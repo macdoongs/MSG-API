@@ -1,10 +1,9 @@
 {
   "name": "portfolio-site",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Youngmin Kim's Portfolio webpage.",
-  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
   "repository": {
     "type": "git",
@@ -15,13 +14,15 @@
   "bugs": {
     "url": "https://github.com/mac0314/portfolio-site/issues"
   },
-  "homepage": "https://github.com/mac0314/portfolio-site#readme",
   "dependencies": {
-    "cheerio": "^0.20.0",
-    "config.json": "0.0.4",
-    "express": "^4.14.0",
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "ejs": "~2.4.1",
+    "express": "~4.13.4",
+    "morgan": "~1.7.0",
     "mysql": "^2.11.1",
-    "pug": "^2.0.0-beta3",
-    "serve-favicon": "^2.3.0"
+    "serve-favicon": "~2.3.0",
+    "stylus": "0.54.5"
   }
 }
