@@ -10,50 +10,36 @@
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <h1><a href="/"><%= title %></a></h1>
-      </div>
-      <div class="panel-body">
-        <img src="/images/macComs.jpg" alt= "Profile" id="Profile">
-      </div>
-    </div>
-    <nav>
-      <ul class="nav nav-tabs  nav-justified">
-        <% for (var i = 0; i < rows.length; i++){ %>
-          <% if (i == 0){ %>
-            <li role="presentation">
-          <% } else { %>
-            <li role="presentation">
-          <% } %>
-            <a href="/topics/<%= rows[i].id %>">
-              <%= rows[i].title %>
-            </a>
-          </li>
-        <% } %>
-      </ul>
-    </nav>
+    <title><%= title %></title>
   </head>
   <body>
     <header>
     <div>
       <div>
-        <!--<h1><a href="/"><%= title %></a></h1>-->
+        <h1><a href="/"><%= title %></a></h1>
       </div>
       <div>
-
+        <img src="/images/macComs.jpg" alt= "Profile" id="Profile">
       </div>
     </div>
     </header>
-    <div class="jumbotron">
-
-      <div class="container" style="height: 600px;">
+    <div>
+      <nav>
+        <ol>
+          <% for (var i = 0; i < rows.length; i++){ %>
+            <ol>
+              <a href="/topics/<%= rows[i].id %>">
+                <%= rows[i].title %>
+              </a>
+            </ol>
+          <% } %>
+        </ol>
+      </nav>
+      <div>
         <div id="control">
         </div>
         <hr>
       <article id="explanation">
-          <h2><%- rows[seq].title %></h2>
-          <p><%- rows[seq].description %></p>
       </article>
       </div>
     </div>

@@ -5,6 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+//global.jQuery = require('jquery');
+//var bootstrap = require('bootstrap');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var topics = require('./routes/topics');
@@ -37,6 +40,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist')));
+//app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist/css')));
+//app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist/fonts')));
+//app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist/js')));
 
 app.use('/', routes);
 app.use('/users', users);
