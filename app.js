@@ -53,34 +53,7 @@ var pug = require('pug');
 //});
 
 
-
-/*
-//var sql = 'INSERT INTO topic (title, description, author) VALUE (?, ?, ?)';
-
-//var params = {'Supervisor', 'Watcher', 'gra'};
-
-// conn.query(sql, params, function(err, rows, fields){
-//   if(err){
-//     throw err;
-//   } else{
-//     console.log('rows', rows);
-//     console.log('fields', fields);
-//   }
-// });
-
-// var sql = 'SELECT id, title, author, created FROM topic';
-//
-// conn.query(sql, function(err, rows, fields){
-//   if(err){
-//     console.log(err);
-//   } else{
-//     console.log('rows', rows);
-//     console.log('fields', fields);
-//   }
-// });
-*/
-
-//app.use('/image', './image');
+app.use('/image', './image');
 
 app.locals.pretty = true;
 
@@ -104,60 +77,38 @@ var server = app.listen(config.app.port, function(){
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 
-/*
-app.get(['/topic', '/topic/:id'],function(req, res){
 
-  var sql = 'SELECT id, title FROM topic';
-
-  conn.query(sql, function(err, topics, fields){
-    var id = req.params.id;
-    if(id){
-      var sql = 'SELECT * FROM topic WHERE id=?';
-      conn.query(sql, [id], function(err, topic, fields){
-        if(err){
-          console.log(err);
-        }else{
-          res.render('view', {topics:topics, topic:topic[0]});
-        }
-      });
-    }else{
-      res.render('view', {topics:topics});
-    }
-  });
-});
-*/
 
 app.get('/', function(req, res){
 
-/*
-
+	var myName = config.rds.user;
 	//res.render('index', { title: 'Korchid' , name:'uiandwe'});
-	var sql = 'SELECT id, title FROM topic';
+	var sql = 'SELECT id, title FROM topic WHERE author = (SELECT id FROM user WHERE name ="' + myName + '")';
 
-	conn.query(sql, function(err, topics, fields){
-    		var id = req.params.id;
-		var title = req.params.title;
-
-    		if(id){
-      			var sql = 'SELECT * FROM topic WHERE id=?';
-      			conn.query(sql, [id], function(err, topic, fields){
-        			if(err){
-          				console.log(err);
-        			}else{
-          				console.log(id);
-        			}
-      			});
-    		}else{
-    			console.log("miss DB data");
+	conn.query(sql, function(err, rows, fields){
+		if(err){
+			console.log(err);
+		}else{
+			if(!rows.length){
+				console.log("Missing DB data.");
+			}else{
+				res.sendFile(path.join(__dirname + '/views/topic.html'));
+			}
 		}
-  	});
-*/
+  });
+
 	//pug.render('index');
 	res.sendFile(path.join(__dirname + '/views/index.html'));
-	//res.sendFile('/index.html');
+});
 
+app.get(['/topic', '/topic/:id'],function(req, res){
+  var sql = 'SELECT id, title FROM topic';
 
+  conn.query(sql, function(err, topics, fields){
+
+  });
 });
 
 
-conn.end();
+
+//conn.end();
