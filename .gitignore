@@ -38,9 +38,6 @@ Thumbs.db
 .config/
 config/
 
-# views basic_form (no bootstrap)
-view/basic_*.*
-
 # Module directory
 node_modules/
 

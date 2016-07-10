@@ -35,12 +35,26 @@
     </nav>
   </head>
   <body>
+    <header>
+    <div>
+      <div>
+        <!--<h1><a href="/"><%= title %></a></h1>-->
+      </div>
+      <div>
+
+      </div>
+    </div>
+    </header>
     <div class="jumbotron">
-      <div id= "container" class="container">
-        <article id="explanation">
+
+      <div class="container" style="height: 600px;">
+        <div id="control">
+        </div>
+        <hr>
+      <article id="explanation">
           <h2><%- rows[seq].title %></h2>
           <p><%- rows[seq].description %></p>
-        </article>
+      </article>
       </div>
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
