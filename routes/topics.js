@@ -42,14 +42,10 @@ router.get(['/', '/:id'], function(req, res, next) {
 				}else{
 					res.render('topics', { title: 'KYM coms', rows: pRows, seq: topicSeq });
 				}
-
-
-
 			}
 		}
   });
 
 });
-
 
 module.exports = router;

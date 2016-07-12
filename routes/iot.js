@@ -16,6 +16,9 @@ var conn = mysql.createConnection({
 
 conn.connect();
 
+
+var sh_timer = require('./timer');
+
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;
@@ -40,8 +43,9 @@ router.get(['/', '/:id'], function(req, res, next) {
 							topicSeq = i;
 					}
 				}
-				var message = mqtt_req_connect(mqtt_client);
+				//var message = mqtt_req_connect(mqtt_client);
 
+				var message = "hi";
 
 				res.render('iot', { title: 'KYM coms', rows: pRows, id:topicId , message : message});
 
@@ -51,16 +55,54 @@ router.get(['/', '/:id'], function(req, res, next) {
 
 });
 
+var count = 0;
+var usemqttaeid = config.iot.mqttaeid;
+var req_topic = util.format('/oneM2M/req/+/%s/#', usemqttaeid);
+var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
 
-function mqtt_req_connect(brokerip) {
+
+//if(count == 0){
+mqtt_client.on('connect', function () {
+		mqtt_client.subscribe(req_topic);
+
+		console.log(req_topic);
+
+		var message = "Connect";
+
+		console.log(message);
+
+		return message;
+});
+//}
+
+sh_timer.timer.on('tick', function() {
+		count++;
+
+		console.log(count);
+
+		//if(count >= 100){
+			//count = 0;
+
+
+
+	      	mqtt_client.on('message', function (topic, message) {
+	        //var topic_arr = topic.split("/");
+					console.log(message);
+	    });
+		//}
+});
+
+
+/*
+//function mqtt_req_connect(brokerip) {
 		var usemqttaeid = config.iot.mqttaeid;
     var req_topic = util.format('/oneM2M/req/+/%s/#', usemqttaeid);
-    var mqtt_client = mqtt.connect('mqtt://' + brokerip);
+    var mqtt_client = mqtt.connect('mqtt://' + "52.78.68.226");
 
     mqtt_client.on('connect', function () {
         mqtt_client.subscribe(req_topic);
 
-				var message = "connect"
+				var message = "connect";
 
 				console.log(message);
 
@@ -73,6 +115,7 @@ function mqtt_req_connect(brokerip) {
 
 				return message;
     });
-}
+//}
+*/
 
 module.exports = router;
