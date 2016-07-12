@@ -10,6 +10,8 @@ var conn = mysql.createConnection({
 	database  : config.rds.webdatabase
 });
 
+conn.connect();
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var myName = config.rds.user;
@@ -31,5 +33,6 @@ router.get('/', function(req, res, next) {
   });
 
 });
+
 
 module.exports = router;

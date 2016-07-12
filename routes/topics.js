@@ -10,6 +10,8 @@ var conn = mysql.createConnection({
 	database  : config.rds.webdatabase
 });
 
+conn.connect();
+
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;
@@ -40,10 +42,14 @@ router.get(['/', '/:id'], function(req, res, next) {
 				}else{
 					res.render('topics', { title: 'KYM coms', rows: pRows, seq: topicSeq });
 				}
+
+
+
 			}
 		}
   });
 
 });
+
 
 module.exports = router;

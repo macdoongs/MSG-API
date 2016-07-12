@@ -10,6 +10,8 @@ var conn = mysql.createConnection({
 	database  : config.rds.iotdatabase
 });
 
+conn.connect();
+
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;
@@ -41,5 +43,6 @@ router.get(['/', '/:id'], function(req, res, next) {
   });
 
 });
+
 
 module.exports = router;
