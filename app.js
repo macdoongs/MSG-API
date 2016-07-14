@@ -41,6 +41,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'jquery-mobile')));
 app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist')));
 //app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist/css')));
 //app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist/fonts')));
@@ -57,6 +58,21 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+
+// // 3033 포트로 소켓을 연다
+// var io = require('socket.io').listen(3033);
+//
+// // connection이 발생할 때 핸들러를 실행한다.
+// io.sockets.on('connection', function (socket) {
+// // 클라이언트로 news 이벤트를 보낸다.
+//     socket.emit('news', { hello: 'world' });
+//
+// // 클라이언트에서 my other event가 발생하면 데이터를 받는다.
+// socket.on('my other event', function (data) {
+//         console.log(data);
+//     });
+// });
 
 // error handlers
 

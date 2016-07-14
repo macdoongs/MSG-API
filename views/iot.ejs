@@ -7,48 +7,83 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <link rel='stylesheet' href='/stylesheets/style.css' />
 
-    <!-- Bootstrap -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"  href="//code.jquery.com/mobile/git/jquery.mobile-git.css">
+	  <script src="//code.jquery.com/jquery-1.10.1.js"></script>
+	  <script src="//code.jquery.com/mobile/git/jquery.mobile-git.js"></script>
+    <script src="jquery.mobile.nestedlists.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+    <style type="text/css">
+      a:link { color: red; text-decoration: none;}
+      a:visited { color: black; text-decoration: none;}
+      a:hover { color: blue; text-decoration: underline;}
+    </style>
+
 
     <title><%= title %></title>
-    <div class="panel panel-info">
-      <div class="panel-heading">
         <h1><a href="/"><%= title %></a></h1>
-      </div>
-      <div class="panel-body">
-        <!--<img src="/images/macComs.jpg" alt= "Profile" id="Profile">-->
-      </div>
-    </div>
-    <nav>
-      <ul class="nav nav-tabs  nav-justified">
+  </head>
+<!--
+  <script>
+    var ref_t = setInterval(function (){
+      jQuery('#list').load('http://internetbat.com/{$mid}#list_load').fadeIn('slow');, 6000);
+  </script>
+-->
+  <body>
+
+  <div data-role="page" id "iotmain">
+  	<div data-role="header" data-position="fixed" data-theme="b">
+  		<h1>MMCN_2016_IoT</h1>
+  	</div><!-- /header -->
+
+  	<div data-role="content" id="content">
+      <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
+        <li data-role="list-divider"><h1>My Device</h1></li>
         <% for (var i = 0; i < rows.length; i++){ %>
-          <% if (i == 0){ %>
-            <li role="presentation">
-          <% } else { %>
-            <li role="presentation">
-          <% } %>
-              <%= rows[i].ri %>
-            </li>
+          <li><h1><a href= "<%- rows[i].ri %>">Device <%- i + 1 %> : <%- rows[i].ri %></a></h1></li>
         <% } %>
       </ul>
-    </nav>
-  </head>
-  <body>
-    <div class="jumbotron">
-      <div id= "container" class="container">
-        <% for (var i = 0; i < rows.length; i++){ %>
-            <article id="explanation">
-            <h2>ri : <%- rows[i].ri %></h2>
-            <p>mni : <%- rows[i].mni %></p>
-            <p>aei : <%- rows[i].cni %></p>
-            <p>api : <%- rows[i].cbs %></p>
-          </article>
-        <% } %>
-      </div>
-    </div>
+    </div><!-- /content -->
+
+    	<div data-role="footer" data-position="fixed" data-theme="b">
+    		<h1>Demo page</h1>
+    	</div><!-- /footer -->
+
+    </div><!-- /page -->
+
+<!--
+    <script>
+    // localhost로 연결한다.
+    var socket = io.connect('http://localhost');
+
+    // 서버에서 news 이벤트가 일어날 때 데이터를 받는다.
+    socket.on('news', function (data) {
+      console.log(data);
+      //서버에 my other event 이벤트를 보낸다.
+      socket.emit('my other event', { my: 'data' });
+    });
+    </script>
+-->
+    <% for (var i = 0; i < rows.length; i++){ %>
+      <div data-role="page" id="<%- rows[i].ri %>" data-title="Device">
+        <div data-role="header" data-theme="a">
+    			<a href="#" data-rel="back">back</a>
+    			<h1>Device <%- i + 1 %> : <%- rows[i].ri %></h1>
+    		</div><!-- /header -->
+      <div data-role="content" id="content">
+      <ul data-role="listview" data-child-pages="true" data-inset="true" id= "plist">
+            <li><h3>ri : <%- rows[i].ri %></h3></li>
+            <li><h3>mni : <%- rows[i].mni %></h3></li>
+            <li><h3>aei : <%- rows[i].cni %></h3></li>
+            <li><h3>api : <%- rows[i].cbs %></h3></li>
+			</ul>
+      </div><!-- /content -->
+      </div><!-- /page -->
+    <% } %>
+
+
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/js/bootstrap.min.js"></script>
   </body>
 </html>
