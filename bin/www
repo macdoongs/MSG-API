@@ -7,7 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('myweb:server');
 var http = require('http');
-
+var util = require('util');
+var config = require('config.json')('./config/config.json');
 /**
  * Get port from environment and store in Express.
  */
@@ -21,8 +22,49 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+var io = require('socket.io').listen(server);
 
+// connection이 발생할 때 핸들러를 실행한다.
+io.sockets.on('connection', function (socket) {
+// 클라이언트로 news 이벤트를 보낸다.
+    socket.emit('toClient', { msg: 'Welcome AjouIoT' });
 
+		mqtt_client.on('message', function (topic, message) {
+				console.log(message.toString());
+
+				var mqtt_client = config.iot.mqttproxy;
+
+				socket.emit('toClient', { msg: message.toString()});
+		});
+
+		// 클라이언트에서 my other event가 발생하면 데이터를 받는다.
+		socket.on('fromClient', function (data) {
+
+				//socket.broadcast.emit('toClient', data);
+        //socket.emit('toClient', data);
+		    //console.log('Message from client :' + data.msg);
+        mqtt_client.publish("test-topic", "web : " + data.msg);
+    });
+});
+
+var mqtt = require('mqtt');
+
+var roomId = "test-topic";
+var req_topic = util.format('%s', roomId);
+var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
+
+//
+mqtt_client.on('connect', function () {
+		mqtt_client.subscribe(req_topic);
+
+		console.log(req_topic);
+
+		var message = "Connect";
+
+		console.log(message);
+
+		return message;
+});
 /**
  * Listen on provided port, on all network interfaces.
  */

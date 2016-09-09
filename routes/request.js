@@ -21,38 +21,24 @@ var sh_timer = require('./timer');
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;
-	var topicId = req.params.id;
+	var topicId = "test-topic";
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
 
-  var sql = 'SELECT * FROM cnt';
 
-  conn.query(sql, function(err, rows, fields){
-  	if(err){
-  		console.log(err);
-  	}else{
-  		if(!rows.length){
-  			console.log("Missing DB data.");
-  		}else{
-				var sRows = JSON.stringify(rows);
-				var pRows = JSON.parse(sRows);
-
-				for(var i = 0; i < rows.length; i++){
-					if(rows[i].id == topicId){
-							topicSeq = i;
-					}
-				}
 				//var message = mqtt_req_connect(mqtt_client);
 
-				var message = "hi";
+				var message = "room01";
 
-				res.render('iot', { title: 'MMCN 2016', rows: pRows, id:topicId , message : message});
-
-			}
-		}
-  });
+				res.render('chat', { title: 'Ajou IoT', id:topicId , message : message});
 
 });
+//
+ global.subCount = 0;
 
-global.subCount = 0;
+var roomId = "test-topic";
+var req_topic = util.format('%s', roomId);
+var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
+
+
 module.exports = router;

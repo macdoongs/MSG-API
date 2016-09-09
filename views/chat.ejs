@@ -38,47 +38,48 @@
   	<div data-role="content" id="content">
       <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
         <li data-role="list-divider"><h1>My Device</h1></li>
-        <% for (var i = 0; i < rows.length; i++){ %>
-          <li><h1><a href= "<%- rows[i].ri %>">Device <%- i + 1 %> : <%- rows[i].ri %></a></h1></li>
-        <% } %>
       </ul>
+      <textarea rows="300" cols="300" name="contents"><%- message %></textarea>
     </div><!-- /content -->
 
-    	<div data-role="footer" data-position="fixed" data-theme="b">
+
+
+      <b>Send message</b><p>
+      Message  <input type="text" id="msgbox"/>
+      <br>
+      <span id="msgs"></span>
+
+      <script type="text/javascript">
+          var socket = io.connect('http://korchid.org');
+          $("#msgbox").keyup(function(event) {
+              if (event.which == 13) {
+                  socket.emit('fromClient',{msg:$('#msgbox').val()});
+                  $('#msgbox').val('');
+              }
+          });
+          socket.on('toClient',function(data){
+              console.log(data.msg);
+              $('#msgs').append(data.msg+'<BR>');
+          });
+      </script>
+
+      <div data-role="footer" data-position="fixed" data-theme="b">
     		<h1>Demo page</h1>
     	</div><!-- /footer -->
-
     </div><!-- /page -->
 
-<!--
-    <script>
-    // localhost로 연결한다.
-    var socket = io.connect('http://localhost');
 
-    // 서버에서 news 이벤트가 일어날 때 데이터를 받는다.
-    socket.on('news', function (data) {
-      console.log(data);
-      //서버에 my other event 이벤트를 보낸다.
-      socket.emit('my other event', { my: 'data' });
-    });
-    </script>
--->
-    <% for (var i = 0; i < rows.length; i++){ %>
-      <div data-role="page" id="<%- rows[i].ri %>" data-title="Device">
-        <div data-role="header" data-theme="a">
-    			<a href="#" data-rel="back">back</a>
-    			<h1>Device <%- i + 1 %> : <%- rows[i].ri %></h1>
-    		</div><!-- /header -->
-      <div data-role="content" id="content">
-      <ul data-role="listview" data-child-pages="true" data-inset="true" id= "plist">
-            <li><h3>ri : <%- rows[i].ri %></h3></li>
-            <li><h3>mni : <%- rows[i].mni %></h3></li>
-            <li><h3>aei : <%- rows[i].cni %></h3></li>
-            <li><h3>api : <%- rows[i].cbs %></h3></li>
-			</ul>
-      </div><!-- /content -->
+
+
+    <div data-role="page" id= "chat" data-title="Device">
+      <div data-role="header" data-theme="a">
+  			<a href="#" data-rel="back">back</a>
+
+  	  </div><!-- /header -->
+        <div data-role="content" id="content">
+
+        </div><!-- /content -->
       </div><!-- /page -->
-    <% } %>
 
 
 
