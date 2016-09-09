@@ -13,6 +13,7 @@ var users = require('./routes/users');
 var topics = require('./routes/topics');
 var iot = require('./routes/iot');
 var chat = require('./routes/chat');
+var rooms = require('./routes/rooms');
 
 var config = require('config.json')('./config/config.json');
 
@@ -53,6 +54,7 @@ app.use('/users', users);
 app.use('/topics', topics);
 app.use('/iot', iot);
 app.use('/chat', chat);
+app.use('/rooms', rooms);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
