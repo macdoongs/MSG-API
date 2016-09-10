@@ -54,5 +54,4 @@ router.get(['/', '/:id'], function(req, res, next) {
 
 });
 
-global.subCount = 0;
 module.exports = router;

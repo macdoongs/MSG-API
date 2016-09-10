@@ -23,7 +23,7 @@ conn.connect();
 
 var sh_timer = require('./timer');
 
-var conArr = new Array();
+
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
@@ -32,7 +32,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
 
-	url = 'http://localhost:7579/mobius-yt/Sajouiot01/beacon01?rcn=4&lim=5'
+	url = 'http://localhost:7579/mobius-yt/Sajouiot01/beacon01?rcn=4&lim=8'
 	request({
      		url : url,
      		method: 'GET',
@@ -46,25 +46,30 @@ router.get(['/', '/:id'], function(req, res, next) {
     		if(error) {
       			console.log(error);
     		}else{
-					console.log('Mobius request Ok!');
+					var conArr = new Array();
+
+					//console.log('Mobius request Ok!');
 
 					parser.parseString(body, function(err, result){
 						sResult = JSON.stringify(result);
 						oResult = JSON.parse(sResult);
 
-						console.log(Object.keys(oResult['m2m:rsp']['m2m:cin'][0]));
+						//console.log(Object.keys(oResult['m2m:rsp']['m2m:cin'][0]));
 						//var cin = Object.keys(oResult['m2m:rsp']['m2m:cin']);
 						var cin = oResult['m2m:rsp']['m2m:cin'];
 						var cinLen = Object.keys(cin).length;
-						console.log('cin : ' + cin);
-						console.log(cinLen);
-						console.log('oResult-con : ' + oResult['m2m:rsp']['m2m:cin'][0]['con']);
+
+						//console.log('cin : ' + cin);
+						//console.log(cinLen);
+						//console.log('oResult-con : ' + oResult['m2m:rsp']['m2m:cin'][0]['con']);
+
+						global.rooms = new Array();
 
 						for(var i=0; i < cinLen; i++){
-							console.log('cin['+ i + '] : ' + cin[i]);
-							console.log(cin[i]['con']);
+							//console.log('cin['+ i + '] : ' + cin[i]);
+							//console.log(cin[i]['con']);
 							var sptArr = cin[i]['con'][0].split(',');
-							console.log(i + ' con : ' + sptArr[0]);
+							//console.log(i + ' con : ' + sptArr[0]);
 							var nameCheck = 0;
 							for(var j=0; j<conArr.length; j++){
 								if(conArr[j] == sptArr[0]){
@@ -74,10 +79,11 @@ router.get(['/', '/:id'], function(req, res, next) {
 							}
 							if(nameCheck){
 							}else{
+								global.rooms.push(sptArr[0]);
 								conArr.push(sptArr[0]);
 							}
 						}
-						console.log(conArr);
+						//console.log(conArr);
 
 						res.render('rooms', { title: 'AjouIoT', id:topicId , rooms : conArr});
 

@@ -7,8 +7,12 @@
 var app = require('../app');
 var debug = require('debug')('myweb:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 var util = require('util');
 var config = require('config.json')('./config/config.json');
+
+var mqtt = require('mqtt');
 /**
  * Get port from environment and store in Express.
  */
@@ -20,56 +24,181 @@ app.set('port', port);
  * Create HTTP server.
  */
 
+ var options = {
+    key: fs.readFileSync('./ssl/www.korchid.com.key'),
+    cert: fs.readFileSync('./ssl/2_www.korchid.com.crt'),
+ };
+
+//var server = https.createServer(options, app);
 var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
 
+// usernames which are currently connected to the chat
+var usernames = {};
+//var mqtt_client = mqtt.connect(config.iot.mqttproxy);
+var mqtt_client = config.iot.mqttproxy;
+
+var data = {
+  'username':'',
+  'message':''
+};
+
+// rooms which are currently available in chat
+global.rooms = new Array();
+
+
+
 // connection이 발생할 때 핸들러를 실행한다.
 io.sockets.on('connection', function (socket) {
-// 클라이언트로 news 이벤트를 보낸다.
-    socket.emit('toClient', { msg: 'Welcome AjouIoT' });
+/*
+    // 클라이언트로 news 이벤트를 보낸다.
+        socket.emit('toClient', { msg: 'Welcome AjouIoT' });
 
-		mqtt_client.on('message', function (topic, message) {
-				console.log(message.toString());
-
-				var mqtt_client = config.iot.mqttproxy;
-
-				socket.emit('toClient', { msg: message.toString()});
-		});
-
-		// 클라이언트에서 my other event가 발생하면 데이터를 받는다.
+    // 클라이언트에서 my other event가 발생하면 데이터를 받는다.
 		socket.on('fromClient', function (data) {
-
+        console.log('www _ fromClient _  ROOMID : ' + global.ROOMID);
 				//socket.broadcast.emit('toClient', data);
         //socket.emit('toClient', data);
 		    //console.log('Message from client :' + data.msg);
-        mqtt_client.publish("test-topic", "web : " + data.msg);
+        mqtt_client.publish(global.ROOMID, "web : " + data.msg);
     });
+*/
+    // when the client emits 'adduser', this listens and executes
+    console.log("IO connect");
+
+
+
+	  socket.on('adduser', function(username){
+		    // store the username in the socket session for this client
+		    socket.username = username;
+		    // store the room name in the socket session for this client
+		    socket.room = global.rooms[0];
+		    // add the client's username to the global list
+		    usernames[username] = username;
+		    // send client to room 1
+		    socket.join(socket.room);
+
+        mqtt_client.on('connect', function () {
+            console.log("MQTT Connect");
+        });
+
+        console.log('subscribe : ' + socket.room);
+        mqtt_client.subscribe(socket.room);
+
+		    // echo to client they've connected
+		    //socket.emit('updatechat', 'SERVER', 'you have connected ' + socket.room);
+
+        // echo to room 1 that a person has connected to their room
+        //socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', username + ' has connected to this room');
+
+        socket.emit('updaterooms', global.rooms, socket.room);
+
+        data.username = 'SERVER';
+        data.message = socket.username + " has connected to this room";
+        var dataStr = JSON.stringify(data);
+
+        mqtt_client.publish(socket.room,  dataStr);
+    });
+
+    mqtt_client.on('message', function (topic, data) {
+        console.log('message : ' + data);
+
+        var dataObj = JSON.parse(data);
+
+        socket.emit('updatechat', dataObj.username , dataObj.message);
+    });
+
+    // when the client emits 'sendchat', this listens and executes
+	  socket.on('sendchat', function (message) {
+          console.log('sendchat _ data : ' + message);
+          //console.log(socket.room);
+		      // we tell the client to execute 'updatechat' with 2 parameters
+		      //io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+          data.username = socket.username;
+          data.message = message;
+
+          var dataStr = JSON.stringify(data);
+
+          mqtt_client.publish(socket.room,  dataStr);
+	  });
+
+    // socket.on('updatechat', function (data) {
+    //       //console.log('sendchat _ data : ' + data);
+    //       //console.log(socket.room);
+		//       // we tell the client to execute 'updatechat' with 2 parameters
+    //       mqtt_client.publish(socket.room, socket.username + " : " + data);
+	  // });
+
+    socket.on('switchRoom', function(newroom){
+		    // leave the current room (stored in session)
+		    socket.leave(socket.room);
+        mqtt_client.unsubscribe(socket.room);
+        console.log('switchRoom _ unsubscribe : ' + socket.room);
+
+		    // join new room, received as function parameter
+		    socket.join(newroom);
+        mqtt_client.subscribe(newroom);
+        console.log('switchRoom _ subscribe : ' + newroom);
+
+        data.username = 'SERVER';
+        data.message = socket.username + " has connected to this room";
+        var dataStr = JSON.stringify(data);
+
+        mqtt_client.publish(socket.room,  dataStr);
+		    //socket.emit('updatechat', 'SERVER', 'you have connected to '+ newroom);
+		    // sent message to OLD room
+		    //socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room');
+		    // update socket session room title
+		    socket.room = newroom;
+		    //socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
+		    socket.emit('updaterooms', global.rooms, newroom);
+	  });
+
+	  // when the user disconnects.. perform this
+	  socket.on('disconnect', function(){
+        data.username = 'SERVER';
+        data.message = "socket.username + has disconnected";
+        var dataStr = JSON.stringify(data);
+
+        mqtt_client.publish(socket.room,  dataStr);
+        console.log('disconnect');
+		    // remove the username from global usernames list
+		    delete usernames[socket.username];
+		    // update list of users in chat, client-side
+		    io.sockets.emit('updateusers', usernames);
+		    // echo globally that this client has left
+		    //socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+		    socket.leave(socket.room);
+        mqtt_client.close;
+	  });
 });
 
-var mqtt = require('mqtt');
 
-var roomId = "test-topic";
-var req_topic = util.format('%s', roomId);
+
+global.ROOMID = "test-topic";
+var req_topic = util.format('%s', global.ROOMID);
 var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
 
 //
-mqtt_client.on('connect', function () {
-		mqtt_client.subscribe(req_topic);
-
-		console.log(req_topic);
-
-		var message = "Connect";
-
-		console.log(message);
-
-		return message;
-});
+// mqtt_client.on('connect', function () {
+// 		mqtt_client.subscribe(req_topic);
+//
+// 		console.log(req_topic);
+//
+// 		var message = "Connect";
+//
+// 		console.log(message);
+//
+// 		return message;
+// });
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, function(){
+  console.log('Server Listen ' + port + ' port');
+});
 server.on('error', onError);
 server.on('listening', onListening);
 

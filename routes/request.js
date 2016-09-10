@@ -33,12 +33,5 @@ router.get(['/', '/:id'], function(req, res, next) {
 				res.render('chat', { title: 'Ajou IoT', id:topicId , message : message});
 
 });
-//
- global.subCount = 0;
-
-var roomId = "test-topic";
-var req_topic = util.format('%s', roomId);
-var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
-
 
 module.exports = router;

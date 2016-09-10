@@ -23,41 +23,17 @@ var sh_timer = require('./timer');
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
 	var topicId = req.params.id;
+	global.ROOMID = req.params.id;
   var myName = config.rds.user;
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
 
-	url = 'http://localhost:7579/mobius-yt/Sajouiot01/beacon01?rcn=4&lim=5'
-	request({
-     		url : url,
-     		method: 'GET',
-     		headers : {
-      			'Accept':'application/xml',
-      			'X-M2M-RI': '12345',
-      			'X-M2M-Origin': 'SOrigin',
-						'nmtype':'short'    },
-		//qs: {'query' : text}
-   	}, function(error, response, body) {
-    		if(error) {
-      			console.log(error);
-    		}else{
-			console.log('Mobius request Ok!');
-			//console.log(body);
+	var message = topicId;
 
-			}
-		});
 
-				var message = topicId;
-
-				res.render('chat', { title: 'Ajou IoT', id:topicId , message : message});
+	//console.log('chat _ ROOMID : ' + global.ROOMID);
+	res.render('chat', { title: 'Ajou IoT', id:global.ROOMID , message : message});
 
 });
-//
- global.subCount = 0;
-
-var roomId = "test-topic";
-var req_topic = util.format('%s', roomId);
-var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
-
 
 module.exports = router;

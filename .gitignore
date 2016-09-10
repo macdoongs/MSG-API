@@ -33,13 +33,22 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
+# SSL file #
+############
+.ssl/
+ssl/
+*.crt
+*.cer
 
-# Configuration directory
+# Configuration directory #
+###########################
 .config/
 config/
 
-# Module directory
+# Module directory #
+####################
 node_modules/
 
-# gitignore directory
+# gitignore directory #
+#######################
 gitignore/
