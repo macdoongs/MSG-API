@@ -22,6 +22,12 @@
     <title><%= title %></title>
         <h1><a href="/"><%= title %></a></h1>
   </head>
+<!--
+  <script>
+    var ref_t = setInterval(function (){
+      jQuery('#list').load('http://internetbat.com/{$mid}#list_load').fadeIn('slow');, 6000);
+  </script>
+-->
   <body>
 
   <div data-role="page" id "iotmain">
@@ -29,19 +35,41 @@
   		<h1>MMCN_2016_IoT</h1>
   	</div><!-- /header -->
 
-      <div data-role="content" id="content">
-        <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
-          <li data-role="list-divider"><h1>Chatting Rooms</h1></li>
-          <% for (var i = 0; i < rooms.length; i++){ %>
-            <li><h1><a href= "<%- 'chat/' + rooms[i] %>">room <%- i + 1 %> : <%- rooms[i] %></a></h1></li>
-          <% } %>
-        </ul>
-      </div><!-- /content -->
+  	<div data-role="content" id="content">
+      <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
+        <li data-role="list-divider"><h1>My Device</h1></li>
+      </ul>
+      <textarea rows="300" cols="300" name="contents"></textarea>
+    </div><!-- /content -->
+
+    <script>
+    	var socket = io.connect('https://www.korchid.com', {secure:true});
+
+    	// on connection to server, ask for user's name with an anonymous callback
+    	socket.on('connect', function(){
+    		// call the server-side function 'adduser' and send one parameter (value of prompt)
+    		socket.emit('adduser', 'mac');//prompt("What's your name?"));
+
+        var destination = '/rooms';
+        socket.emit('redirect', destination);
+    	});
+
+    </script>
+    <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
+    	<b>ROOMS</b>
+    	<div id="rooms"></div>
+    </div>
+    <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
+    	<div id="conversation"></div>
+    	<input id="data" style="width:200px;" />
+    	<input type="button" id="datasend" value="send" />
+    </div>
 
       <div data-role="footer" data-position="fixed" data-theme="b">
     		<h1>Demo page</h1>
     	</div><!-- /footer -->
     </div><!-- /page -->
+
 
     <div data-role="page" id= "chat" data-title="Device">
       <div data-role="header" data-theme="a">

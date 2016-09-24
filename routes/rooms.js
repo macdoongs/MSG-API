@@ -71,6 +71,9 @@ router.get(['/', '/:id'], function(req, res, next) {
 							var sptArr = cin[i]['con'][0].split(',');
 							//console.log(i + ' con : ' + sptArr[0]);
 							var nameCheck = 0;
+							if(sptArr[0].substring(0, 6) != 'beacon'){
+								continue;
+							}
 							for(var j=0; j<conArr.length; j++){
 								if(conArr[j] == sptArr[0]){
 									nameCheck++;

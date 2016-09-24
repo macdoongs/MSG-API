@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <link rel="stylesheet"  href="//code.jquery.com/mobile/git/jquery.mobile-git.css">
+	  <script src="//code.jquery.com/jquery-1.10.1.js"></script>
+	  <script src="//code.jquery.com/mobile/git/jquery.mobile-git.js"></script>
+    <script src="jquery.mobile.nestedlists.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <meta name="google-signin-client_id" content="1067670564214-2e217fhtiisjhlqtll5hhi4gmksioi20.apps.googleusercontent.com">
+
+    <script>
+    function start() {
+      gapi.load('auth2', function() {
+        auth2 = gapi.auth2.init({
+          client_id: '1067670564214-2e217fhtiisjhlqtll5hhi4gmksioi20.apps.googleusercontent.com',
+          // Scopes to request in addition to 'profile' and 'email'
+          //scope: 'additional_scope'
+        });
+      });
+    }
+  </script>
+
+    <style type="text/css">
+      a:link { color: red; text-decoration: none;}
+      a:visited { color: black; text-decoration: none;}
+      a:hover { color: blue; text-decoration: underline;}
+    </style>
+
+
+    <title><%= title %></title>
+        <h1><a href="/"><%= title %></a></h1>
+  </head>
+<!--
+  <script>
+    var ref_t = setInterval(function (){
+      jQuery('#list').load('http://internetbat.com/{$mid}#list_load').fadeIn('slow');, 6000);
+  </script>
+-->
+  <body>
+
+  <div data-role="page" id "iotmain">
+  	<div data-role="header" data-position="fixed" data-theme="b">
+  		<h1>MMCN_2016_IoT</h1>
+  	</div><!-- /header -->
+
+  	<div data-role="content" id="content">
+      <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
+        <li data-role="list-divider"><h1>My Device</h1></li>
+      </ul>
+      <textarea rows="300" cols="300" name="contents"></textarea>
+    </div><!-- /content -->
+
+
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <script>
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName());
+        console.log('Given Name: ' + profile.getGivenName());
+        console.log('Family Name: ' + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+      };
+    </script>
+    <a href="#" onclick="signOut();">Sign out</a>
+    <script>
+      function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+          console.log('User signed out.');
+        });
+      }
+    </script>
+
+    <div data-role="footer" data-position="fixed" data-theme="b">
+    		<h1>Demo page</h1>
+    </div><!-- /footer -->
+  </div><!-- /page -->
+
+
+    <div data-role="page" id= "chat" data-title="Device">
+      <div data-role="header" data-theme="a">
+  			<a href="#" data-rel="back">back</a>
+
+  	  </div><!-- /header -->
+        <div data-role="content" id="content">
+
+        </div><!-- /content -->
+    </div><!-- /header -->
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  </body>
+</html>
