@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Basic Page Needs
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>PoS: Place of Chatting</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <link rel="stylesheet"  href="//code.jquery.com/mobile/git/jquery.mobile-git.css">
-	  <script src="//code.jquery.com/jquery-1.10.1.js"></script>
-	  <script src="//code.jquery.com/mobile/git/jquery.mobile-git.js"></script>
-    <script src="jquery.mobile.nestedlists.js"></script>
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
 
-    <style type="text/css">
-      a:link { color: red; text-decoration: none;}
-      a:visited { color: black; text-decoration: none;}
-      a:hover { color: blue; text-decoration: underline;}
-    </style>
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="../../dist/css/normalize.css">
+    <link rel="stylesheet" href="../../dist/css/skeleton.css">
+    <link rel="stylesheet" href="/css/custom.css">
+
+    <!-- Scripts
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 
-    <title><%= title %></title>
-        <h1><a href="/"><%= title %></a></h1>
+    <!-- Favicon
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="icon" type="image/png" href="/favicon.ico">
+
   </head>
   <body>
 
   <div data-role="page" id "iotmain">
-  	<div data-role="header" data-position="fixed" data-theme="b">
-  		<h1>MMCN_2016_IoT</h1>
-  	</div><!-- /header -->
-
       <div data-role="content" id="content">
         <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
           <li data-role="list-divider"><h1>Chatting Rooms</h1></li>
           <% for (var i = 0; i < rooms.length; i++){ %>
-            <li><h1><a href= "<%- 'chat/' + rooms[i] %>">room <%- i + 1 %> : <%- rooms[i] %></a></h1></li>
+            <li><h1><a class="button button-primary" href= "<%- 'chat/' + rooms[i] %>">room <%- i + 1 %> : <%- rooms[i] %></a></h1></li>
+            <button onclick="location.href='<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button>
           <% } %>
         </ul>
       </div><!-- /content -->
-
-      <div data-role="footer" data-position="fixed" data-theme="b">
-    		<h1>Demo page</h1>
-    	</div><!-- /footer -->
     </div><!-- /page -->
 
     <div data-role="page" id= "chat" data-title="Device">

@@ -16,6 +16,9 @@ var conn = mysql.createConnection({
 
 var request = require('request');
 
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser();
+
 conn.connect();
 
 var sh_timer = require('./timer');
@@ -24,18 +27,18 @@ var sh_timer = require('./timer');
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
-	var topicId = req.params.id;
-	//global.ROOMID = req.params.id;
   var myName = config.rds.user;
+	var topicId = "test-topic";
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
 
-	var message = topicId;
 
 
-	//console.log('chat _ ROOMID : ' + global.ROOMID);
-	res.render('login', { title: 'Ajou IoT', message : message});
+
+	// Pi request
+	res.redirect('http://61.83.186.235:10000');
 
 });
+
 
 module.exports = router;

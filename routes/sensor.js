@@ -32,7 +32,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
 
-	url = 'http://localhost:7579/mobius-yt/Sajouiot03/camera?rcn=4&lim=1'
+	url = 'http://localhost:7579/mobius-yt/Sajouiot03/arduino?rcn=4&lim=10'
 	request({
      		url : url,
      		method: 'GET',
@@ -53,12 +53,11 @@ router.get(['/', '/:id'], function(req, res, next) {
 						oResult = JSON.parse(sResult);
 
 						var cin = oResult['m2m:rsp']['m2m:cin'];
-						var image = cin[0]['con'][0];
+						var data = cin[0]['con'][0];
 
 
 
-						res.writeHead(200, {'Content-type':'base64'});
-						res.end(base64_decode(image));
+						res.send(data);
 					});
 
 			}

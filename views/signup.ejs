@@ -32,13 +32,7 @@
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <link rel="icon" type="image/png" href="/favicon.ico">
 
-    <style type="text/css">
-      a:link { color: red; text-decoration: none;}
-      a:visited { color: black; text-decoration: none;}
-      a:hover { color: blue; text-decoration: underline;}
-    </style>
   </head>
-
 <!--
   <script>
     var ref_t = setInterval(function (){
@@ -46,36 +40,31 @@
   </script>
 -->
   <body>
+
+
   	<div data-role="content" id="content">
       <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
         <li data-role="list-divider"><h1>My Device</h1></li>
       </ul>
       <!--<textarea rows="300" cols="300" name="contents"></textarea>-->
-      <ul>
-        <li><button onclick="location.href='/auth/google'">google login</button></li>
-        <li><button onclick="location.href='/auth/facebook'">Facebook login</button></li>
-        <li><button onclick="location.href='/auth/twitter'">twitter login</button></li>
-      <!--<li><a href="https://www.korchid.com/auth/google">Sign In with Google</a></li>
-      <li><a href="https://www.korchid.com/auth/facebook">Sign In with facebook</a></li>
-      <li><a href="https://www.korchid.com/auth/twitter">Sign In with twitter</a></li>-->
-      </ul>
-      <form action="/local-login" method="post">
-    <div>
-        <label>UserId:</label>
-        <input type="text" name="userid"/><br/>
-    </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" name="password"/>
-    </div>
-    <div>
-        <input type="submit" value="Submit"/>
-    </div>
+      <form action="/signup" method="post">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="text" class="form-control" name="email">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password">
+        </div>
+
+        <button type="submit" class="btn btn-warning btn-lg">Signup</button>
     </form>
-    <p>Need an account? <a href="/signup">Signup</a></p>
+
+    <hr>
+
+    <p>Already have an account? <a href="/login">Login</a></p>
     <p>Or go <a href="/">home</a>.</p>
     </div><!-- /content -->
-    </div><!-- /page -->
 
 
     <div data-role="page" id= "chat" data-title="Device">

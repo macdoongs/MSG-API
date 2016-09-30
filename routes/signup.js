@@ -16,11 +16,12 @@ var conn = mysql.createConnection({
 
 var request = require('request');
 
+var xml2js = require('xml2js');
+var parser = new xml2js.Parser();
+
 conn.connect();
 
 var sh_timer = require('./timer');
-
-
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
@@ -32,10 +33,20 @@ router.get(['/', '/:id'], function(req, res, next) {
 
 	var message = topicId;
 
-
+	//res.send('ok')
 	//console.log('chat _ ROOMID : ' + global.ROOMID);
-	res.render('login', { title: 'Ajou IoT', message : message});
+	res.render('signup', { title: 'Ajou IoT', message : message});
 
+});
+
+router.post(['/', '/:id'], function(req, res, next) {
+
+	console.log(Object.keys(req));
+
+	console.log('email : ' + req.body.email);
+	console.log('password : ' + req.body.password);
+
+	res.send('Good!')
 });
 
 module.exports = router;
