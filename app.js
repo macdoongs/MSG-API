@@ -20,6 +20,8 @@ var streaming = require('./routes/streaming');
 
 var config = require('config.json')('./config/config.json');
 
+var session = require('express-session');
+
 var app = express();
 
 var mysql = require('mysql');
@@ -74,7 +76,7 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 
 app.use(passport.initialize());
 //app.use(passport.session());
-
+app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();
 
 // passport.use(new LocalStrategy({
@@ -106,7 +108,7 @@ passport.use(new LocalStrategy({
     ,function(req,userid, password, done) {
         if(userid=='asdf' && password=='asdf'){
             var user = { 'userid':'asdf',
-                          'email':'asdf@naver.com'};
+                          'password':'asdf'};
             return done(null,user);
         }else{
             return done(null,false);
@@ -121,6 +123,7 @@ app.use(passport.session({
     saveUninitialized: true,
     cookie: { secure: true }
 }));
+
 
 
 // serialize
@@ -150,6 +153,7 @@ function ensureAuthenticated(req, res, next) {
 app.post('/login',
     passport.authenticate('local', { failureRedirect: '/login_fail', failureFlash: true }),
     function(req, res) {
+				console.log(req.session);
         res.redirect('/login_success');
 });
 
@@ -160,11 +164,33 @@ app.get('/login', function(req, res, next) {
 
 });
 
-app.post('/local-login', passport.authenticate('local', {
+app.get('/login_success', function(req, res, next) {
+			console.log('Login Success : ' + req.user);
+			console.log();
+			if(req.session.passport.user.id == 110154195936516884946){
+				res.redirect('/rooms/' + req.session.passport.user.id);
+			}else if(req.session.passport.user.userid == 'asdf' && req.session.passport.user.password == 'asdf'){
+				res.redirect('/rooms/' + req.session.passport.user.id);
+			}else{
+				res.send('Login Success!');
+			}
+});
 
-    successRedirect: '/userinfo', // 로그인 성공 Redirect URL
-    failureRedirect: '/login', // 로그인 실패 Redirect URL
-}));
+app.get('/login_fail', function(req, res, next) {
+
+		res.send('Login Fail');
+
+});
+
+app.post('/local-login', passport.authenticate('local'), function(req, res){
+		console.log('local-login');
+		if (req.isAuthenticated()) {
+				console.log(req.session);
+				res.redirect('/login_success');
+		}else{
+			res.redirect('/login_fail');
+		}
+});
 
 app.get('/userinfo', function(req, res, next){
 
@@ -183,33 +209,36 @@ app.get('/userinfo', function(req, res, next){
 passport.use(new GoogleStrategy({
     clientID: '1067670564214-2e217fhtiisjhlqtll5hhi4gmksioi20.apps.googleusercontent.com',
     clientSecret: 'UPA0_oWAmXgDTbtkW8X1--X6',
-    callbackURL: "https://www.korchid.com/auth/google/callback"
+    callbackURL: 'https://www.korchid.com/auth/google/callback'
   },
   function(accessToken, refreshToken, profile, cb) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
-			// if (!user) {
-      //     // make a new google profile without key start with $
-      //     var new_profile = {}
-      //     new_profile.id = profile.id
-      //     new_profile.displayName = profile.displayName
-      //     new_profile.emails = profile.emails
-      //     user = new User({
-      //         name: profile.displayName
-      //       , email: profile.emails[0].value
-      //       , username: profile.username
-      //       , provider: 'google'
-      //       , google: new_profile._json
-      //     })
-      //     user.save(function (err) {
-      //       if (err) console.log(err)
-      //       return done(err, user)
-      //     })
-      //   } else {
-      //     return done(err, user)
-      //   }
-			console.log(user);
-      return cb(err, user);
-    });
+		console.log(profile);
+		return cb(null, profile);
+     //profile.findOrCreate({ googleId: profile.id }, function (err, user) {
+	// 		if (!user) {
+  //         // make a new google profile without key start with $
+	// 				console.log(user);
+  //         var new_profile = {}
+  //         new_profile.id = profile.id
+  //         new_profile.displayName = profile.displayName
+  //         new_profile.emails = profile.emails
+  //         user = new User({
+  //             name: profile.displayName
+  //           , email: profile.emails[0].value
+  //           , username: profile.username
+  //           , provider: 'google'
+  //           , google: new_profile._json
+  //         })
+  //         user.save(function (err) {
+  //           if (err) console.log(err)
+  //           return done(err, user)
+  //         })
+  //       } else {
+  //         return done(err, user)
+  //       }
+	// 		console.log(user);
+  //     return cb(err, user);
+  //   });
   }
 ));
 
@@ -217,24 +246,32 @@ app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
 
 app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google'),
   function(req, res) {
-    // Successful authentication, redirect home.
+    // Successful authentication, redirect home
+		if (req.isAuthenticated()) {
+				console.log(req.user);
+				res.redirect('/login_success');
+		}else{
+			res.redirect('/login_fail');
+		}
     //res.redirect('/');
-		res.send(req.user);
+		//res.send(req.user);
   });
 
-/*
+
 	passport.use(new FacebookStrategy({
-	    clientID: '174418527246196',
+	    clientID: '1744185272461961',
 	    clientSecret: 'e70790dbdf575043408e1d12a3571f34',
 	    callbackURL: "https://www.korchid.com/auth/facebook/callback"
 	  },
 	  function(accessToken, refreshToken, profile, cb) {
-	    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-				console.log(user);
-	      return cb(err, user);
-	    });
+			console.log(profile);
+			return cb(null, profile);
+	    // User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+			// 	console.log(user);
+	    //   return cb(err, user);
+	    // });
 	  }
 	));
 
@@ -243,22 +280,28 @@ app.get('/auth/google/callback',
 	  passport.authenticate('facebook'));
 
 	app.get('/auth/facebook/callback',
-	  passport.authenticate('facebook', { failureRedirect: '/login' }),
-	  function(req, res) {
+	  passport.authenticate('facebook', { failureRedirect: '/login' }),  function(req, res) {
 	    // Successful authentication, redirect home.
-	    res.redirect('/');
+			if (req.isAuthenticated()) {
+					console.log(req.user);
+					res.redirect('/login_success');
+			}else{
+				res.redirect('/login_fail');
+			}
 	  });
 
 		passport.use(new TwitterStrategy({
-		    consumerKey: 'TWITTER_CONSUMER_KEY',
-		    consumerSecret: 'TWITTER_CONSUMER_SECRET',
-		    callbackURL: "http://www.example.com/auth/twitter/callback"
+		    consumerKey: 'S8QClFieKug2cJhhZHBs0DmMt',
+		    consumerSecret: 'K1ELWK3pUe0WjNKzchYl4u00J3aqHmRwxwyqnxaMCgC7mPdzJw',
+		    callbackURL: "https://www.korchid.com/auth/twitter/callback"
 		  },
 		  function(token, tokenSecret, profile, done) {
-		    User.findOrCreate({ twitterId: profile.id }, function(err, user) {
-		      if (err) { return done(err); }
-		      done(null, user);
-		    });
+				console.log(profile);
+				return done(null, profile);
+				// User.findOrCreate({ twitterId: profile.id }, function(err, user) {
+		    //   if (err) { return done(err); }
+		    //   done(null, user);
+		    // });
 		  }
 		));
 
@@ -272,12 +315,28 @@ app.get('/auth/google/callback',
 		// access was granted, the user will be logged in.  Otherwise,
 		// authentication has failed.
 		app.get('/auth/twitter/callback',
-		  passport.authenticate('twitter', { successRedirect: '/',
-		                                     failureRedirect: '/login' }));
-*/
+		  passport.authenticate('twitter', { failureRedirect: '/login' }),	function(req, res) {
+			// Successful authentication, redirect home.
+			if (req.isAuthenticated()) {
+					console.log(req.user);
+					res.redirect('/login_success');
+			}else{
+				res.redirect('/login_fail');
+			}
+		});
+
 app.get('/logout', function(req, res){
+	try{
+	console.log('Function - logout');
+	console.log(req.session);
 	req.logout();
-	res.redirect('/');
+	req.session.destroy();
+	console.log('logout!');
+	console.log(req.session);
+}catch(exception){
+	console.log(exception);
+}
+	res.redirect('/login');
 });
 
 // catch 404 and forward to error handler

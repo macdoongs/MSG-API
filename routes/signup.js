@@ -11,7 +11,7 @@ var conn = mysql.createConnection({
 	host      : config.rds.host,
 	user      : config.rds.user,
 	password  : config.rds.password,
-	database  : config.rds.iotdatabase
+	database  : config.rds.ajouiotdb
 });
 
 var request = require('request');
@@ -46,7 +46,38 @@ router.post(['/', '/:id'], function(req, res, next) {
 	console.log('email : ' + req.body.email);
 	console.log('password : ' + req.body.password);
 
-	res.send('Good!')
+
+	var sql = 'SELECT * FROM USER WHERE (email = "' +  req.body.email + '" AND password = "' + req.body.password + '")';
+
+													conn.query(sql, function(error, rows, fields){
+																	if(error){
+																					console.log(error);
+																	}else{
+																					if(!rows.length){
+																									console.log("No id, Insert!");
+
+																									var sql = 'INSERT INTO USER (email, password) VALUES (?, ?)';
+																									var params = [req.body.email, req.body.password];
+
+																									conn.query(sql, params, function(err, rows, fields){
+																													if(err){
+																																	throw err;
+																													} else{
+																																	console.log('rows : ', rows);
+																																	console.log('fields : ', fields);
+																																	res.send('sign up OK!');
+																													}
+																								 });
+																					}else{
+																									console.log("Already have id.");
+																									res.redirect('/signup');
+																					}
+																	}
+															});
+
+
+
+	//res.send('Good!');
 });
 
 module.exports = router;

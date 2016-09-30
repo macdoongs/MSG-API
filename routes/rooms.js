@@ -28,10 +28,10 @@ var sh_timer = require('./timer');
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;
-	var topicId = "test-topic";
+	var userId = req.params.id;
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
-
+	if(userId){
 	url = 'http://localhost:7579/mobius-yt/Sajouiot01/beacon01?rcn=4&lim=8'
 	request({
      		url : url,
@@ -88,12 +88,15 @@ router.get(['/', '/:id'], function(req, res, next) {
 						}
 						//console.log(conArr);
 
-						res.render('rooms', { title: 'AjouIoT', id:topicId , rooms : conArr});
+						res.render('rooms', { title: 'AjouIoT', rooms : conArr});
 
 					});
 
 			}
 		});
+	}else{
+		res.redirect('/login');
+	}
 });
 
 module.exports = router;
