@@ -6,8 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
-var topics = require('./routes/topics');
+//var topics = require('./routes/topics');
 var iot = require('./routes/iot');
 var chat = require('./routes/chat');
 var rooms = require('./routes/rooms');
@@ -17,10 +16,14 @@ var camera = require('./routes/camera');
 var sign_in = require('./routes/sign-in');
 var signup = require('./routes/signup');
 var streaming = require('./routes/streaming');
+var mapping = require('./routes/mapping');
+var cookie = require('./routes/cookie');
 
 var config = require('config.json')('./config/config.json');
 
 var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+var redis = require('redis');
 
 var app = express();
 
@@ -29,7 +32,7 @@ var conn = mysql.createConnection({
 	host      : config.rds.host,
 	user      : config.rds.user,
 	password  : config.rds.password,
-	database  : config.rds.webdatabase
+	database  : config.rds.ajouiotdb
 });
 
 conn.connect();
@@ -54,8 +57,8 @@ app.use(express.static(path.join(__dirname, 'jquery-mobile')));
 app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist')));
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/topics', topics);
+// app.use('/users', users);
+// app.use('/topics', topics);
 app.use('/iot', iot);
 app.use('/chat', chat);
 app.use('/rooms', rooms);
@@ -65,7 +68,8 @@ app.use('/sign-in', sign_in);
 app.use('/signup', signup);
 app.use('/camera', camera);
 app.use('/streaming', streaming);
-
+app.use('/mapping', mapping);
+//app.use('/cookie', cookie);
 
 
 var passport = require('passport');
@@ -75,9 +79,16 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 
 app.use(passport.initialize());
-//app.use(passport.session());
-app.use(session({ secret: 'SECRET' }));
+app.use(passport.session());
+//app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();
+
+
+app.get('/writecookie', cookie.writecookie);
+app.get('/readcookie', cookie.readcookie);
+
+
+
 
 // passport.use(new LocalStrategy({
 //     usernameField: 'email',
@@ -100,29 +111,51 @@ app.use(session({ secret: 'SECRET' }));
 //     });
 // }));
 
-passport.use(new LocalStrategy({
-        usernameField : 'userid',
-        passwordField : 'password',
-        passReqToCallback : true
-    }
-    ,function(req,userid, password, done) {
-        if(userid=='asdf' && password=='asdf'){
-            var user = { 'userid':'asdf',
-                          'password':'asdf'};
-            return done(null,user);
-        }else{
-            return done(null,false);
-        }
-    }
-	));
 
-app.use(passport.session({
-    secret: 'keyboard cat',
-    proxy: true,
-    resave: true,
+
+// app.use(session({
+// 	  store: new RedisStore({
+// 	    port: config.redis.port,
+// 	    host: config.redis.host//,
+// 	    //db: config.redis.db,
+// 	    //pass: config.redis.password
+// 	  }),
+// 	  secret: 'Your secret here',
+// 	  proxy: true,
+// 		resave: true,
+//     saveUninitialized: true,
+// 	  cookie: { secure: true }
+// 	}));
+
+app.use(session({
+	  store: new RedisStore({
+	    port: config.redis.port,
+	    host: config.redis.host,
+	    db: config.redis.db,
+	    pass: config.redis.password
+	  }),
+	  secret: 'ajouiot',
+	  proxy: true,
+		resave: true,
     saveUninitialized: true,
-    cookie: { secure: true }
-}));
+	  cookie: { secure: true }
+	}));
+
+// app.use(function (req, res, next) {
+// 	  if (!req.session) {
+// 	    return next(new Error('oh no')); // handle error
+//   	}
+// 	  next(); // otherwise continue
+// });
+
+
+// app.use(session({
+//     secret: 'keyboard cat',
+//     proxy: true,
+//     resave: true,
+//     saveUninitialized: true,
+//     cookie: { secure: true }
+// }));
 
 
 
@@ -166,27 +199,73 @@ app.get('/login', function(req, res, next) {
 
 app.get('/login_success', function(req, res, next) {
 			console.log('Login Success : ' + req.user);
-			console.log();
+			console.log(req.session);
+			//console.log('Session : ' + req.session);
+			//console.log(Object.keys(req));
+			console.log(req._passport.session);
+			try{
 			if(req.session.passport.user.id == 110154195936516884946){
 				res.redirect('/rooms/' + req.session.passport.user.id);
-			}else if(req.session.passport.user.userid == 'asdf' && req.session.passport.user.password == 'asdf'){
+			}else if(req.session.passport.user.id == 'asdf' && req.session.passport.user.password == 'asdf'){
 				res.redirect('/rooms/' + req.session.passport.user.id);
 			}else{
 				res.send('Login Success!');
 			}
+		}catch(exception){
+			console.log(exception);
+		}
 });
+
+function loginSuccess(id){
+		var url = '/rooms/';
+
+		if(id == 110154195936516884946 || (id == 'asdf' && password == 'asdf')){
+			url += id;
+		}else{
+
+		}
+
+		return url;
+}
 
 app.get('/login_fail', function(req, res, next) {
-
 		res.send('Login Fail');
-
 });
+
+passport.use(new LocalStrategy({
+        usernameField : 'id',
+        passwordField : 'password',
+        passReqToCallback : true
+    }
+    ,function(req, id, password, done) {
+				console.log('LocalStrategy');
+
+        //if(id=='asdf' && password=='asdf'){
+            var user = { 'id':id,
+                          'password':password};
+            return done(null,user);
+        //}else{
+        //    return done(null,false);
+        //}
+    }
+	));
 
 app.post('/local-login', passport.authenticate('local'), function(req, res){
 		console.log('local-login');
 		if (req.isAuthenticated()) {
 				console.log(req.session);
-				res.redirect('/login_success');
+				//res.redirect('/login_success');
+				try{
+					if(req.session.passport.user.id == 110154195936516884946){
+						res.redirect('/rooms/' + req.session.passport.user.id);
+					}else if(req.session.passport.user.id == 'asdf' && req.session.passport.user.password == 'asdf'){
+						res.redirect('/rooms/' + req.session.passport.user.id);
+					}else{
+						res.send('Login Success!');
+					}
+				}catch(exception){
+					console.log(exception);
+				}
 		}else{
 			res.redirect('/login_fail');
 		}
@@ -212,35 +291,37 @@ passport.use(new GoogleStrategy({
     callbackURL: 'https://www.korchid.com/auth/google/callback'
   },
   function(accessToken, refreshToken, profile, cb) {
+		console.log('GoogleStrategy');
 		console.log(profile);
 		return cb(null, profile);
-     //profile.findOrCreate({ googleId: profile.id }, function (err, user) {
-	// 		if (!user) {
-  //         // make a new google profile without key start with $
-	// 				console.log(user);
-  //         var new_profile = {}
-  //         new_profile.id = profile.id
-  //         new_profile.displayName = profile.displayName
-  //         new_profile.emails = profile.emails
-  //         user = new User({
-  //             name: profile.displayName
-  //           , email: profile.emails[0].value
-  //           , username: profile.username
-  //           , provider: 'google'
-  //           , google: new_profile._json
-  //         })
-  //         user.save(function (err) {
-  //           if (err) console.log(err)
-  //           return done(err, user)
-  //         })
-  //       } else {
-  //         return done(err, user)
-  //       }
-	// 		console.log(user);
-  //     return cb(err, user);
-  //   });
+    // profile.findOrCreate({ googleId: profile.id }, function (err, user) {
+		// 	if (!user) {
+    //       // make a new google profile without key start with $
+		// 			console.log(user);
+    //       var new_profile = {}
+    //       new_profile.id = profile.id
+    //       new_profile.displayName = profile.displayName
+    //       new_profile.emails = profile.emails
+    //       user = new User({
+    //           name: profile.displayName
+    //         , email: profile.emails[0].value
+    //         , username: profile.username
+    //         , provider: 'google'
+    //         , google: new_profile._json
+    //       })
+    //       user.save(function (err) {
+    //         if (err) console.log(err)
+    //         return done(err, user)
+    //       })
+    //     } else {
+    //       return done(err, user)
+    //     }
+		// 	console.log(user);
+    //   return cb(err, user);
+    // });
   }
 ));
+
 
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
@@ -251,7 +332,8 @@ app.get('/auth/google/callback',
     // Successful authentication, redirect home
 		if (req.isAuthenticated()) {
 				console.log(req.user);
-				res.redirect('/login_success');
+				//res.redirect('/login_success');
+				res.redirect('/rooms/' + req.session.passport.user.id);
 		}else{
 			res.redirect('/login_fail');
 		}
@@ -266,6 +348,7 @@ app.get('/auth/google/callback',
 	    callbackURL: "https://www.korchid.com/auth/facebook/callback"
 	  },
 	  function(accessToken, refreshToken, profile, cb) {
+			console.log('FacebookStrategy');
 			console.log(profile);
 			return cb(null, profile);
 	    // User.findOrCreate({ facebookId: profile.id }, function (err, user) {
@@ -284,7 +367,8 @@ app.get('/auth/google/callback',
 	    // Successful authentication, redirect home.
 			if (req.isAuthenticated()) {
 					console.log(req.user);
-					res.redirect('/login_success');
+					//res.redirect('/login_success');
+					res.redirect('/rooms/' + req.session.passport.user.id);
 			}else{
 				res.redirect('/login_fail');
 			}
@@ -296,6 +380,7 @@ app.get('/auth/google/callback',
 		    callbackURL: "https://www.korchid.com/auth/twitter/callback"
 		  },
 		  function(token, tokenSecret, profile, done) {
+				console.log('TwitterStrategy');
 				console.log(profile);
 				return done(null, profile);
 				// User.findOrCreate({ twitterId: profile.id }, function(err, user) {
@@ -319,7 +404,8 @@ app.get('/auth/google/callback',
 			// Successful authentication, redirect home.
 			if (req.isAuthenticated()) {
 					console.log(req.user);
-					res.redirect('/login_success');
+					//res.redirect('/login_success');
+					res.redirect('/rooms/' + req.session.passport.user.id);
 			}else{
 				res.redirect('/login_fail');
 			}
@@ -336,8 +422,13 @@ app.get('/logout', function(req, res){
 }catch(exception){
 	console.log(exception);
 }
+	res.clearCookie();
 	res.redirect('/login');
 });
+
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

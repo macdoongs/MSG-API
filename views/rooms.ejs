@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>PoS: Place of Chatting</title>
+    <title>PoC: Place of Chatting</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -41,7 +41,8 @@
           <li data-role="list-divider"><h1>Chatting Rooms</h1></li>
           <% for (var i = 0; i < rooms.length; i++){ %>
             <!--<li><h1><a class="button button-primary" href= "<%- 'chat/' + rooms[i] %>">room <%- i + 1 %> : <%- rooms[i] %></a></h1></li>-->
-            <li><button onclick="location.href='<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
+            <li><button onclick="location.href='https://www.korchid.com/<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
+            <!--<li><button onclick=redirect(<%- 'chat/' + rooms[i] %>)>room <%- i + 1 %> : <%- rooms[i] %></button></li>-->
           <% } %>
         </ul>
       </div><!-- /content -->

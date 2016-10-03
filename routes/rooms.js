@@ -87,7 +87,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 							}
 						}
 						//console.log(conArr);
-
+						console.log(conArr);
 						res.render('rooms', { title: 'AjouIoT', rooms : conArr});
 
 					});
@@ -98,5 +98,6 @@ router.get(['/', '/:id'], function(req, res, next) {
 		res.redirect('/login');
 	}
 });
+
 
 module.exports = router;

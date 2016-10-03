@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>PoS: Place of Chatting</title>
+    <title>PoC: Place of Chatting</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -66,7 +66,9 @@
     		socket.emit('adduser', prompt("What's your name?"));
     	});
 */
-      socket.emit('chooseroom');
+      roomname = '<%= id %>';
+
+      socket.emit('chooseroom', roomname);
 
     	// listener, whenever the server emits 'updatechat', this updates the chat body
     	socket.on('updatechat', function (username, data) {
@@ -81,7 +83,7 @@
     	socket.on('updaterooms', function(rooms, current_room) {
     		$('#rooms').empty();
     		$.each(rooms, function(key, value) {
-    			if(value == current_room){
+    			if(value == '<%=id%>'){
     				$('#rooms').append('<div>' + value + '</div>');
     			}
     			else {

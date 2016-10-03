@@ -23,7 +23,6 @@ var sh_timer = require('./timer');
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
 	var topicId = req.params.id;
-	global.ROOMID = req.params.id;
   var myName = config.rds.user;
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
@@ -31,8 +30,9 @@ router.get(['/', '/:id'], function(req, res, next) {
 	var message = topicId;
 
 
+
 	//console.log('chat _ ROOMID : ' + global.ROOMID);
-	res.render('chat', { title: 'Ajou IoT', id:global.ROOMID , message : message});
+	res.render('chat', { title: 'Ajou IoT', id:topicId , message : message});
 
 });
 
