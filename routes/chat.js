@@ -29,7 +29,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 
 	var message = topicId;
 
-
+	console.log('session : ' + req.session);
 
 	//console.log('chat _ ROOMID : ' + global.ROOMID);
 	res.render('chat', { title: 'Ajou IoT', id:topicId , message : message});

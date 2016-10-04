@@ -11,7 +11,7 @@ var conn = mysql.createConnection({
 	host      : config.rds.host,
 	user      : config.rds.user,
 	password  : config.rds.password,
-	database  : config.rds.iotdatabase
+	database  : config.rds.ajouiotdb
 });
 
 var request = require('request');
@@ -27,13 +27,46 @@ var sh_timer = require('./timer');
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;
-	var userId = req.params.id;
+	var userid = req.params.id;
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
+	console.log('session : ' + req.session);
 
+	if(userid){
+	var sql = 'SELECT Rname FROM ROOM, ADMIN WHERE ROOM.Rid = ADMIN.Rid AND ADMIN.Uid = (SELECT Uid FROM USER WHERE USER.Email="' + userid +'")'; ;
 
-	if(userId){
-	url = 'http://localhost:7579/mobius-yt/Sajouiot01/beacon01?rcn=4&lim=8'
+	conn.query(sql, function(error, rows, fields){
+					if(error){
+									console.log(error);
+					}else{
+									var conArr = new Array();
+
+									if(!rows.length){
+													console.log("No room!");
+									}else{
+										console.log("Load Room ok!");
+										var sRows = JSON.stringify(rows);
+										var pRows = JSON.parse(sRows);
+
+										for(var i=0; i<rows.length; i++){
+											conArr[i] = rows[i].Rname;
+										}
+
+										console.log(rows[0].Rname);
+										console.log(pRows);
+
+									}
+
+									res.render('rooms', { title: 'AjouIoT', rooms : conArr});
+					}
+			});
+	}else{
+		res.redirect('/login');
+	}
+
+	/*
+	if(userid){
+	url = 'http://localhost:7579/mobius-yt/Sajouiot03/beacon01?rcn=4&lim=8'
 	request({
      		url : url,
      		method: 'GET',
@@ -98,6 +131,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 	}else{
 		res.redirect('/login');
 	}
+	*/
 });
 
 

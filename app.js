@@ -80,56 +80,13 @@ var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;
 
-app.use(passport.initialize());
-app.use(passport.session());
+
 //app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();
 
 // Cookie Test code
 app.get('/writecookie', cookie.writecookie);
 app.get('/readcookie', cookie.readcookie);
-
-
-
-
-// passport.use(new LocalStrategy({
-//     usernameField: 'email',
-//     passwordField: 'password'
-// }, function( email, password, done){
-//     User.findOne({
-//         where: {
-//             email: email
-//         }
-//     }).then(function( user ){
-//         if(!user){
-//             return done(null, false);
-//         }
-//         if(user.password !== password){
-//             return done(null, false);
-//         }
-//         return done(null, user);
-//     }).catch(function( err ){
-//         done(err, null);
-//     });
-// }));
-
-
-
-// app.use(session({
-// 	  store: new RedisStore({
-// 	    port: config.redis.port,
-// 	    host: config.redis.host//,
-// 	    //db: config.redis.db,
-// 	    //pass: config.redis.password
-// 	  }),
-// 	  secret: 'Your secret here',
-// 	  proxy: true,
-// 		resave: true,
-//     saveUninitialized: true,
-// 	  cookie: { secure: true }
-// 	}));
-
-
 app.use(session({
 	  store: new RedisStore({
 	    port: config.redis.port,
@@ -137,12 +94,84 @@ app.use(session({
 	    db: config.redis.db,
 	    pass: config.redis.password
 	  }),
-	  secret: 'ajouiot',
+	  secret: 'korchid',
 	  proxy: true,
 		resave: true,
+		expires: false,
     saveUninitialized: true,
 	  cookie: { secure: true }
 	}));
+
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(passport.session({
+		store: new RedisStore({
+			port: config.redis.port,
+			host: config.redis.host,
+			db: config.redis.db,
+			pass: config.redis.password
+		}),
+		secret: 'korchid',
+		proxy: true,
+		resave: true,
+		expires: false,
+		saveUninitialized: true,
+		cookie: { secure: true }
+	}));
+
+
+
+
+// serialize
+// 인증후 사용자 정보를 세션에 저장
+passport.serializeUser(function(user, done) {
+    console.log('serialize');
+
+		try{
+			var id = user.id;
+			var provider = user.provider;
+			if(provider == undefined){
+				provider = 'local';
+			}
+		}catch(exception){
+			console.log(exception);
+		}
+
+		console.log('id : ' + id);
+		console.log('provider : ' + provider);
+
+    done(null, user);
+});
+
+
+// deserialize
+// 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
+passport.deserializeUser(function(user, done) {
+    //findById(id, function (err, user) {
+    console.log('deserialize');
+    done(null, user);
+    //});
+});
+
+
+// app.use(passport.session({
+// 	  store: new RedisStore({
+// 	    port: config.redis.port,
+// 	    host: config.redis.host,
+// 	    db: config.redis.db,
+// 	    pass: config.redis.password
+// 	  }),
+// 	  secret: 'ajouiot',
+// 	  proxy: true,
+// 		resave: true,
+// 		expires: false,
+//     saveUninitialized: true,
+// 	  cookie: { secure: true }
+// 	}));
+
 
 
 	client = redis.createClient(config.redis.port, config.redis.host);
@@ -189,84 +218,69 @@ app.use(session({
 	           res.json(value);
 	      });
 	});
-// app.use(function (req, res, next) {
-// 	  if (!req.session) {
-// 	    return next(new Error('oh no')); // handle error
-//   	}
-// 	  next(); // otherwise continue
-// });
 
 
-// app.use(session({
-//     secret: 'keyboard cat',
-//     proxy: true,
-//     resave: true,
-//     saveUninitialized: true,
-//     cookie: { secure: true }
-// }));
+// function ensureAuthenticated(req, res, next) {
+//     // 로그인이 되어 있으면, 다음 파이프라인으로 진행
+//     if (req.isAuthenticated()) {
+// 			return next();
+// 		}
+//     // 로그인이 안되어 있으면, login 페이지로 진행
+//     res.redirect('/login');
+// }
 
-
-
-// serialize
-// 인증후 사용자 정보를 세션에 저장
-passport.serializeUser(function(user, done) {
-    console.log('serialize');
-
-		try{
-			var id = user.id;
-			var provider = user.provider;
-			if(provider == undefined){
-				provider = 'local';
-			}
-		}catch(exception){
-			console.log(exception);
-		}
-
-		console.log('id : ' + id);
-		console.log('provider : ' + provider);
-
-    done(null, user);
-});
-
-
-// deserialize
-// 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
-passport.deserializeUser(function(user, done) {
-    //findById(id, function (err, user) {
-    console.log('deserialize');
-    done(null, user);
-    //});
-});
-
-function ensureAuthenticated(req, res, next) {
-    // 로그인이 되어 있으면, 다음 파이프라인으로 진행
-    if (req.isAuthenticated()) { return next(); }
-    // 로그인이 안되어 있으면, login 페이지로 진행
-    res.redirect('/login');
-}
-
-app.post('/login',
-    passport.authenticate('local', { failureRedirect: '/login_fail', failureFlash: true }),
+app.post('/login', passport.authenticate('local', { failureRedirect: '/login_fail', failureFlash: true }),
     function(req, res) {
 				console.log(req.session);
-				req.session.key = req.session.passport.user.id;
-				console.log(req.session.key);
+				//req.session.key = req.session.passport.user.id;
+				//console.log(req.session.key);
         res.redirect('/login_success');
 });
 
 app.get('/login', function(req, res, next) {
-
+			console.log('session : ' + req.session);
+			//console.log(req.session.passport);
+			//console.log(req.session.user);
 			//console.log('chat _ ROOMID : ' + global.ROOMID);
 			res.render('login', { title: 'Ajou IoT', message : 'message'});
 
 });
 
-app.get('/login_success', function(req, res, next) {
-			console.log('Login Success : ' + req.user);
-			console.log(req.session);
+app.post('/local-login',
+		passport.authenticate('local'), function(req, res){
+		console.log('local-login');
+		if (req.isAuthenticated()) {
+				console.log('session : ' + req.session);
+				console.log(Object.keys(req.session));
+
+
+				//console.log('session : ' + req.session.passport);
+
+				//res.redirect('/login_success');
+
+				 try{
+				 	if(req.session.passport.user.id == 110154195936516884946){
+				 		res.redirect('/rooms/' + req.session.passport.user.id);
+				 	}else if(req.session.passport.user.id == 'asdf' && req.session.passport.user.password == 'asdf'){
+				 		res.redirect('/rooms/' + req.session.passport.user.id);
+				 	}else{
+				 		res.send('Login Success!');
+				 	}
+				 }catch(exception){
+				 	console.log(exception);
+				 }
+		}else{
+			res.redirect('/login_fail');
+		}
+});
+
+//app.get('/login_success',  ensureAuthenticated, function(req, res, next) {
+app.get('/login_success',  function(req, res, next) {
+			//console.log('Login Success : ' + req.user);
+			console.log('session : ' + req.session);
+			//console.log(req.session.key);
 			//console.log('Session : ' + req.session);
-			//console.log(Object.keys(req));
-			console.log(req._passport.session);
+			//console.log(Object.keys(req.session));
 			try{
 			if(req.session.passport.user.id == 110154195936516884946){
 				res.redirect('/rooms/' + req.session.passport.user.id);
@@ -280,17 +294,6 @@ app.get('/login_success', function(req, res, next) {
 		}
 });
 
-function loginSuccess(id){
-		var url = '/rooms/';
-
-		if(id == 110154195936516884946 || (id == 'asdf' && password == 'asdf')){
-			url += id;
-		}else{
-
-		}
-
-		return url;
-}
 
 app.get('/login_fail', function(req, res, next) {
 		res.send('Login Fail');
@@ -314,31 +317,13 @@ passport.use(new LocalStrategy({
     }
 	));
 
-app.post('/local-login', passport.authenticate('local'), function(req, res){
-		console.log('local-login');
-		if (req.isAuthenticated()) {
-				console.log(req.session);
-				//res.redirect('/login_success');
-				try{
-					if(req.session.passport.user.id == 110154195936516884946){
-						res.redirect('/rooms/' + req.session.passport.user.id);
-					}else if(req.session.passport.user.id == 'asdf' && req.session.passport.user.password == 'asdf'){
-						res.redirect('/rooms/' + req.session.passport.user.id);
-					}else{
-						res.send('Login Success!');
-					}
-				}catch(exception){
-					console.log(exception);
-				}
-		}else{
-			res.redirect('/login_fail');
-		}
-});
+
 
 app.get('/userinfo', function(req, res, next){
 
     var isLogin = req.isAuthenticated();
     console.log( isLogin );
+		console.log('session : ' + req.session);
 
 		console.log(req.user);
 		res.send(req.user);
@@ -395,6 +380,7 @@ app.get('/auth/google/callback',
   function(req, res) {
     // Successful authentication, redirect home
 		if (req.isAuthenticated()) {
+				console.log('session : ' + req.session);
 				console.log(req.user);
 
 				var key = req.user.id;
@@ -444,6 +430,7 @@ app.get('/auth/google/callback',
 	  passport.authenticate('facebook', { failureRedirect: '/login' }),  function(req, res) {
 	    // Successful authentication, redirect home.
 			if (req.isAuthenticated()) {
+					console.log('session : ' + req.session);
 					console.log(req.user);
 					//res.redirect('/login_success');
 					res.redirect('/rooms/' + req.session.passport.user.id);
@@ -481,6 +468,7 @@ app.get('/auth/google/callback',
 		  passport.authenticate('twitter', { failureRedirect: '/login' }),	function(req, res) {
 			// Successful authentication, redirect home.
 			if (req.isAuthenticated()) {
+					console.log('session : ' + req.session);
 					console.log(req.user);
 					//res.redirect('/login_success');
 					res.redirect('/rooms/' + req.session.passport.user.id);
@@ -498,7 +486,7 @@ app.get(['/logout', '/logout/:id'], function(req, res){
 	console.log('uid : ' + uid);
 	console.log(req.session);
 	req.logout();
-	req.cache.del(uid);
+	//req.cache.del(uid);
 	req.session.destroy();
 	console.log('logout!');
 	console.log(req.session);

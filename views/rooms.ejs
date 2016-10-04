@@ -38,7 +38,7 @@
   <div data-role="page" id "iotmain">
       <div data-role="content" id="content">
         <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
-          <li data-role="list-divider"><h1>Chatting Rooms</h1></li>
+          <li data-role="list-divider"><h1>My Rooms</h1></li>
           <% for (var i = 0; i < rooms.length; i++){ %>
             <!--<li><h1><a class="button button-primary" href= "<%- 'chat/' + rooms[i] %>">room <%- i + 1 %> : <%- rooms[i] %></a></h1></li>-->
             <li><button onclick="location.href='https://www.korchid.com/<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
@@ -48,6 +48,12 @@
         </ul>
       </div><!-- /content -->
     </div><!-- /page -->
+
+    <script>
+    	var socket = io.connect('https://www.korchid.com',  {secure: true});
+
+      socket.emit('leaveroom', <%= rooms %>);
+    </script>
 
     <div data-role="page" id= "chat" data-title="Device">
       <div data-role="header" data-theme="a">
