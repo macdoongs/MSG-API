@@ -40,14 +40,12 @@ router.get(['/', '/:id'], function(req, res, next) {
 });
 
 router.post(['/', '/:id'], function(req, res, next) {
+	//console.log('email : ' + req.body.email);
+	//console.log('password : ' + req.body.password);
+	var uid = req.body.email;
+	var pw = req.body.password
 
-	console.log(Object.keys(req));
-
-	console.log('email : ' + req.body.email);
-	console.log('password : ' + req.body.password);
-
-
-	var sql = 'SELECT * FROM USER WHERE (email = "' +  req.body.email + '" AND password = "' + req.body.password + '")';
+	var sql = 'SELECT * FROM USER WHERE (email = "' + uid + '" AND password = "' + pw + '")';
 
 	conn.query(sql, function(error, rows, fields){
 					if(error){
@@ -57,14 +55,14 @@ router.post(['/', '/:id'], function(req, res, next) {
 													console.log("No id, Insert!");
 
 													var sql = 'INSERT INTO USER (email, password) VALUES (?, ?)';
-													var params = [req.body.email, req.body.password];
+													var params = [uid, pw];
 
 													conn.query(sql, params, function(err, rows, fields){
 																	if(err){
 																					throw err;
 																	} else{
-																					console.log('rows : ', rows);
-																					console.log('fields : ', fields);
+																					//console.log('rows : ', rows);
+																					//console.log('fields : ', fields);
 																					res.send('sign up OK!');
 																	}
 												 });

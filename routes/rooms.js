@@ -19,7 +19,6 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-conn.connect();
 
 var sh_timer = require('./timer');
 
@@ -31,6 +30,8 @@ router.get(['/', '/:id'], function(req, res, next) {
 	var userId = req.params.id;
 	var topicSeq = null;
 	var mqtt_client = config.iot.mqttproxy;
+
+
 	if(userId){
 	url = 'http://localhost:7579/mobius-yt/Sajouiot01/beacon01?rcn=4&lim=8'
 	request({

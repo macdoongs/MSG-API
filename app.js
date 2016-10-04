@@ -18,6 +18,7 @@ var signup = require('./routes/signup');
 var streaming = require('./routes/streaming');
 var mapping = require('./routes/mapping');
 var cookie = require('./routes/cookie');
+var register = require('./routes/register');
 
 var config = require('config.json')('./config/config.json');
 
@@ -69,6 +70,7 @@ app.use('/signup', signup);
 app.use('/camera', camera);
 app.use('/streaming', streaming);
 app.use('/mapping', mapping);
+app.use('/register', register);
 //app.use('/cookie', cookie);
 
 
@@ -83,7 +85,7 @@ app.use(passport.session());
 //app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();
 
-
+// Cookie Test code
 app.get('/writecookie', cookie.writecookie);
 app.get('/readcookie', cookie.readcookie);
 
@@ -127,6 +129,7 @@ app.get('/readcookie', cookie.readcookie);
 // 	  cookie: { secure: true }
 // 	}));
 
+
 app.use(session({
 	  store: new RedisStore({
 	    port: config.redis.port,
@@ -141,6 +144,51 @@ app.use(session({
 	  cookie: { secure: true }
 	}));
 
+
+	client = redis.createClient(config.redis.port, config.redis.host);
+	client.auth(config.redis.password)
+
+	app.use(function(req,res,next){
+	      req.cache = client;
+	      next();
+	})
+
+	// Profile test code
+	app.post('/profile',function(req,res,next){
+	      req.accepts('application/json');
+
+	      var key = req.body.name;
+	      var value = JSON.stringify(req.body);
+
+	      req.cache.set(key,value,function(err,data){
+	           if(err){
+	                 console.log(err);
+	                 res.send("error "+err);
+	                 return;
+	           }
+						 console.log(key);
+	           req.cache.expire(key,10);
+	           res.json(value);
+	           //console.log(value);
+	      });
+	})
+	app.get('/profile/:name',function(req,res,next){
+	      var key = req.params.name;
+
+				console.log(key);
+
+	      req.cache.get(key,function(err,data){
+	           if(err){
+	                 console.log(err);
+	                 res.send("error "+err);
+	                 return;
+	           }
+
+	           var value = JSON.parse(data);
+						 console.log(data);
+	           res.json(value);
+	      });
+	});
 // app.use(function (req, res, next) {
 // 	  if (!req.session) {
 // 	    return next(new Error('oh no')); // handle error
@@ -163,6 +211,20 @@ app.use(session({
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function(user, done) {
     console.log('serialize');
+
+		try{
+			var id = user.id;
+			var provider = user.provider;
+			if(provider == undefined){
+				provider = 'local';
+			}
+		}catch(exception){
+			console.log(exception);
+		}
+
+		console.log('id : ' + id);
+		console.log('provider : ' + provider);
+
     done(null, user);
 });
 
@@ -187,6 +249,8 @@ app.post('/login',
     passport.authenticate('local', { failureRedirect: '/login_fail', failureFlash: true }),
     function(req, res) {
 				console.log(req.session);
+				req.session.key = req.session.passport.user.id;
+				console.log(req.session.key);
         res.redirect('/login_success');
 });
 
@@ -332,6 +396,20 @@ app.get('/auth/google/callback',
     // Successful authentication, redirect home
 		if (req.isAuthenticated()) {
 				console.log(req.user);
+
+				var key = req.user.id;
+	      var value = req.user.provider;
+
+	      req.cache.set(key,value,function(err,data){
+	           if(err){
+	                 console.log(err);
+	                 res.send("error "+err);
+	           }else{
+							 		 console.log(key);
+									 req.cache.expire(key, 1800);
+						 }
+	      });
+
 				//res.redirect('/login_success');
 				res.redirect('/rooms/' + req.session.passport.user.id);
 		}else{
@@ -411,11 +489,16 @@ app.get('/auth/google/callback',
 			}
 		});
 
-app.get('/logout', function(req, res){
+app.get(['/logout', '/logout/:id'], function(req, res){
+
+	var uid = req.params.id;
+
 	try{
 	console.log('Function - logout');
+	console.log('uid : ' + uid);
 	console.log(req.session);
 	req.logout();
+	req.cache.del(uid);
 	req.session.destroy();
 	console.log('logout!');
 	console.log(req.session);

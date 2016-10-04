@@ -19,8 +19,6 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-conn.connect();
-
 var sh_timer = require('./timer');
 
 
