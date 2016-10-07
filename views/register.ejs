@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>PoC: Place of Chatting</title>
+    <title>Place of Chatting</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -46,41 +46,44 @@
   </script>
 -->
   <body>
-  	<div data-role="content" id="content">
-      <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
-        <li data-role="list-divider"><h1>My Device</h1></li>
-      </ul>
-      <!--<textarea rows="300" cols="300" name="contents"></textarea>-->
-
-      <form action="/register" method="post">
-    <div>
-        <label>UUID:</label>
-        <input type="text" name="uuid"/><br/>
+    <div class="container">
+      <div class="navbar-spacer"></div>
+      <nav class="navbar">
+        <div class="container">
+          <ul class="navbar-list">
+            <li class="navbar-item"><a class="navbar-link" href="#registration">Registration</a></li>
+            <li class="navbar-item"><a class="navbar-link" href="/login">Back</a></li>
+          </ul>
+        </div>
+      </nav>
     </div>
-    <div>
-        <label>Room ID:</label>
-        <input type="text" name="roomid"/>
+    <div class="container">
+      <section class="header">
+        <h2 class="title">Device</h2>
+      </section>
+      <h5>Register your device</h5>
     </div>
-    <div>
-        <input type="submit" value="Submit"/>
+    <div class="registration" id="registration">
+      <div class="container">
+
+        <form action="/register" method="post">
+          <div>
+              <label>Device UUID</label>
+              <input type="text" placeholder="UUID without -" name="uuid"/><br/>
+          </div>
+          <div>
+              <label>Room ID</label>
+              <input type="text" placeholder="Room name" name="roomid"/>
+          </div>
+          <div>
+              <input type="submit" value="Submit"/>
+          </div>
+        </form>
+      </div>
     </div>
-    </form>
-
-    </div><!-- /content -->
-    </div><!-- /page -->
-
-
-    <div data-role="page" id= "chat" data-title="Device">
-      <div data-role="header" data-theme="a">
-  			<a href="#" data-rel="back">back</a>
-
-  	  </div><!-- /header -->
-        <div data-role="content" id="content">
-
-        </div><!-- /content -->
-      </div><!-- /page -->
-
-
+    <div class="container" id="back">
+  		<a href="/login" data-rel="back">back</a>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

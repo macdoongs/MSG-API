@@ -198,7 +198,7 @@ io.sockets.on('connection', function (socket) {
           console.log(roomname);
 
           if(roomname[3] == socket.room){
-            socket.emit('updatechat', 'Admin' , con.toString());
+            socket.emit('updatechat', con.toString());
           }
 
         });
@@ -226,6 +226,10 @@ io.sockets.on('connection', function (socket) {
           data.username = socket.username;
           data.message = message;
 
+          var user = "Admin";
+
+          var con =  user + ": " + data.message;
+
           //var dataStr = JSON.stringify(data);
 
           var dataXML = xmlbuilder.create('m2m:rqp', {'encoding':'UTF-8'}).att('xmlns:m2m', 'http://www.onem2m.org/xml/protocols').att('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
@@ -235,7 +239,7 @@ io.sockets.on('connection', function (socket) {
             .ele('rqi', 'rqi201610011554337900rzY').up()
             .ele('ty', '4').up()
             .ele('pc').ele('cin').ele('rn', '').up()
-            .ele('con', data.message)
+            .ele('con', con)
             .end({ pretty: true});
 
           //console.log(dataXML);
@@ -297,7 +301,7 @@ io.sockets.on('connection', function (socket) {
 		    // update list of users in chat, client-side
 		    io.sockets.emit('updateusers', usernames);
 		    // echo globally that this client has left
-		    socket.broadcast.emit('updatechat', 'Admin', socket.username + ' has disconnected');
+		    //socket.broadcast.emit('updatechat', 'Admin has disconnected');
 		    socket.leave(socket.room);
         mqtt_client.close;
 	  });

@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>PoC: Place of Chatting</title>
+    <title>Place of Chatting</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -40,43 +40,50 @@
   </script>
 -->
   <body>
-
-
-  	<div data-role="content" id="content">
-      <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
-        <li data-role="list-divider"><h1>My Device</h1></li>
-      </ul>
-      <!--<textarea rows="300" cols="300" name="contents"></textarea>-->
-      <form action="/signup" method="post">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="text" class="form-control" name="email">
+    <div class="container">
+      <div class="navbar-spacer"></div>
+      <nav class="navbar">
+        <div class="container">
+          <ul class="navbar-list">
+            <li class="navbar-item"><a class="navbar-link" href="#join">join</a></li>
+            <li class="navbar-item"><a class="navbar-link" href="/login">Back</a></li>
+          </ul>
         </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" class="form-control" name="password">
-        </div>
+      </nav>
+    </div>
 
-        <button type="submit" class="btn btn-warning btn-lg">Signup</button>
-    </form>
+    <div class="container">
+      <section class="header">
+        <h2 class="title">Sign-up Place of Chatting</h2>
+      </section>
+      <h3>Fill out this form</h3>
+    </div>
 
-    <hr>
+    <div class="join" id="join">
+      <div class="container">
+        <!--<textarea rows="300" cols="300" name="contents"></textarea>-->
+        <form action="/signup" method="post">
+          <div class="form-group">
+              <label>E-mail</label>
+              <input type="text" class="form-control" placeholder="test@mailbox.com" name="email">
+          </div>
+          <div class="form-group">
+              <label>Password</label>
+              <input type="password" class="form-control" placeholder="password" name="password">
+          </div>
 
-    <p>Already have an account? <a href="/login">Login</a></p>
-    <p>Or go <a href="/">home</a>.</p>
-    </div><!-- /content -->
+          <button type="submit" class="btn btn-warning btn-lg">Signup</button>
+      </form>
+    </div>
+  </div>
+    <div class="container">
+      <hr>
 
+      <p>Already have an account? <a href="/login">Login</a></p>
+      <p>Or go <a href="/">Home</a>.</p>
+    </div>
 
-    <div data-role="page" id= "chat" data-title="Device">
-      <div data-role="header" data-theme="a">
-  			<a href="#" data-rel="back">back</a>
-
-  	  </div><!-- /header -->
-        <div data-role="content" id="content">
-
-        </div><!-- /content -->
-      </div><!-- /page -->
-
+  	<a href="#" data-rel="back">back</a>
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>PoC: Place of Chatting</title>
+    <title>Place of Chatting</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -34,20 +34,35 @@
 
   </head>
   <body>
+    <div class="container">
+      <div class="navbar-spacer"></div>
+      <nav class="navbar">
+        <div class="container">
+          <ul class="navbar-list">
+            <% for (var i = 0; i < rooms.length; i++){ %>
+              <li class="navbar-item"><a class="navbar-link" href="#<%-rooms[i]%>"><%-rooms[i]%></a></li>
+            <% } %>
+            <li class="navbar-item"><a class="navbar-link" href="/login">Back</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="container" id="container">
+      <section class="header">
+        <h2 class="title">Chatting based on location</h2>
+      </section>
+      <h5>Choose the room</h5>
+    </div>
+    <div class="topic choice">
+      <div class="container">
 
-  <div data-role="page" id "iotmain">
-      <div data-role="content" id="content">
-        <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
-          <li data-role="list-divider"><h1>My Rooms</h1></li>
           <% for (var i = 0; i < rooms.length; i++){ %>
-            <!--<li><h1><a class="button button-primary" href= "<%- 'chat/' + rooms[i] %>">room <%- i + 1 %> : <%- rooms[i] %></a></h1></li>-->
-            <li><button onclick="location.href='https://www.korchid.com/<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
-            <!--<li><button onclick=redirect(<%- 'chat/' + rooms[i] %>)>room <%- i + 1 %> : <%- rooms[i] %></button></li>-->
+            <div class="row">
+              <button class="button-primary" id="<%-rooms[i]%>" onclick="location.href='https://www.korchid.com/<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
+            </div>
           <% } %>
-            <li><button onclick="location.href='https://www.korchid.com/register'">Register Room</button></li>
-        </ul>
-      </div><!-- /content -->
-    </div><!-- /page -->
+      </div>
+    </div>
 
     <script>
     	var socket = io.connect('https://www.korchid.com',  {secure: true});
@@ -55,15 +70,13 @@
       socket.emit('leaveroom', <%= rooms %>);
     </script>
 
-    <div data-role="page" id= "chat" data-title="Device">
-      <div data-role="header" data-theme="a">
-  			<a href="#" data-rel="back">back</a>
+    <div class="container">
+      <div class="row">
+        <button onclick="location.href='https://www.korchid.com/register'">Register Room</button></li>
+      </div>
+  		<a href="/login" data-rel="back">back</a>
+    </div>
 
-  	  </div><!-- /header -->
-        <div data-role="content" id="content">
-
-        </div><!-- /content -->
-      </div><!-- /page -->
 
 
 

@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>PoC: Place of Chatting</title>
+    <title>Place of Chatting</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -39,57 +39,73 @@
     </style>
   </head>
 
-<!--
-  <script>
-    var ref_t = setInterval(function (){
-      jQuery('#list').load('http://internetbat.com/{$mid}#list_load').fadeIn('slow');, 6000);
-  </script>
--->
   <body>
-  	<div data-role="content" id="content">
-      <ul data-role="listview" data-child-pages="true"  data-filter="true" data-inset="true">
-        <li data-role="list-divider"><h1>My Device</h1></li>
-      </ul>
-      <!--<textarea rows="300" cols="300" name="contents"></textarea>-->
-      <ul>
-        <li><button onclick="location.href='/auth/google'">google login</button></li>
-        <li><button onclick="location.href='/auth/facebook'">Facebook login</button></li>
-        <li><button onclick="location.href='/auth/twitter'">twitter login</button></li>
-      <!--<li><a href="https://www.korchid.com/auth/google">Sign In with Google</a></li>
-      <li><a href="https://www.korchid.com/auth/facebook">Sign In with facebook</a></li>
-      <li><a href="https://www.korchid.com/auth/twitter">Sign In with twitter</a></li>-->
-        <button onclick="location.href='/logout'">logout</button>
-      </ul>
-      <form action="/local-login" method="post">
-    <div>
-        <label>UserId:</label>
-        <input type="text" name="id"/><br/>
+    <div class="container">
+      <div class="navbar-spacer"></div>
+      <nav class="navbar">
+        <div class="container">
+          <ul class="navbar-list">
+            <li class="navbar-item"><a class="navbar-link" href="#interwoking">Interwoking</a></li>
+            <li class="navbar-item"><a class="navbar-link" href="#localworking">Local ID</a></li>
+            <li class="navbar-item"><a class="navbar-link" href="/">Back</a></li>
+          </ul>
+        </div>
+      </nav>
     </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" name="password"/>
+  	<div class="container">
+      <section class="header">
+        <h2 class="title">Chatting based on location</h2>
+      </section>
+      <h5>Please Login</h5>
     </div>
-    <div>
-        <input type="submit" value="Submit"/>
+
+    <div class="interwoking">
+      <div class="container">
+
+      </div>
     </div>
-    </form>
-    <p>Need an account? <a href="/signup">Signup</a></p>
-    <p>Or go <a href="/">home</a>.</p>
-    </div><!-- /content -->
-    </div><!-- /page -->
 
-
-    <div data-role="page" id= "chat" data-title="Device">
-      <div data-role="header" data-theme="a">
-  			<a href="#" data-rel="back">back</a>
-
-  	  </div><!-- /header -->
-        <div data-role="content" id="content">
-
-        </div><!-- /content -->
-      </div><!-- /page -->
-
-
+    <div class="topic loginID">
+      <div class="container">
+        <div class="menu" id= "interworking"  style="margin-bottom:50px;">
+          <div class="row">
+            <button class="button-primary" onclick="location.href='/auth/google'">google login</button>
+          </div>
+          <div class="row">
+            <button class="button-primary" onclick="location.href='/auth/facebook'">Facebook login</button>
+          </div>
+          <div class="row">
+            <button class="button-primary" onclick="location.href='/auth/twitter'">twitter login</button>
+          </div>
+        </div>
+        <div id="localworking">
+          <form action="/local-login" method="post">
+            <div class="row">
+              <div class="six columns">
+                <label>E-mail</label>
+                <input class="u-full-width" type="text" placeholder="test@mailbox.com" name="id"/><br/>
+              </div>
+            </div>
+            <div class="row">
+              <div class="six columns">
+                <label>Password</label>
+                <input class="u-full-width" type="password" placeholder="password" name="password"/>
+              </div>
+            </div>
+            <div>
+              <input class="button-primary" type="submit" value="Submit"/>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="logout">
+      <div class="container">
+        <button  onclick="location.href='/logout'">logout</button>
+        <p>Need an account? <a href="/signup">Signup</a></p>
+        <p>Or go <a href="/">home</a>.</p>
+      </div>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

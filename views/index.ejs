@@ -5,7 +5,7 @@
   <!-- Basic Page Needs
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta charset="utf-8">
-  <title>PoC: Place of Chatting</title>
+  <title>Place of Chatting</title>
   <meta name="description" content="">
   <meta name="author" content="">
 
@@ -37,8 +37,20 @@
 
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-
-  <div class="section hero">
+  <div class="container">
+    <div class="navbar-spacer"></div>
+    <nav class="navbar">
+      <div class="container">
+        <ul class="navbar-list">
+          <li class="navbar-item"><a class="navbar-link" href="#main">Main</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#intro">Intro</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#doc">Doc</a></li>
+          <li class="navbar-item"><a class="navbar-link" href="#app">App</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="section hero" id="main">
     <div class="container">
       <div class="row">
         <div class="one-half column">
@@ -53,48 +65,49 @@
     </div>
   </div>
 
-  <div class="section values">
+  <div class="section values" id="intro">
     <div class="container">
       <div class="row">
         <div class="one-third column value">
-          <h2 class="value-multiplier">67%</h2>
-          <h5 class="value-heading">Purchase Increase</h5>
-          <p class="value-description">Percentage of users more likely to purchase on mobile friendly site.</p>
+          <h2 class="value-multiplier">Chatting device</h2>
+          <h5 class="value-heading">Chatting each other in same location</h5>
+          <p class="value-description">Device provide a chatting room</p>
         </div>
         <div class="one-third column value">
-          <h2 class="value-multiplier">90%</h2>
-          <h5 class="value-heading">Multi-device Users</h5>
-          <p class="value-description">Most of the world accesses the internet on multiple devices.</p>
+          <h2 class="value-multiplier">Room environment</h2>
+          <h5 class="value-heading">Multi-sensor information</h5>
+          <p class="value-description">Dust, Temperature, Humidity, CO_2, beacon and so on.</p>
         </div>
         <div class="one-third column value">
-          <h2 class="value-multiplier">66%</h2>
-          <h5 class="value-heading">Sad Users</h5>
-          <p class="value-description">Percentage of users that are frustrated with page load times.</p>
+          <h2 class="value-multiplier">Room security</h2>
+          <h5 class="value-heading">Streaming image in your room</h5>
+          <p class="value-description">Device take pictures in your place and save your place</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="section get-help">
+  <div class="section get-help" id="doc">
     <div class="container">
-      <h3 class="section-heading">Need help getting started?</h3>
-      <p class="section-description">Skeleton is an amazingly easy place to start with responsive development. If you want to learn more, just visit the documentation!</p>
+      <h3 class="section-heading">PoC Tutorial</h3>
+      <p class="section-description">Need help getting started? Please click this button! This document explain how it works and how to play this app.</p>
       <a class="button button-primary" href="https://www.korchid.com">View Docs</a>
     </div>
   </div>
 
-  <div class="section categories">
+  <div class="section categories" id="app">
     <div class="container">
-      <h3 class="section-heading">Responsive Images</h3>
-      <p class="section-description">Skeleton images sit easily in grid with .u-max-full-width class. I suggest exploring solution to serving different images based on device size.</p>
+      <h3 class="section-heading">Enjoy our PoC application</h3>
+      <p class="section-description">You can interact unknown people. Even if you go alone in this place, you can hang out with them and have a great day.</p>
       <div class="row">
+        <!--<div class="one column category">-->
+          <img class="u-max-full-width" src="../images/app_icon.jpg">
+        <!--</div>
         <div class="one-half column category">
           <img class="u-max-full-width" src="images/placeholder.png">
-        </div>
-        <div class="one-half column category">
-          <img class="u-max-full-width" src="images/placeholder.png">
-        </div>
+        </div>-->
       </div>
+      <a class="button button-primary" href="https://www.korchid.com">Download App</a>
     </div>
   </div>
 
