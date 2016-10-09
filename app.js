@@ -239,11 +239,8 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login_fai
 
 app.get('/login', function(req, res, next) {
 			console.log('session : ' + req.session);
-			//console.log(req.session.passport);
-			//console.log(req.session.user);
-			//console.log('chat _ ROOMID : ' + global.ROOMID);
-			res.render('login', { title: 'Ajou IoT', message : 'message'});
 
+			res.render('login', { title: 'Place of Chatting'});
 });
 
 app.post('/local-login',
@@ -392,7 +389,7 @@ app.get('/auth/google/callback',
 	                 res.send("error "+err);
 	           }else{
 							 		 console.log(key);
-									 req.cache.expire(key, 1800);
+									 //req.cache.expire(key, 1800);
 						 }
 	      });
 

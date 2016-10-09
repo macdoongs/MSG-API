@@ -2,10 +2,6 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var util = require('util');
-
-var mqtt = require('mqtt');
-
 var mysql = require('mysql');
 var conn = mysql.createConnection({
 	host      : config.rds.host,
@@ -20,9 +16,6 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
 conn.connect();
-
-var sh_timer = require('./timer');
-
 
 
 /* GET home page. */

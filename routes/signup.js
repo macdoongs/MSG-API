@@ -2,8 +2,6 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var util = require('util');
-
 var mqtt = require('mqtt');
 
 var mysql = require('mysql');
@@ -25,17 +23,8 @@ var sh_timer = require('./timer');
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
-	var topicId = req.params.id;
-	//global.ROOMID = req.params.id;
-  var myName = config.rds.user;
-	var topicSeq = null;
-	var mqtt_client = config.iot.mqttproxy;
 
-	var message = topicId;
-
-	//res.send('ok')
-	//console.log('chat _ ROOMID : ' + global.ROOMID);
-	res.render('signup', { title: 'Ajou IoT', message : message});
+	res.render('signup', { title: 'Place of Chatting'});
 
 });
 
@@ -73,9 +62,6 @@ router.post(['/', '/:id'], function(req, res, next) {
 					}
 			});
 
-
-
-	//res.send('Good!');
 });
 
 module.exports = router;

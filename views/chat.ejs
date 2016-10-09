@@ -5,7 +5,7 @@
     <!-- Basic Page Needs
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
-    <title>Place of Chatting</title>
+    <title><%=title%></title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -85,29 +85,13 @@
         var message = dataArr[1];
 
         if(username != 'Admin'){
-    		    $('#conversation').append('<p class="talk other"<b>'+ username + ': </b> ' + message + '<br>');
+            $('#conversation').append('<b>' + username + '</b>');
+    		    $('#conversation').append('<p class="talk other">' + message + '<br>');
         }else{
-            $('#conversation').append('<p class="talk me"><b></b> ' + message + '<br>');
+            $('#conversation').append('<p class="talk me">' + message + '<br>');
         }
     	});
-/*
-    	// listener, whenever the server emits 'updaterooms', this updates the room the client is in
-    	socket.on('updaterooms', function(rooms, current_room) {
-    		$('#rooms').empty();
-    		$.each(rooms, function(key, value) {
-    			if(value == '<%=id%>'){
-    				$('#rooms').append('<div>' + value + '</div>');
-    			}
-    			else {
-    				$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
-    			}
-    		});
-    	});
 
-    	function switchRoom(room){
-    		socket.emit('switchRoom', room);
-    	}
-*/
     	// on load of page
     	$(function(){
     		// when the client clicks SEND

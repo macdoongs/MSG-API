@@ -2,10 +2,6 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var util = require('util');
-
-var mqtt = require('mqtt');
-
 var mysql = require('mysql');
 var conn = mysql.createConnection({
 	host      : config.rds.host,
@@ -21,14 +17,11 @@ var parser = new xml2js.Parser();
 
 conn.connect();
 
-var sh_timer = require('./timer');
-
-
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
 
-	res.render('register', { title: 'AjouIoT'});
+	res.render('register', { title: 'Place of Chatting'});
 });
 
 
