@@ -80,11 +80,15 @@
 
     	// listener, whenever the server emits 'updatechat', this updates the chat body
     	socket.on('updatechat', function (data) {
-        //if(username == 'Admin'){
-    		  //  $('#conversation').append('<b>'+username + ':</b> ' + data + '<br>');
-        //}else{
-            $('#conversation').append('<p class="talk me"><b></b> ' + data + '<br>');
-        //}
+        var dataArr = data.split(':');
+        var username = dataArr[0];
+        var message = dataArr[1];
+
+        if(username != 'Admin'){
+    		    $('#conversation').append('<p class="talk other"<b>'+ username + ': </b> ' + message + '<br>');
+        }else{
+            $('#conversation').append('<p class="talk me"><b></b> ' + message + '<br>');
+        }
     	});
 /*
     	// listener, whenever the server emits 'updaterooms', this updates the room the client is in

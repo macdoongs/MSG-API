@@ -268,6 +268,106 @@ body
   color: #000;
 }
 
+.camera {
+  margin-bottom: 3rem;
+  padding: 5rem 0 19rem;
+  background-image: url('../images/Untitled.png');
+  background-size: cover;
+  color: #000;
+}
+
 .logout {
   margin-top: 6rem;
 }
+
+.talk {
+  position: relative;
+  padding: 15px;
+  margin: 1em 0 1em;
+  color: black;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  width: auto; }
+
+.talk.other {
+  margin-left: 30px;
+  border: 5px solid #F0F0F0;
+  background: #F0F0F0; }
+
+.talk.me {
+  margin-right: 30px;
+  border: 5px solid #7DA2FF;
+  background-color: #7DA2FF; }
+
+.talk:before {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 40px;
+  border-width: 20px 20px 0;
+  border-style: solid;
+  border-color: #5a8f00 transparent;
+  /* reduce the damage in FF3.0 */
+  display: block;
+  width: 0; }
+
+/* creates the smaller  triangle */
+.talk:after {
+  content: "";
+  position: absolute;
+  bottom: -13px;
+  left: 47px;
+  border-width: 13px 13px 0;
+  border-style: solid;
+  border-color: #FFEFB9 transparent;
+  /* reduce the damage in FF3.0 */
+  display: block;
+  width: 0; }
+
+/* creates the larger triangle */
+.talk.other:before {
+  top: 10px;
+  bottom: auto;
+  left: -30px;
+  border-width: 15px 30px 15px 0;
+  border-color: transparent #F0F0F0; }
+
+/* creates the smaller  triangle */
+.talk.other:after {
+  top: 16px;
+  bottom: auto;
+  left: -21px;
+  border-width: 9px 21px 9px 0;
+  border-color: transparent #F0F0F0; }
+
+.talk.me:before {
+  top: 10px;
+  /* controls vertical position */
+  bottom: auto;
+  left: auto;
+  right: -30px;
+  /* value = - border-left-width - border-right-width */
+  border-width: 15px 0 15px 30px;
+  border-color: transparent #7DA2FF; }
+
+.talk.me:after {
+  top: 16px;
+  bottom: auto;
+  left: auto;
+  right: -21px;
+  border-width: 9px 0 9px 21px;
+  border-color: transparent #7DA2FF; }
+
+.msg {
+  display: inline-block;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857;
+  color: #555555;
+  background-color: #fff;
+  background-image: none;
+  border: 0px solid #ccc;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px; }

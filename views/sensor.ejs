@@ -32,34 +32,60 @@
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <link rel="icon" type="image/png" href="/favicon.ico">
 
+    <style type="text/css">
+      a:link { color: red; text-decoration: none;}
+      a:visited { color: black; text-decoration: none;}
+      a:hover { color: blue; text-decoration: underline;}
+    </style>
   </head>
+
+<!--
+  <script>
+    var ref_t = setInterval(function (){
+      jQuery('#list').load('http://internetbat.com/{$mid}#list_load').fadeIn('slow');, 6000);
+  </script>
+-->
   <body>
     <div class="container">
       <div class="navbar-spacer"></div>
       <nav class="navbar">
         <div class="container">
           <ul class="navbar-list">
-            <li class="navbar-item"><a class="navbar-link" href="#camera">Camera</a></li>
+            <li class="navbar-item"><a class="navbar-link" href="#info">Information</a></li>
             <li class="navbar-item"><a class="navbar-link" href="/rooms">Back</a></li>
           </ul>
         </div>
       </nav>
     </div>
-
     <div class="container">
       <section class="header">
-        <h2 class="title">Chatting based on location</h2>
+        <h2 class="title">My Room</h2>
       </section>
+      <h5>Information</h5>
     </div>
-    <div class="topic camera" id="camera">
+    <div class="registration" id="info">
       <div class="container">
-        <img src="data:image/png;base64,<%- image %>" alt="" />
+          <%var dataArr = data.split(",");%>
+
+          <%var sensorInfo = {pcs:'', ug:'', temperature:'', humidity:''};%>
+
+          <%var max = 5;%>
+          <%for(var i=1; i<max; i++){%>
+            <%var infoArr = dataArr[i].split(":");%>
+            <%sensorInfo[infoArr[0]]=infoArr[1];%>
+
+            <div class="row">
+              <div><h5><%=infoArr[0]%> : <%=sensorInfo[infoArr[0]]%></h5></div>
+            </div>
+          <%}%>
+
+
+
       </div>
     </div>
-    <div class="container">
-  	   <a href="#" data-rel="/chat">back</a>
-     </div><!-- /header -->
-
+    <div class="container" id="back">
+  		<a href="/rooms" data-rel="back">back</a>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

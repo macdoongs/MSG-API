@@ -53,9 +53,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 						var cin = oResult['m2m:rsp']['m2m:cin'];
 						var data = cin[0]['con'][0];
 
-
-
-						res.send(data);
+						res.render('sensor', {data:data})
 					});
 
 			}

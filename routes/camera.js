@@ -55,9 +55,12 @@ router.get(['/', '/:id'], function(req, res, next) {
 						var image = cin[0]['con'][0];
 
 
+						var pImage = base64_decode(image);
 
-						res.writeHead(200, {'Content-type':'base64'});
-						res.end(base64_decode(image));
+						res.render('camera', {image:image});
+
+						//res.writeHead(200, {'Content-type':'base64'});
+						//res.end(base64_decode(image));
 					});
 
 			}
