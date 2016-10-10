@@ -19,7 +19,6 @@ var parser = new xml2js.Parser();
 
 conn.connect();
 
-var sh_timer = require('./timer');
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {

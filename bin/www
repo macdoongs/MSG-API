@@ -30,31 +30,24 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-
- var options = {
-    key: fs.readFileSync('./ssl/www.korchid.com.key'),
-    cert: fs.readFileSync('./ssl/2_www.korchid.com.crt'),
- };
-
-//var server = https.createServer(options, app);
 var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
 
 // usernames which are currently connected to the chat
 var usernames = {};
-//var mqtt_client = mqtt.connect(config.iot.mqttproxy);
-var mqtt_client = config.iot.mqttproxy;
+
+var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
 
 var data = {
   'username':'',
   'message':''
 };
 
-// rooms which are currently available in chat
-global.rooms = new Array();
+var cseid = 'mobius-yt';
+var aeid = '';
 
-
+var topic = '';
 
 // connection이 발생할 때 핸들러를 실행한다.
 io.sockets.on('connection', function (socket) {
@@ -102,59 +95,14 @@ io.sockets.on('connection', function (socket) {
       //console.log(socket.username);
 
 
-      var aeid = roomname;
-      var cseid = 'mobius-yt';
+      aeid = roomname;
 
-      var topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+      topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
       mqtt_client.subscribe(topic);
 
       //socket.emit('updaterooms', global.rooms, socket.room);
 
       console.log('subscribe : ' + topic);
-      /* message format
-
-      <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-      <m2m:rqp xmlns:m2m=\"http://www.onem2m.org/xml/protocols\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">
-              <op>1</op>
-              <to>/mobius-yt/Sajouiot03/chatting</to>
-              <fr>S0.2.481.1.20160721051547725</fr>
-              <rqi>rqi201607211554337900rzY</rqi>
-              <ty>4</ty>
-              <pc>
-      		      <cin>
-      			      <rn></rn>
-      			      <con>MQTT Message</con>
-                </cin>
-              </pc>
-      </m2m:rqp>
-      */
-      /*
-      var xml = builder.create('root')
-        .ele('xmlbuilder')
-          .ele('repo', {'type': 'git'}, 'git://github.com/oozcitak/xmlbuilder-js.git')
-        .end({ pretty: true});
-
-      console.log(xml);
-------------------------------------
-      <?xml version="1.0"?>
-        <root>
-          <xmlbuilder>
-            <repo type="git">git://github.com/oozcitak/xmlbuilder-js.git</repo>
-          </xmlbuilder>
-        </root>
---------------------------------------
-      builder.create({
-  root: {
-    xmlbuilder: {
-      repo: {
-        '@type': 'git', // attributes start with @
-        '#text': 'git://github.com/oozcitak/xmlbuilder-js.git' // text node
-      }
-    }
-  }
-});
-      */
-
 
 
       data.username = 'SERVER';
@@ -206,12 +154,11 @@ io.sockets.on('connection', function (socket) {
 
     // listener, whenever the server emits 'updatechat', this updates the chat body
     socket.on('leaveroom', function (rooms) {
-        var aeid = '';
-        var cseid = 'mobius-yt'
+
         for(var i=0; i<rooms.length; i++){
             aeid = rooms[i];
 
-            var topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+            topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
 
             mqtt_client.unsubscribe(topic);
         }
@@ -245,10 +192,9 @@ io.sockets.on('connection', function (socket) {
           //console.log(dataXML);
 
 
-          var aeid = socket.room;
-          var cseid = 'mobius-yt';
+          aeid = socket.room;
 
-          var topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+          topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
 
           mqtt_client.publish(topic,  dataXML);
 	  });
@@ -288,10 +234,9 @@ io.sockets.on('connection', function (socket) {
         data.message = " has disconnected";
         console.log(socket.room);
 
-        var cseid = 'mobius-yt'
-        var aeid = socket.room;
+        aeid = socket.room;
 
-        var topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+        topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
 
         //mqtt_client.publish(topic,  data.message);
 
@@ -308,10 +253,6 @@ io.sockets.on('connection', function (socket) {
 });
 
 
-
-global.ROOMID = "test-topic";
-var req_topic = util.format('%s', global.ROOMID);
-var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
 
 server.listen(port, function(){
   console.log('Server Listen ' + port + ' port');

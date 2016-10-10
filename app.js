@@ -5,6 +5,31 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var config = require('config.json')('./config/config.json');
+
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+var redis = require('redis');
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
+var TwitterStrategy = require('passport-twitter').Strategy;
+
+var app = express();
+
+var mysql = require('mysql');
+var conn = mysql.createConnection({
+	host      : config.rds.host,
+	user      : config.rds.user,
+	password  : config.rds.password,
+	database  : config.rds.ajouiotdb
+});
+
+conn.connect();
+
+
 var routes = require('./routes/index');
 //var topics = require('./routes/topics');
 var iot = require('./routes/iot');
@@ -20,24 +45,6 @@ var mapping = require('./routes/mapping');
 var cookie = require('./routes/cookie');
 var register = require('./routes/register');
 
-var config = require('config.json')('./config/config.json');
-
-var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
-var redis = require('redis');
-
-var app = express();
-
-var mysql = require('mysql');
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.ajouiotdb
-});
-
-conn.connect();
-
 
 console.log("My webpage start!");
 
@@ -51,34 +58,29 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'dist')));
-app.use(express.static(path.join(__dirname, 'jquery-mobile')));
-app.use(express.static(path.join(__dirname, 'bootstrap-3.3.4-dist')));
 
 app.use('/', routes);
-// app.use('/users', users);
-// app.use('/topics', topics);
-app.use('/iot', iot);
 app.use('/chat', chat);
 app.use('/rooms', rooms);
 app.use('/sensor', sensor);
-//app.use('/login', login);
-app.use('/sign-in', sign_in);
 app.use('/signup', signup);
 app.use('/camera', camera);
 app.use('/streaming', streaming);
 app.use('/mapping', mapping);
 app.use('/register', register);
+// app.use('/users', users);
+// app.use('/topics', topics);
+//app.use('/iot', iot);
+
+//app.use('/login', login);
+//app.use('/sign-in', sign_in);
+
 //app.use('/cookie', cookie);
 
 
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
-var TwitterStrategy = require('passport-twitter').Strategy;
+
 
 
 //app.use(session({ secret: 'SECRET' }));
@@ -87,6 +89,8 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 // Cookie Test code
 app.get('/writecookie', cookie.writecookie);
 app.get('/readcookie', cookie.readcookie);
+
+
 app.use(session({
 	  store: new RedisStore({
 	    port: config.redis.port,
@@ -101,8 +105,6 @@ app.use(session({
     saveUninitialized: true,
 	  cookie: { secure: true }
 	}));
-
-
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -157,67 +159,50 @@ passport.deserializeUser(function(user, done) {
 });
 
 
-// app.use(passport.session({
-// 	  store: new RedisStore({
-// 	    port: config.redis.port,
-// 	    host: config.redis.host,
-// 	    db: config.redis.db,
-// 	    pass: config.redis.password
-// 	  }),
-// 	  secret: 'ajouiot',
-// 	  proxy: true,
-// 		resave: true,
-// 		expires: false,
-//     saveUninitialized: true,
-// 	  cookie: { secure: true }
-// 	}));
+client = redis.createClient(config.redis.port, config.redis.host);
+client.auth(config.redis.password)
 
+app.use(function(req,res,next){
+      req.cache = client;
+      next();
+})
 
+// Profile test code
+app.post('/profile',function(req,res,next){
+      req.accepts('application/json');
 
-	client = redis.createClient(config.redis.port, config.redis.host);
-	client.auth(config.redis.password)
+      var key = req.body.name;
+      var value = JSON.stringify(req.body);
 
-	app.use(function(req,res,next){
-	      req.cache = client;
-	      next();
-	})
+      req.cache.set(key,value,function(err,data){
+           if(err){
+                 console.log(err);
+                 res.send("error "+err);
+                 return;
+           }
+					 console.log(key);
+           req.cache.expire(key,10);
+           res.json(value);
+           //console.log(value);
+      });
+})
+app.get('/profile/:name',function(req,res,next){
+      var key = req.params.name;
 
-	// Profile test code
-	app.post('/profile',function(req,res,next){
-	      req.accepts('application/json');
+			console.log(key);
 
-	      var key = req.body.name;
-	      var value = JSON.stringify(req.body);
+      req.cache.get(key,function(err,data){
+           if(err){
+                 console.log(err);
+                 res.send("error "+err);
+                 return;
+           }
 
-	      req.cache.set(key,value,function(err,data){
-	           if(err){
-	                 console.log(err);
-	                 res.send("error "+err);
-	                 return;
-	           }
-						 console.log(key);
-	           req.cache.expire(key,10);
-	           res.json(value);
-	           //console.log(value);
-	      });
-	})
-	app.get('/profile/:name',function(req,res,next){
-	      var key = req.params.name;
-
-				console.log(key);
-
-	      req.cache.get(key,function(err,data){
-	           if(err){
-	                 console.log(err);
-	                 res.send("error "+err);
-	                 return;
-	           }
-
-	           var value = JSON.parse(data);
-						 console.log(data);
-	           res.json(value);
-	      });
-	});
+           var value = JSON.parse(data);
+					 console.log(data);
+           res.json(value);
+      });
+});
 
 
 // function ensureAuthenticated(req, res, next) {

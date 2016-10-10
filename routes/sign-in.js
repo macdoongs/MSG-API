@@ -18,8 +18,6 @@ var request = require('request');
 
 conn.connect();
 
-var sh_timer = require('./timer');
-
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
 	var topicId = req.params.id;
@@ -31,7 +29,6 @@ router.get(['/', '/:id'], function(req, res, next) {
 	var message = topicId;
 
 
-	//console.log('chat _ ROOMID : ' + global.ROOMID);
 	res.render('sign-in', { title: 'Ajou IoT'});
 
 });

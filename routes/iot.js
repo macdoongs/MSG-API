@@ -16,8 +16,6 @@ var conn = mysql.createConnection({
 
 conn.connect();
 
-var sh_timer = require('./timer');
-
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
   var myName = config.rds.user;

@@ -69,17 +69,21 @@
 
           <%var sensorInfo = {pcs:'', ug:'', temperature:'', humidity:''};%>
 
+          <%var unit = ['', '', 'ug/㎥', '°C', '%'];%>
+
           <%var max = 5;%>
-          <%for(var i=1; i<max; i++){%>
+          <%for(var i=2; i<max; i++){%>
             <%var infoArr = dataArr[i].split(":");%>
             <%sensorInfo[infoArr[0]]=infoArr[1];%>
 
             <div class="row">
-              <div><h5><%=infoArr[0]%> : <%=sensorInfo[infoArr[0]]%></h5></div>
+              <%if(infoArr[0]=='ug'){%>
+                <div><h5><b>Dust</b> : <%=sensorInfo[infoArr[0]]%> <b><%=unit[i]%></b></h5></div>
+              <%}else{%>
+                <div><h5><b><%=infoArr[0]%></b>  : <%=sensorInfo[infoArr[0]]%> <b><%=unit[i]%></b></h5></div>
+              <%}%>
             </div>
           <%}%>
-
-
 
       </div>
     </div>

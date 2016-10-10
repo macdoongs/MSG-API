@@ -20,8 +20,8 @@ var parser = new xml2js.Parser();
 router.get(['/', '/:id'], function(req, res, next) {
 
 	// Pi request
-	res.redirect('http://61.83.186.235:10000');
-
+	//res.redirect('http://61.83.186.235:10000');
+	res.render('camera', {title:"TEST"});
 });
 
 
