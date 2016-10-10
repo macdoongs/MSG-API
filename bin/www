@@ -44,7 +44,10 @@ var data = {
   'message':''
 };
 
-var cseid = 'mobius-yt';
+global.usecsebase = config.iot.usecsebase;
+global.usecsebaseport = config.iot.usecsebaseport;
+global.mobiushost = config.iot.mobiushost;
+
 var aeid = '';
 
 var topic = '';
@@ -97,7 +100,7 @@ io.sockets.on('connection', function (socket) {
 
       aeid = roomname;
 
-      topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+      topic = '/oneM2M/req/' + aeid + '/:' + usecsebase + '/xml';
       mqtt_client.subscribe(topic);
 
       //socket.emit('updaterooms', global.rooms, socket.room);
@@ -158,7 +161,7 @@ io.sockets.on('connection', function (socket) {
         for(var i=0; i<rooms.length; i++){
             aeid = rooms[i];
 
-            topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+            topic = '/oneM2M/req/' + aeid + '/:' + usecsebase + '/xml';
 
             mqtt_client.unsubscribe(topic);
         }
@@ -194,7 +197,7 @@ io.sockets.on('connection', function (socket) {
 
           aeid = socket.room;
 
-          topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+          topic = '/oneM2M/req/' + aeid + '/:' + usecsebase + '/xml';
 
           mqtt_client.publish(topic,  dataXML);
 	  });
@@ -236,7 +239,7 @@ io.sockets.on('connection', function (socket) {
 
         aeid = socket.room;
 
-        topic = '/oneM2M/req/' + aeid + '/:' + cseid + '/xml';
+        topic = '/oneM2M/req/' + aeid + '/:' + usecsebase + '/xml';
 
         //mqtt_client.publish(topic,  data.message);
 

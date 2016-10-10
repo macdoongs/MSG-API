@@ -17,11 +17,14 @@ var parser = new xml2js.Parser();
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
+router.get(['/', '/:userid/:roomid'], function(req, res, next) {
+	var userid = req.params.userid;
+	var roomid = req.params.roomid;
 
 	// Pi request
+	res.send('TODO redirect');
 	//res.redirect('http://61.83.186.235:10000');
-	res.render('camera', {title:"TEST"});
+	//res.render('camera', {title:"TEST"});
 });
 
 

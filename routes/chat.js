@@ -5,12 +5,13 @@ var request = require('request');
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
-	var topicId = req.params.id;
+router.get(['/', '/:userid/:roomid'], function(req, res, next) {
+	var userid = req.params.userid;
+	var roomid = req.params.roomid;
 
 	console.log('session : ' + req.session);
 
-	res.render('chat', { title: 'Place of Chatting', id:topicId});
+	res.render('chat', { title: 'Place of Chatting', userid:userid, roomid:roomid});
 
 });
 

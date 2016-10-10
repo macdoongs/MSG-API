@@ -6,12 +6,15 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
+var aeid = "";
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
-	var myRoom = "test-topic";
+router.get(['/', '/:userid/:roomid'], function(req, res, next) {
+	var userid = req.params.userid;
+	var roomid = req.params.roomid;
+	aeid = roomid;
 
-	url = 'http://localhost:7579/mobius-yt/Sajouiot03/arduino?rcn=4&lim=10'
+	url = 'http://' + mobiushost + ':' + usecsebaseport + '/' + usecsebase + '/'+ aeid + '/arduino?rcn=4&lim=10';
 	request({
      		url : url,
      		method: 'GET',
@@ -27,14 +30,21 @@ router.get(['/', '/:id'], function(req, res, next) {
     		}else{
 
 					parser.parseString(body, function(err, result) {
-  					console.log(result);
+  					//console.log('result : ' + result);
 						sResult = JSON.stringify(result);
 						oResult = JSON.parse(sResult);
 
-						var cin = oResult['m2m:rsp']['m2m:cin'];
-						var data = cin[0]['con'][0];
+						try{
+							var cin = oResult['m2m:rsp']['m2m:cin'];
+							var data = cin[0]['con'][0];
+						}catch(exception){
+							console.log(exception);
+							res.send('No data!');
+						}
 
-						res.render('sensor', {title:"Place of Chatting", data:data})
+						//console.log("data" + data);
+
+						res.render('sensor', {title:"Place of Chatting", userid:userid, roomid:roomid, data:data})
 					});
 
 			}

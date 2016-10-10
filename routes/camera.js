@@ -13,7 +13,10 @@ var s3Bucket = new AWS.S3( { params: {Bucket: 'korchid'} } );
 var aeid = '';
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
+router.get(['/', '/:userid/:roomid'], function(req, res, next) {
+	var userid = req.params.userid;
+	var roomid = req.params.roomid;
+	aeid = roomid;
 
 
 	var data = {
@@ -24,9 +27,7 @@ router.get(['/', '/:id'], function(req, res, next) {
     ContentType: 'image/jpeg'
   };
 
-	aeid = "Sajouiot02";
-
-	url = 'http://localhost:7579/mobius-yt/'+ aeid + '/camera?rcn=4&lim=1';
+	url = 'http://'+ mobiushost + ':' + usecsebaseport + '/' + usecsebase + '/'+ aeid + '/camera?rcn=4&lim=1';
 	request({
      		url : url,
      		method: 'GET',
@@ -45,13 +46,17 @@ router.get(['/', '/:id'], function(req, res, next) {
   					//console.log(result);
 						sResult = JSON.stringify(result);
 						oResult = JSON.parse(sResult);
+						try{
+							var cin = oResult['m2m:rsp']['m2m:cin'];
+							var image = cin[0]['con'][0];
+						}catch(exception){
+							console.log(exception);
+							res.send('No data!');
+						}
 
-						var cin = oResult['m2m:rsp']['m2m:cin'];
-						var image = cin[0]['con'][0];
 
-
-
-						data.Key = "korchid.com/image/" + aeid + "/capture.png";
+						var timeSaved = Date.now();
+						data.Key = "korchid.com/image/" + aeid + "/" + timeSaved;
 						data.Body = image;
 
 
@@ -64,7 +69,9 @@ router.get(['/', '/:id'], function(req, res, next) {
 					      }
 					  });
 
-						res.render('camera', {title:"Place of Chatting", image:image});
+						var pathSaved = "https://s3.ap-northeast-2.amazonaws.com/korchid/korchid.com/image/" + aeid + "/" + timeSaved;
+
+						res.render('camera', {title:"Place of Chatting", userid:userid, roomid:roomid, image:image, path:pathSaved});
 					});
 
 			}

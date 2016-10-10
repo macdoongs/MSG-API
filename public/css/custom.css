@@ -297,6 +297,7 @@ body
 
 .talk.me {
   margin-right: 30px;
+  text-align: left;
   border: 5px solid #7DA2FF;
   background-color: #7DA2FF; }
 
@@ -371,3 +372,8 @@ body
   border: 0px solid #ccc;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px; }
+
+.path {
+  margin-top: 20px;
+  margin-left: 50px;
+}

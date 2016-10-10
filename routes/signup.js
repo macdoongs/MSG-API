@@ -51,7 +51,7 @@ router.post(['/', '/:id'], function(req, res, next) {
 																	} else{
 																					//console.log('rows : ', rows);
 																					//console.log('fields : ', fields);
-																					res.send('sign up OK!');
+																					res.redirect('/rooms/' + uid);
 																	}
 												 });
 									}else{

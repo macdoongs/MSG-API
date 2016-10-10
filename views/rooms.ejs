@@ -58,7 +58,7 @@
 
           <% for (var i = 0; i < rooms.length; i++){ %>
             <div class="row">
-              <button class="button-primary" id="<%-rooms[i]%>" onclick="location.href='https://www.korchid.com/<%- 'chat/' + rooms[i] %>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
+              <button class="button-primary" id="<%-rooms[i]%>" onclick="location.href='https://www.korchid.com/chat/<%-userid%>/<%-rooms[i]%>'">room <%- i + 1 %> : <%- rooms[i] %></button></li>
             </div>
           <% } %>
       </div>

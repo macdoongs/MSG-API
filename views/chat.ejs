@@ -54,7 +54,7 @@
         <div class="container">
           <ul class="navbar-list">
             <li class="navbar-item"><a class="navbar-link" href="#chat">chat</a></li>
-            <li class="navbar-item"><a class="navbar-link" href="/rooms">Back</a></li>
+            <li class="navbar-item"><a class="navbar-link" href="/rooms/<%=userid%>">Back</a></li>
           </ul>
         </div>
       </nav>
@@ -74,7 +74,7 @@
     		socket.emit('adduser', prompt("What's your name?"));
     	});
 */
-      roomname = '<%= id %>';
+      roomname = '<%= roomid %>';
 
       socket.emit('chooseroom', roomname);
 
@@ -119,7 +119,7 @@
     </div>
     <div class="chatting">
       <div class="container">
-        <h5><%=id%></h5>
+        <h5><%=roomid%></h5>
         <hr/>
         <div class= "window">
           <div class="one-third column value" style= "border-right:1px solid black;">
@@ -137,11 +137,11 @@
 
 
             <div>
-              <button onclick="location.href='/camera'">Camera</button>
-              <button onclick="location.href='/streaming'">Streaming</button>
-              <button onclick="location.href='/sensor'">Sensor</button>
+              <button onclick="location.href='/camera/<%=userid%>/<%=roomid%>'">Camera</button>
+              <button onclick="location.href='/streaming/<%=userid%>/<%=roomid%>'">Streaming</button>
+              <button onclick="location.href='/sensor/<%=userid%>/<%=roomid%>'">Sensor</button>
             </div>
-            <a href="/rooms" data-rel="back">back</a>
+            <a href="/rooms/<%=userid%>" data-rel="back">back</a>
 
           </div>
         </div>

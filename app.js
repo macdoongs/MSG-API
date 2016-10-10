@@ -95,8 +95,8 @@ app.use(session({
 	  store: new RedisStore({
 	    port: config.redis.port,
 	    host: config.redis.host,
-	    db: config.redis.db,
-	    pass: config.redis.password
+	    db: config.redis.db//,
+	    //pass: config.redis.password
 	  }),
 	  secret: 'korchid',
 	  proxy: true,
@@ -113,8 +113,8 @@ app.use(passport.session({
 		store: new RedisStore({
 			port: config.redis.port,
 			host: config.redis.host,
-			db: config.redis.db,
-			pass: config.redis.password
+			db: config.redis.db//,
+			//pass: config.redis.password
 		}),
 		secret: 'korchid',
 		proxy: true,
@@ -160,7 +160,7 @@ passport.deserializeUser(function(user, done) {
 
 
 client = redis.createClient(config.redis.port, config.redis.host);
-client.auth(config.redis.password)
+//client.auth(config.redis.password)
 
 app.use(function(req,res,next){
       req.cache = client;

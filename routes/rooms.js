@@ -17,11 +17,9 @@ var parser = new xml2js.Parser();
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
-  var myName = config.rds.user;
-	var userid = req.params.id;
-	var topicSeq = null;
-	var mqtt_client = config.iot.mqttproxy;
+router.get(['/', '/:userid'], function(req, res, next) {
+	var userid = req.params.userid;
+
 	console.log('session : ' + req.session);
 
 	if(userid){
@@ -49,7 +47,7 @@ router.get(['/', '/:id'], function(req, res, next) {
 
 									}
 
-									res.render('rooms', { title: 'Place of Chatting', rooms : conArr});
+									res.render('rooms', { title: 'Place of Chatting', rooms : conArr, userid : userid});
 					}
 			});
 	}else{
