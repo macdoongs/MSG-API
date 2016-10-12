@@ -222,10 +222,12 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login_fai
         res.redirect('/login_success');
 });
 
-app.get('/login', function(req, res, next) {
+app.get(['/login', '/login/:userid'], function(req, res, next) {
+			var userid = req.params.userid;
+
 			console.log('session : ' + req.session);
 
-			res.render('login', { title: 'Place of Chatting'});
+			res.render('login', { title: 'Place of Chatting', userid:userid});
 });
 
 app.post('/local-login',

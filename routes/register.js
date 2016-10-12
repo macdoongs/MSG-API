@@ -19,14 +19,18 @@ conn.connect();
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
+router.get(['/', '/:userid'], function(req, res, next) {
+	var userid = req.params.userid;
 
-	res.render('register', { title: 'Place of Chatting'});
+	res.render('register', { title: 'Place of Chatting', userid:userid});
 });
 
 
 
-router.post(['/', '/:id'], function(req, res, next) {
+router.post(['/', '/:userid/:roomid'], function(req, res, next) {
+	var userid = req.params.userid;
+	var roomid = req.params.roomid;
+
 	var uuid = req.body.uuid;
 	var roomid = req.body.roomid;
 
