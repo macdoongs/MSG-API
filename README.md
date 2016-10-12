@@ -1,5 +1,6 @@
-# Portfolio-site
+# Place of Chatting(PoC) - Website
 
 ## Overview
+OCEAN IoT Platform contest
 
-### [Me](www.korchid.com)
+### [Me](https://www.korchid.com)
