@@ -44,7 +44,8 @@ var streaming = require('./routes/streaming');
 var mapping = require('./routes/mapping');
 var cookie = require('./routes/cookie');
 var register = require('./routes/register');
-
+var sms_sender = require('./routes/sms-sender');
+var dropbox_release = require('./routes/dropbox-release');
 
 console.log("My webpage start!");
 
@@ -70,6 +71,9 @@ app.use('/camera', camera);
 app.use('/streaming', streaming);
 app.use('/mapping', mapping);
 app.use('/register', register);
+app.use('/sms-sender', sms_sender);
+app.use('/dropbox-release', dropbox_release);
+
 // app.use('/users', users);
 // app.use('/topics', topics);
 //app.use('/iot', iot);
@@ -95,8 +99,8 @@ app.use(session({
 	  store: new RedisStore({
 	    port: config.redis.port,
 	    host: config.redis.host,
-	    db: config.redis.db//,
-	    //pass: config.redis.password
+	    db: config.redis.db,
+	    pass: config.redis.password
 	  }),
 	  secret: 'korchid',
 	  proxy: true,
@@ -108,13 +112,13 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+/*
 app.use(passport.session({
 		store: new RedisStore({
 			port: config.redis.port,
 			host: config.redis.host,
-			db: config.redis.db//,
-			//pass: config.redis.password
+			db: config.redis.db,
+			pass: config.redis.password
 		}),
 		secret: 'korchid',
 		proxy: true,
@@ -123,8 +127,7 @@ app.use(passport.session({
 		saveUninitialized: true,
 		cookie: { secure: true }
 	}));
-
-
+*/
 
 
 // serialize
@@ -149,10 +152,12 @@ passport.serializeUser(function(user, done) {
 });
 
 
+
 // deserialize
 // 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
 passport.deserializeUser(function(user, done) {
-    //findById(id, function (err, user) {
+
+		//findById(id, function (err, user) {
     console.log('deserialize');
     done(null, user);
     //});
@@ -160,7 +165,7 @@ passport.deserializeUser(function(user, done) {
 
 
 client = redis.createClient(config.redis.port, config.redis.host);
-//client.auth(config.redis.password)
+client.auth(config.redis.password)
 
 app.use(function(req,res,next){
       req.cache = client;
@@ -225,6 +230,8 @@ app.post('/login', passport.authenticate('local', { failureRedirect: '/login_fai
 app.get(['/login', '/login/:userid'], function(req, res, next) {
 			var userid = req.params.userid;
 
+
+
 			console.log('session : ' + req.session);
 
 			res.render('login', { title: 'Place of Chatting', userid:userid});
@@ -237,10 +244,28 @@ app.post('/local-login',
 				console.log('session : ' + req.session);
 				console.log(Object.keys(req.session));
 
-
 				//console.log('session : ' + req.session.passport);
 
 				//res.redirect('/login_success');
+
+				var key = req.user.id;
+
+	      var value = 'local';
+
+				req.session.id = key;
+				req.session.provider = value;
+
+				console.log('session id :', req.session.id);
+
+	      req.cache.set(key,value,function(err,data){
+	           if(err){
+	                 console.log(err);
+	                 res.send("error "+err);
+	           }else{
+							 		 console.log(key);
+									 //req.cache.expire(key, 1800);
+						 }
+	      });
 
 				 try{
 				 	if(req.session.passport.user.id == 110154195936516884946){
@@ -479,6 +504,7 @@ app.get(['/logout', '/logout/:id'], function(req, res){
 }
 	res.clearCookie();
 	res.redirect('/login');
+	//res.redirect('https://accounts.google.com/logout');
 });
 
 

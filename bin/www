@@ -50,6 +50,8 @@ global.mobiushost = config.iot.mobiushost;
 
 var aeid = '';
 
+var cntid = 'chatting';
+
 var topic = '';
 
 // connection이 발생할 때 핸들러를 실행한다.
@@ -117,7 +119,7 @@ io.sockets.on('connection', function (socket) {
 
       var dataXML = xmlbuilder.create('m2m:rqp', {'encoding':'UTF-8'}).att('xmlns:m2m', 'http://www.onem2m.org/xml/protocols').att('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
         .ele('op', '1').up()
-        .ele('to', '/mobius-yt'+ aeid +'/chatting').up()
+        .ele('to', '/' + usecsebase + '/' + aeid +'/' + cntid).up()
         .ele('fr', 'S0.2.481.1.20160721051547725').up()
         .ele('rqi', 'rqi201607211554337900rzY').up()
         .ele('ty', '4').up()
@@ -184,7 +186,7 @@ io.sockets.on('connection', function (socket) {
 
           var dataXML = xmlbuilder.create('m2m:rqp', {'encoding':'UTF-8'}).att('xmlns:m2m', 'http://www.onem2m.org/xml/protocols').att('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
             .ele('op', '1').up()
-            .ele('to', '/mobius-yt/Sajouiot03/chatting').up()
+            .ele('to', '/' + usecsebase + '/' + aeid +'/' + cntid).up()
             .ele('fr', 'S0.2.481.1.20161001051547725').up()
             .ele('rqi', 'rqi201610011554337900rzY').up()
             .ele('ty', '4').up()

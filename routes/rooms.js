@@ -39,6 +39,11 @@ router.get(['/', '/:userid'], function(req, res, next) {
 										var pRows = JSON.parse(sRows);
 
 										for(var i=0; i<rows.length; i++){
+											/*
+											if(rows[i].Rname == 'Sajouiot03'){
+												continue;
+											}
+											*/
 											conArr[i] = rows[i].Rname;
 										}
 
