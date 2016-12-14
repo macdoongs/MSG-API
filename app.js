@@ -46,6 +46,11 @@ var cookie = require('./routes/cookie');
 var register = require('./routes/register');
 var sms_sender = require('./routes/sms-sender');
 var dropbox_release = require('./routes/dropbox-release');
+var msg_signup = require('./routes/msg-signup');
+var msg_mapping = require('./routes/msg-mapping');
+var msg_error = require('./routes/msg-error');
+var msg_user_info = require('./routes/msg-user-info');
+var msg_reservation = require('./routes/msg-reservation');
 
 console.log("My webpage start!");
 
@@ -73,6 +78,11 @@ app.use('/mapping', mapping);
 app.use('/register', register);
 app.use('/sms-sender', sms_sender);
 app.use('/dropbox-release', dropbox_release);
+app.use('/msg-signup', msg_signup);
+app.use('/msg-mapping', msg_mapping);
+app.use('/msg-error', msg_error);
+app.use('/msg-user-info', msg_user_info);
+app.use('/msg-reservation', msg_reservation);
 
 // app.use('/users', users);
 // app.use('/topics', topics);
