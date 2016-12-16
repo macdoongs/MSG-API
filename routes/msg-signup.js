@@ -18,14 +18,8 @@ var parser = new xml2js.Parser();
 conn.connect();
 
 
-/* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
 
-	res.render('signup', { title: 'Place of Chatting'});
-
-});
-
-router.post(['/', '/:id'], function(req, res, next) {
+router.post(['/'], function(req, res, next) {
 	var phoneNumber = req.body.phoneNumber;
 	var password = req.body.password;
 
@@ -45,26 +39,10 @@ router.post(['/', '/:id'], function(req, res, next) {
 
 													conn.query(sql, params, function(err, rows, fields){
 																	if(err){
-																					throw err;
+																					console.log(err);
+																					res.send("Error");
 																	} else{
-																					console.log('rows : ', rows);
-																					console.log('fields : ', fields);
-
-																					console.log(Object.keys(rows));
-
-																					var sql = 'SELECT _userId FROM USER WHERE PhoneNumber = "' + phoneNumber + '", Password = "' + password + '"';
-
-																					conn.query(sql, function(error, rows, fields){
-																						if(error){
-																							console.log(error);
-																						}else{
-																							if(!rows.length){
-																								console.log('Error, No data.');
-																							}else{
-																								res.send("" + rows[0]._userId);
-																							}
-																						}
-																					});
+																					res.send("OK");
 																	}
 												 });
 									}else{
@@ -76,5 +54,32 @@ router.post(['/', '/:id'], function(req, res, next) {
 			});
 
 });
+
+
+/* GET home page. */
+router.get(['/:phoneNumber'], function(req, res, next) {
+	var phoneNumber = req.params.phoneNumber;
+
+	console.log("phoneNumber : " + phoneNumber);
+
+	var sql = 'SELECT _userId FROM USER WHERE PhoneNumber = "' + phoneNumber + '"';
+
+	conn.query(sql, function(error, rows, fields){
+					if(error){
+									console.log(error);
+					}else{
+									if(!rows.length){
+													console.log("No id, Insert!");
+													res.send("No");
+									}else{
+													console.log("Already have id.");
+													res.send("" + rows[0]._userId);
+									}
+
+					}
+			});
+
+});
+
 
 module.exports = router;

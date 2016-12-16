@@ -43,7 +43,36 @@ router.post(['/'], function(req, res, next){
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
+router.get(['/', '/:userId'], function(req, res, next) {
+		var userId = req.params.userId;
+
+		console.log("userId : " + userId);
+
+		var sql = "";
+
+		if(userId == undefined){
+			sql = "SELECT Log FROM ERROR";
+		}else{
+			sql = "SELECT Log FROM ERROR WHERE _userId = " + userId;
+		}
+
+		conn.query(sql, function(error, rows, fields){
+			if(error){
+				console.log(error);
+			}else{
+				if(!rows.length){
+					res.send("No Log");
+				}else{
+					var result = "";
+
+					for(var i=0; i<rows.length; i++){
+						result += "" + rows[i].Log + "\n";
+					}
+					res.send(result);
+				}
+			}
+		});
+
 
 });
 

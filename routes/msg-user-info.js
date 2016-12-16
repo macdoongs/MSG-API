@@ -42,6 +42,24 @@ router.post(['/'], function(req, res, next){
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
+		var userId = req.params.id;
+
+		var sql = "SELECT Profile, Birthday, Sex FROM USER_INFO WHERE _userId = '" + userId + "'";
+
+		var result = "";
+
+		conn.query(sql, function(error, rows, fields){
+				if(error){
+					console.log(error);
+				}else{
+					for(var i=0; i<rows.length; i++){
+						result = "" + rows[i].Profile + "," + rows[i].Birthday + "," + rows[i].Sex + "\n";
+					}
+					res.send(result);
+				}
+
+		});
+
 
 });
 
