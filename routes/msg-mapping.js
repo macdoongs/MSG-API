@@ -11,13 +11,12 @@ var conn = mysql.createConnection({
 	database  : config.rds.msgdatabase
 });
 
+conn.connect();
+
 var request = require('request');
 
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
-
-conn.connect();
-
 
 
 router.post(['/'], function(req, res, next){
@@ -54,6 +53,7 @@ router.post(['/'], function(req, res, next){
 									}else{
 													console.log("Mapping");
 													res.send("" + rows[0]._mappingId);
+													//res.render('msg-mapping', { title: 'MSG', mapping : topic});
 									}
 					}
 			});
@@ -80,11 +80,17 @@ router.get(['/:userId', '/:parentId/:childId'], function(req, res, next) {
 							}else{
 								var result = "";
 
+
 								for(var i=0; i<rows.length; i++){
+
+									global.topic.push(rows[i]._mappingId);
 									result += "" + rows[i]._mappingId + "\n";
 								}
 
-								res.send(result);
+								console.log("global topic : " + global.topic);
+
+								res.render('msg-mapping', { title: 'MSG', topic : global.topic});
+								//res.send(result);
 							}
 					}
 			});
@@ -105,7 +111,6 @@ router.get(['/:userId', '/:parentId/:childId'], function(req, res, next) {
 				}
 			});
 		}
-
 
 });
 

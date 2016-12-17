@@ -17,6 +17,17 @@ var parser = new xml2js.Parser();
 
 var gcm = require('node-gcm');
 
+var redis = require('redis');
+
+client = redis.createClient(config.redis.port, config.redis.host);
+client.auth(config.redis.password);
+
+
+router.use(function(req,res,next){
+      req.cache = client;
+      next();
+});
+
 /*
 var topic = 'sms-auth';
 var Sender = require('aws-sms-send');
@@ -77,6 +88,21 @@ router.post(['/'], function(req, res, next){
 	sender.send(message, registrationIds, 4, function (err, result) {
 	     // 여기서 푸시 성공 및 실패한 결과를 준다. 재귀로 다시 푸시를 날려볼 수도 있다.
 	     console.log('message : ' + message);
+	});
+
+	var key = phoneNumber;
+	var value = authCode;
+
+	req.cache.set(key, value,function(err, data){
+			 if(err){
+						 console.log(err);
+						 res.send("error " + err);
+						 return;
+			 }
+			 //console.log(key);
+			 //console.log(value);
+			 req.cache.expire(key, 300);
+
 	});
 
 	res.send("OK");

@@ -52,7 +52,8 @@ var aeid = '';
 
 var cntid = 'chatting';
 
-var topic = '';
+global.topic = [];
+
 
 // connection이 발생할 때 핸들러를 실행한다.
 io.sockets.on('connection', function (socket) {
@@ -81,6 +82,12 @@ io.sockets.on('connection', function (socket) {
         console.log(usernames[username]);
 
 
+    });
+
+    socket.on('registerMSG', function(topic){
+      console.log("register MSG!");
+      console.log("topic : " + topic );
+      mqtt_client.subscribe(topic);
     });
 
     socket.on('chooseroom', function(roomname){
@@ -135,26 +142,8 @@ io.sockets.on('connection', function (socket) {
     });
 
     mqtt_client.on('message', function (topic, data) {
-        //console.log('message : ' + data);
-
-        parser.parseString(data, function(err, result){
-          sResult = JSON.stringify(result);
-          oResult = JSON.parse(sResult);
-          //console.log(oResult);
-
-          var con = oResult['m2m:rqp']['pc'][0]['cin'][0]['con'];
-
-          //console.log(Object.keys(oResult['m2m:rqp']['pc'][0]['cin'][0]['con']));
-          //console.log(con);
-          var roomname = {};
-          roomname = topic.split('/');
-          console.log(roomname);
-
-          if(roomname[3] == socket.room){
-            socket.emit('updatechat', con.toString());
-          }
-
-        });
+        console.log('message : ' + data);
+        
     });
 
     // listener, whenever the server emits 'updatechat', this updates the chat body

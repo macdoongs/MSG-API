@@ -45,12 +45,14 @@ var mapping = require('./routes/mapping');
 var cookie = require('./routes/cookie');
 var register = require('./routes/register');
 var sms_sender = require('./routes/sms-sender');
+var sms_check = require('./routes/sms-check');
 var dropbox_release = require('./routes/dropbox-release');
 var msg_signup = require('./routes/msg-signup');
 var msg_mapping = require('./routes/msg-mapping');
 var msg_error = require('./routes/msg-error');
 var msg_user_info = require('./routes/msg-user-info');
 var msg_reservation = require('./routes/msg-reservation');
+var msg_mqtt = require('./routes/msg-mqtt');
 
 console.log("My webpage start!");
 
@@ -83,7 +85,8 @@ app.use('/msg-mapping', msg_mapping);
 app.use('/msg-error', msg_error);
 app.use('/msg-user-info', msg_user_info);
 app.use('/msg-reservation', msg_reservation);
-
+app.use('/msg-mqtt', msg_mqtt);
+app.use('/sms-check', sms_check);
 // app.use('/users', users);
 // app.use('/topics', topics);
 //app.use('/iot', iot);
@@ -175,7 +178,7 @@ passport.deserializeUser(function(user, done) {
 
 
 client = redis.createClient(config.redis.port, config.redis.host);
-client.auth(config.redis.password)
+client.auth(config.redis.password);
 
 app.use(function(req,res,next){
       req.cache = client;
