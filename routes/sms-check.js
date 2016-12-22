@@ -40,7 +40,7 @@ router.post(['/'], function(req, res, next){
 	req.cache.get(key, function(err, data){
 			 if(err){
 						 console.log(err);
-						 res.send("error "+err);
+						 res.send("error " + err);
 						 return;
 			 }
 

@@ -69,9 +69,11 @@ router.get(['/:userId', '/:parentId/:childId'], function(req, res, next) {
 			var userId = req.params.userId;
 			console.log("userId : " + userId);
 
-			var sql = "SELECT _mappingId FROM ((SELECT * FROM MAPPING WHERE _parentId = " + userId + ") UNION (SELECT * FROM MAPPING WHERE _childId = " + userId + " )) AS x";
+			var sql = "SELECT _mappingId FROM ((SELECT * FROM MAPPING WHERE _parentId = ?) UNION (SELECT * FROM MAPPING WHERE _childId = ? )) AS x";
 
-			conn.query(sql, function(error, rows, fields){
+			var params = [userId, userId];
+
+			conn.query(sql, params, function(error, rows, fields){
 					if(error){
 						console.log(error);
 					}else{

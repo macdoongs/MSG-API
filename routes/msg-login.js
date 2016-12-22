@@ -16,25 +16,48 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
+var crypto = require('crypto');
+
+var key = config.crypto.key;      // 암호화, 복호화를 위한 키
+
+
 conn.connect();
 
 router.post(['/'], function(req, res, next){
-	var userId = req.body.userId;
-	var log = req.body.log;
+	var phoneNumber = req.body.phoneNumber;
+	var inputPassword = req.body.password;
 
-	console.log("userId : " + userId + ", log : " + log);
+	console.log("phoneNumber : " + phoneNumber + ", password : " + inputPassword);
 
-	var sql = "INSERT INTO ERROR (_userId , Log) VALUES (?, ?)";
-	var params = [userId, log];
+	var sql = "SELECT _userId, Password FROM USER WHERE PhoneNumber = ?";
+	var params = [phoneNumber];
 
 	conn.query(sql, params, function(error, rows, fields){
 			if(error){
 				console.log(error);
 			}else{
 				if(!rows.length){
-					res.send('OK');
-				}else{
 					res.send('Error');
+				}else{
+					if(inputPassword == rows[0].Password){
+						var result = "";
+
+						var today = new Date().getTime();
+
+						// 해시 생성
+						var shasum = crypto.createHash('sha1'); // shasum은 Hash 클래스의 인스턴스입니다.
+						shasum.update(phoneNumber);
+						var output = shasum.digest('hex') + today;
+
+						console.log("output : " + output);
+
+
+
+						res.send("" + rows[0]._userId + "/" + output);
+					}else{
+						res.send("No");
+					}
+
 				}
 			}
 
@@ -49,16 +72,14 @@ router.get(['/', '/:userId'], function(req, res, next) {
 		console.log("userId : " + userId);
 
 		var sql = "";
-		var params = [];
 
 		if(userId == undefined){
 			sql = "SELECT Log FROM ERROR";
 		}else{
-			sql = "SELECT Log FROM ERROR WHERE _userId = ?";
-			params.push(userId);
+			sql = "SELECT Log FROM ERROR WHERE _userId = " + userId;
 		}
 
-		conn.query(sql, params, function(error, rows, fields){
+		conn.query(sql, function(error, rows, fields){
 			if(error){
 				console.log(error);
 			}else{
