@@ -20,42 +20,73 @@ var parser = new xml2js.Parser();
 
 
 router.post(['/'], function(req, res, next){
-	var senderId = req.body.senderId;
-	var receiver = req.body.childId;
-	var topic = parentId + "_" + childId;
+	var senderPhoneNumber = req.body.senderPhoneNumber;
+	var receiverPhoneNumber = req.body.receiverPhoneNumber;
 
-	console.log("parentId : " + parentId + ", childId : " + childId + ", Topic : " + topic);
+	console.log("senderPhoneNumber : " + senderPhoneNumber + ", receiverPhoneNumber : " + receiverPhoneNumber);
 
-	var sql = "SELECT _mappingId FROM MAPPING WHERE (_parentId = ? AND _childId = ?)";
+	var sql = "SELECT _connection FROM WAIT_CONNECTION WHERE (senderPhoneNumber = ? AND receiverPhoneNumber = ?)";
 
-  var params = [parentId, childId];
+  var params = [receiverPhoneNumber, senderPhoneNumber];
 
 	conn.query(sql, params, function(error, rows, fields){
 					if(error){
 									console.log(error);
 					}else{
 									if(!rows.length){
-													console.log("No mapping id!");
+                            console.log("Not connect!");
 
-													var sql = "INSERT INTO MAPPING (_parentId, _childId, Topic) VALUES (?, ?, ?)";
-													var params = [parentId, childId, topic];
+														var sql = "SELECT _connection FROM WAIT_CONNECTION WHERE (senderPhoneNumber = ? AND receiverPhoneNumber = ?)";
 
-													conn.query(sql, params, function(error, rows, fields){
+													  var params = [senderPhoneNumber, receiverPhoneNumber];
+
+														conn.query(sql, params, function(error, rows, fields){
 															if(error){
 																console.log(error);
 															}else{
 																if(!rows.length){
-																	res.send('OK');
+																	var sql = "INSERT INTO WAIT_CONNECTION (senderPhoneNumber, receiverPhoneNumber) VALUES (?, ?)";
+			  													var params = [senderPhoneNumber, receiverPhoneNumber];
+
+			  													conn.query(sql, params, function(error, rows, fields){
+			  															if(error){
+			  																console.log(error);
+			  															}else{
+			  																if(!rows.length){
+			  																	res.send('OK');
+			  																}else{
+			  																	res.send('Error');
+			  																}
+			  															}
+
+			  													});
 																}else{
-																	res.send('Error');
+																	res.send('Data');
 																}
 															}
 
-													});
+														});
+
+
+
+
+
+
 									}else{
-													console.log("Mapping");
-													res.send("" + rows[0]._mappingId);
-													//res.render('msg-mapping', { title: 'MSG', mapping : topic});
+											console.log("connect");
+											var sql = "UPDATE WAIT_CONNECTION SET _connection = true WHERE senderPhoneNumber = ?";
+
+											var params = [receiverPhoneNumber];
+
+											conn.query(sql, params, function(error, rows, fields){
+												if(error){
+													console.log(error);
+												}else{
+			                      res.send("CONNECT");
+												}
+											});
+
+
 									}
 					}
 			});

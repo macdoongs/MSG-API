@@ -64,9 +64,11 @@ router.get(['/:phoneNumber'], function(req, res, next) {
 
 	console.log("phoneNumber : " + phoneNumber);
 
-	var sql = 'SELECT _userId FROM USER WHERE PhoneNumber = "' + phoneNumber + '"';
+	var sql = 'SELECT _userId FROM USER WHERE PhoneNumber = ?';
 
-	conn.query(sql, function(error, rows, fields){
+	var params = [phoneNumber];
+
+	conn.query(sql, params, function(error, rows, fields){
 					if(error){
 									console.log(error);
 					}else{
