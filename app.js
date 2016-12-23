@@ -50,12 +50,14 @@ var dropbox_release = require('./routes/dropbox-release');
 var msg_signup = require('./routes/msg-signup');
 var msg_mapping = require('./routes/msg-mapping');
 var msg_error = require('./routes/msg-error');
+var msg_user = require('./routes/msg-user');
 var msg_user_info = require('./routes/msg-user-info');
 var msg_reservation = require('./routes/msg-reservation');
 var msg_mqtt = require('./routes/msg-mqtt');
 var msg_login = require('./routes/msg-login');
 var msg_find_password = require('./routes/msg-find-password');
 var msg_wait_connection = require('./routes/msg-wait-connection');
+var msg_message_setting = require('./routes/msg-message-setting')
 
 console.log("My webpage start!");
 
@@ -86,6 +88,7 @@ app.use('/dropbox-release', dropbox_release);
 app.use('/msg-signup', msg_signup);
 app.use('/msg-mapping', msg_mapping);
 app.use('/msg-error', msg_error);
+app.use('/msg-user', msg_user);
 app.use('/msg-user-info', msg_user_info);
 app.use('/msg-reservation', msg_reservation);
 app.use('/msg-mqtt', msg_mqtt);
@@ -93,6 +96,7 @@ app.use('/sms-check', sms_check);
 app.use('/msg-login', msg_login);
 app.use('/msg-find-password', msg_find_password);
 app.use('/msg-wait-connection', msg_wait_connection);
+app.use('/msg-message-setting', msg_message_setting);
 // app.use('/users', users);
 // app.use('/topics', topics);
 //app.use('/iot', iot);

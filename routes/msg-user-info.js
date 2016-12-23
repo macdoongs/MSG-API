@@ -17,24 +17,37 @@ conn.connect();
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
 	var profile = req.body.profile;
-	var birthday = req.body.birthday;
 	var sex = req.body.sex;
 
-	console.log("userId : " + userId + ", profile : " + profile + ", birthday : " + birthday + ", sex : " + sex);
+	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex);
 
-	var sql = "INSERT INTO USER_INFO (_userId, profile , birthday, sex) VALUES (?, ?, ?, ?)";
-	var params = [userId, profile, birthday, sex];
+	var sql = "SELECT * FROM USER_INFO WHERE _userId = ?";
+	var params = [userId];
 
 	conn.query(sql, params, function(error, rows, fields){
-			if(error){
-				console.log(error);
+		if(error){
+			console.log(error);
+		}else{
+			if(!rows.length){
+				var sql = "INSERT INTO USER_INFO (_userId, profile , sex) VALUES (?, ?, ?)";
+				var params = [userId, profile, sex];
+
+				conn.query(sql, params, function(error, rows, fields){
+						if(error){
+							console.log(error);
+						}else{
+							if(!rows.length){
+								res.send('OK');
+							}else{
+								res.send('Error');
+							}
+						}
+				});
 			}else{
-				if(!rows.length){
-					res.send('OK');
-				}else{
-					res.send('Error');
-				}
+				res.send('Already');
 			}
+		}
+
 
 	});
 });
@@ -42,26 +55,25 @@ router.post(['/'], function(req, res, next){
 
 /* GET home page. */
 router.get(['/', '/:id'], function(req, res, next) {
-		var userId = req.params.id;
+	var userId = req.params.id;
 
-		var sql = "SELECT Profile, Birthday, Sex FROM USER_INFO WHERE _userId = ?";
+	var sql = "SELECT Profile, Sex FROM USER_INFO WHERE _userId = ?";
 
-		var params = [userId];
+	var params = [userId];
 
-		var result = "";
+	var result = "";
 
-		conn.query(sql, params, function(error, rows, fields){
-				if(error){
-					console.log(error);
-				}else{
-					for(var i=0; i<rows.length; i++){
-						result = "" + rows[i].Profile + "," + rows[i].Birthday + "," + rows[i].Sex + "\n";
-					}
-					res.send(result);
+	conn.query(sql, params, function(error, rows, fields){
+			if(error){
+				console.log(error);
+			}else{
+				for(var i=0; i<rows.length; i++){
+					result = "" + rows[i].Profile + "," + rows[i].Birthday + "," + rows[i].Sex + "\n";
 				}
+				res.send(result);
+			}
 
-		});
-
+	});
 
 });
 

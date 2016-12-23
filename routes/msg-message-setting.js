@@ -15,13 +15,31 @@ conn.connect();
 
 
 router.post(['/'], function(req, res, next){
+	var swEnable = req.body.swEnable;
+	var swAlert = req.body.swAlert;
+	var weekNum = req.body.weekNum;
 	var userId = req.body.userId;
-	var profile = req.body.profile;
-	var sex = req.body.sex;
+	var times = req.body.times;
+	var message = req.body.message;
 
-	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex);
+	console.log("swEnable : " + swEnable + ", swAlert : " + swAlert + ", weekNum : " + weekNum + ", userId : " + userId + ", times : " + times + ", message : " + message);
 
-	var sql = "SELECT * FROM USER_INFO WHERE _userId = ?";
+	var enable = "";
+	var alert = "";
+
+	if(swEnable == "true"){
+		enable = true;
+	}else{
+		enable = false;
+	}
+
+	if(swAlert == "true"){
+		alert = true;
+	}else{
+		alert = false;
+	}
+
+	var sql = "SELECT * FROM USER_SETTING WHERE _userId = ?";
 	var params = [userId];
 
 	conn.query(sql, params, function(error, rows, fields){
@@ -29,8 +47,9 @@ router.post(['/'], function(req, res, next){
 			console.log(error);
 		}else{
 			if(!rows.length){
-				var sql = "INSERT INTO USER_INFO (_userId, profile , sex) VALUES (?, ?, ?)";
-				var params = [userId, profile, sex];
+				console.log("Insert");
+				var sql = "INSERT INTO USER_SETTING (_settingId, _userId, Enable, Alert, WeekNum, SendTimes, Message) VALUES (null, ?, ?, ?, ?, ?, ?)";
+				var params = [userId, enable, alert, weekNum, times, message];
 
 				conn.query(sql, params, function(error, rows, fields){
 						if(error){
@@ -42,15 +61,15 @@ router.post(['/'], function(req, res, next){
 								res.send('Error');
 							}
 						}
+
 				});
 			}else{
-				res.send('Already');
+				console.log("Already");
+				res.send('Error');
 			}
 		}
 
-
 	});
-
 
 
 
@@ -61,7 +80,7 @@ router.post(['/'], function(req, res, next){
 router.get(['/', '/:id'], function(req, res, next) {
 		var userId = req.params.id;
 
-		var sql = "SELECT Profile, Sex FROM USER_INFO WHERE _userId = ?";
+		var sql = "SELECT Profile, Birthday, Sex FROM USER_INFO WHERE _userId = ?";
 
 		var params = [userId];
 
