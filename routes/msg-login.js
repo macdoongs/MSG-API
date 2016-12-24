@@ -24,8 +24,20 @@ var key = config.crypto.key;      // 암호화, 복호화를 위한 키
 conn.connect();
 
 router.post(['/'], function(req, res, next){
-	var phoneNumber = req.body.phoneNumber;
+	var input = req.body.phoneNumber;
 	var inputPassword = req.body.password;
+
+	var trimPhoneNumber = input.split('-');
+	var phoneNumber = "";
+
+	console.log(trimPhoneNumber);
+
+	console.log(trimPhoneNumber.length);
+
+	for(var i=0; i<trimPhoneNumber.length; i++){
+		phoneNumber += trimPhoneNumber[i];
+	}
+
 
 	console.log("phoneNumber : " + phoneNumber + ", password : " + inputPassword);
 

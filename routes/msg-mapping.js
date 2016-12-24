@@ -99,9 +99,11 @@ router.get(['/:userId', '/:parentId/:childId'], function(req, res, next) {
 		}else{
 			var parentId = req.params.parentId;
 
-			var sql = "SELECT _mappingId FROM MAPPING WHERE (_parentId = " + parentId + " AND _childId = " + childId +")";
+			var sql = "SELECT _mappingId FROM MAPPING WHERE (_parentId = ? AND _childId = ?)";
 
-			conn.query(sql, function(error, rows, fields){
+			var params = [parentId, childId];
+
+			conn.query(sql, params, function(error, rows, fields){
 				if(error){
 					console.log(error);
 				}else{

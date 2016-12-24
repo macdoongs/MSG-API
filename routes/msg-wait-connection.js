@@ -68,15 +68,13 @@ router.post(['/'], function(req, res, next){
 														});
 
 
-
-
-
-
 									}else{
 											console.log("connect");
-											var sql = "UPDATE WAIT_CONNECTION SET _connection = true WHERE senderPhoneNumber = ?";
+											var topic = senderPhoneNumber + "+" + receiverPhoneNumber;
 
-											var params = [receiverPhoneNumber];
+											var sql = "UPDATE WAIT_CONNECTION SET _connection = true, Topic = ? WHERE senderPhoneNumber = ?";
+
+											var params = [receiverPhoneNumber, ];
 
 											conn.query(sql, params, function(error, rows, fields){
 												if(error){
@@ -85,6 +83,8 @@ router.post(['/'], function(req, res, next){
 			                      res.send("CONNECT");
 												}
 											});
+
+
 
 
 									}
