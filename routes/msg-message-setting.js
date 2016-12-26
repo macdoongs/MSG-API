@@ -39,32 +39,18 @@ router.post(['/'], function(req, res, next){
 		alert = false;
 	}
 
-	var sql = "SELECT * FROM USER_SETTING WHERE _userId = ?";
-	var params = [userId];
+	var sql = "INSERT INTO USER_SETTING (_userId, Enable, Alert, WeekNum, SendTimes, Message) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Enable = ?, Alert = ?, WeekNum = ?, SendTimes = ?, Message = ?";
+	var params = [userId, enable, alert, weekNum, times, message, enable, alert, weekNum, times, message];
 
 	conn.query(sql, params, function(error, rows, fields){
 		if(error){
 			console.log(error);
 		}else{
 			if(!rows.length){
-				console.log("Insert");
-				var sql = "INSERT INTO USER_SETTING (_settingId, _userId, Enable, Alert, WeekNum, SendTimes, Message) VALUES (null, ?, ?, ?, ?, ?, ?)";
-				var params = [userId, enable, alert, weekNum, times, message];
-
-				conn.query(sql, params, function(error, rows, fields){
-						if(error){
-							console.log(error);
-						}else{
-							if(!rows.length){
-								res.send('OK');
-							}else{
-								res.send('Error');
-							}
-						}
-
-				});
+				console.log("OK");
+				res.send('OK');
 			}else{
-				console.log("Already");
+				console.log("Error");
 				res.send('Error');
 			}
 		}

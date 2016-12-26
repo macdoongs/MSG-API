@@ -19,7 +19,16 @@ var parser = new xml2js.Parser();
 conn.connect();
 
 router.post(['/'], function(req, res, next){
-	var phoneNumber = req.body.phoneNumber;
+	var input = req.body.phoneNumber;
+
+	var trimPhoneNumber = input.split('-');
+
+	var phoneNumber = "";
+
+	for(var i=0; i<trimPhoneNumber.length; i++){
+		phoneNumber += trimPhoneNumber[i];
+	}
+
 
 	console.log("phoneNumber : " + phoneNumber);
 

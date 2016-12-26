@@ -21,30 +21,19 @@ router.post(['/'], function(req, res, next){
 
 	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex);
 
-	var sql = "SELECT * FROM USER_INFO WHERE _userId = ?";
-	var params = [userId];
+	var sql = "INSERT INTO USER_INFO (_userId, Profile, Sex) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Profile = ?, Sex = ?";
+	var params = [userId, profile, sex, profile, sex];
 
 	conn.query(sql, params, function(error, rows, fields){
 		if(error){
 			console.log(error);
 		}else{
 			if(!rows.length){
-				var sql = "INSERT INTO USER_INFO (_userId, profile , sex) VALUES (?, ?, ?)";
-				var params = [userId, profile, sex];
-
-				conn.query(sql, params, function(error, rows, fields){
-						if(error){
-							console.log(error);
-						}else{
-							if(!rows.length){
-								res.send('OK');
-							}else{
-								res.send('Error');
-							}
-						}
-				});
+				console.log('OK');
+				res.send('OK');
 			}else{
-				res.send('Already');
+				console.log('Error');
+				res.send('Error');
 			}
 		}
 
