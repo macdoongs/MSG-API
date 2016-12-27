@@ -13,6 +13,13 @@ var conn = mysql.createConnection({
 
 conn.connect();
 
+
+
+var crypto = require('crypto');
+
+var key = config.crypto.key;      // 암호화, 복호화를 위한 키
+
+
 var request = require('request');
 
 var xml2js = require('xml2js');
@@ -24,36 +31,23 @@ router.post(['/'], function(req, res, next){
 	var childId = req.body.childId;
 	var topic = parentId + "_" + childId;
 
+
 	console.log("parentId : " + parentId + ", childId : " + childId + ", Topic : " + topic);
 
-	var sql = "SELECT _mappingId FROM MAPPING WHERE (_parentId = '" + parentId + "' AND _childId = '" + childId + "')";
+	var sql = "INSERT INTO MAP_USER (_mappingId, _parentId, _childId, Topic) SELECT null, ?, ?, ? FROM DUAL WHERE NOT EXISTS (SELECT * FROM MAP_USER WHERE _parentId = ? AND _childId = ?)";
 
-	conn.query(sql, function(error, rows, fields){
+	var params = [parentId, childId, topic, parentId, childId];
+
+	conn.query(sql, params, function(error, rows, fields){
 					if(error){
 									console.log(error);
 					}else{
 									if(!rows.length){
-													console.log("No mapping id!");
-
-													var sql = "INSERT INTO MAPPING (_parentId, _childId, Topic) VALUES (?, ?, ?)";
-													var params = [parentId, childId, topic];
-
-													conn.query(sql, params, function(error, rows, fields){
-															if(error){
-																console.log(error);
-															}else{
-																if(!rows.length){
-																	res.send('OK');
-																}else{
-																	res.send('Error');
-																}
-															}
-
-													});
+													console.log("OK");
+													res.send("OK");
 									}else{
-													console.log("Mapping");
-													res.send("" + rows[0]._mappingId);
-													//res.render('msg-mapping', { title: 'MSG', mapping : topic});
+													console.log("Error");
+													res.send("Error");
 									}
 					}
 			});
@@ -62,59 +56,37 @@ router.post(['/'], function(req, res, next){
 
 
 /* GET home page. */
-router.get(['/:userId', '/:parentId/:childId'], function(req, res, next) {
-		var childId = req.params.childId;
+router.get(['/:phoneNumber'], function(req, res, next) {
+		var phoneNumber = req.params.phoneNumber;
 
-		if(childId == undefined){
-			var userId = req.params.userId;
-			console.log("userId : " + userId);
+		console.log("phoneNumber : " + phoneNumber);
 
-			var sql = "SELECT _mappingId FROM ((SELECT * FROM MAPPING WHERE _parentId = ?) UNION (SELECT * FROM MAPPING WHERE _childId = ? )) AS x";
+		var sql = "(SELECT * FROM MAP_USER WHERE _childId IN (SELECT _userId FROM USER WHERE PhoneNumber = ?)) UNION (SELECT * FROM MAP_USER WHERE _parentId IN (SELECT _userId FROM USER WHERE PhoneNumber = ?))";
 
-			var params = [userId, userId];
+		var params = [phoneNumber, phoneNumber];
 
-			conn.query(sql, params, function(error, rows, fields){
-					if(error){
-						console.log(error);
-					}else{
-							if(!rows.length){
-								res.send("No");
-							}else{
-								var result = "";
-
-
-								for(var i=0; i<rows.length; i++){
-
-									global.topic.push(rows[i]._mappingId);
-									result += "" + rows[i]._mappingId + "\n";
-								}
-
-								console.log("global topic : " + global.topic);
-
-								res.render('msg-mapping', { title: 'MSG', topic : global.topic});
-								//res.send(result);
-							}
-					}
-			});
-		}else{
-			var parentId = req.params.parentId;
-
-			var sql = "SELECT _mappingId FROM MAPPING WHERE (_parentId = ? AND _childId = ?)";
-
-			var params = [parentId, childId];
-
-			conn.query(sql, params, function(error, rows, fields){
-				if(error){
-					console.log(error);
+		conn.query(sql, params, function(error, rows, fields){
+			if(error){
+				console.log(error);
+			}else{
+				if(!rows.length){
+					res.send("No");
 				}else{
-					if(!rows.length){
-						res.send("No");
-					}else{
-						res.send(rows[0]._mappingId);
+					var result = "";
+
+					for(var i=0; i<rows.length; i++){
+						result += "_parentId :" + rows[i]._parentId + "/_childId :" + rows[i]._childId + "/Topic :" + rows[i].Topic + "\n";
 					}
+
+					res.send(result);
 				}
-			});
-		}
+
+
+
+			}
+
+		});
+
 
 });
 

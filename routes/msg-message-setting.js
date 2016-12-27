@@ -39,8 +39,8 @@ router.post(['/'], function(req, res, next){
 		alert = false;
 	}
 
-	var sql = "INSERT INTO USER_SETTING (_userId, Enable, Alert, WeekNum, SendTimes, Message) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Enable = ?, Alert = ?, WeekNum = ?, SendTimes = ?, Message = ?";
-	var params = [userId, enable, alert, weekNum, times, message, enable, alert, weekNum, times, message];
+	var sql = "INSERT INTO USER_SETTING (_userId, Enable, Alert, WeekNumber, SendTimes) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE Enable = ?, Alert = ?, WeekNumber = ?, SendTimes = ?";
+	var params = [userId, enable, alert, weekNum, times, enable, alert, weekNum, times];
 
 	conn.query(sql, params, function(error, rows, fields){
 		if(error){

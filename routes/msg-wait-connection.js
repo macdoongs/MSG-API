@@ -95,8 +95,35 @@ router.post(['/'], function(req, res, next){
 
 
 /* GET home page. */
-router.get(['/'], function(req, res, next) {
-		res.send("OK");
+router.get(['/:senderPhoneNumber'], function(req, res, next) {
+	 var senderPhoneNumber = req.params.senderPhoneNumber;
+
+
+	 var sql = "SELECT Topic FROM WAIT_CONNECTION WHERE SenderPhoneNumber = ?";
+
+	 var params = [senderPhoneNumber];
+
+
+	 conn.query(sql, params, function(error, rows, fields){
+		 if(error){
+			 console.log(error);
+		 }else{
+			 if(!rows.length){
+				 res.send("Error");
+			 }else{
+			 	 var result = "";
+
+				 for(var i=0;i<rows.length; i++){
+					 result += rows[i].Topic + "/";
+				 }
+
+				 res.send(result);
+			 }
+		 }
+
+	 });
+
+
 });
 
 

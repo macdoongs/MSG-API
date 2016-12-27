@@ -18,11 +18,12 @@ router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
 	var profile = req.body.profile;
 	var sex = req.body.sex;
+	var nickname = req.body.nickname;
 
-	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex);
+	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex + ", nickname : " + nickname);
 
-	var sql = "INSERT INTO USER_INFO (_userId, Profile, Sex) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Profile = ?, Sex = ?";
-	var params = [userId, profile, sex, profile, sex];
+	var sql = "INSERT INTO USER_INFO (_userId, Profile, Sex, Nickname) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Profile = ?, Sex = ?, Nickname = ?";
+	var params = [userId, profile, sex, nickname, profile, sex, nickname];
 
 	conn.query(sql, params, function(error, rows, fields){
 		if(error){
