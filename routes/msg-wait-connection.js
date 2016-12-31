@@ -8,8 +8,11 @@ var conn = mysql.createConnection({
 	host      : config.rds.host,
 	user      : config.rds.user,
 	password  : config.rds.password,
-	database  : config.rds.msgdatabase
+	database  : config.rds.msgdatabase,
+	dateStrings : 'date'
 });
+// http://stackoverflow.com/questions/11187961/date-format-in-node-js
+
 
 conn.connect();
 
@@ -20,67 +23,55 @@ var parser = new xml2js.Parser();
 
 
 router.post(['/'], function(req, res, next){
-	var senderPhoneNumber = req.body.senderPhoneNumber;
+	var userId = req.body.userId;
 	var receiverPhoneNumber = req.body.receiverPhoneNumber;
+	var inviteTime = req.body.inviteTime;
 
-	console.log("senderPhoneNumber : " + senderPhoneNumber + ", receiverPhoneNumber : " + receiverPhoneNumber);
+	console.log("userId : " + userId + ", receiverPhoneNumber : " + receiverPhoneNumber);
 
-	var sql = "SELECT _connection FROM WAIT_CONNECTION WHERE (senderPhoneNumber = ? AND receiverPhoneNumber = ?)";
+	var sql = "SELECT _choosingId FROM CHOOSE_ROLE WHERE (_userId = ?)";
 
-  var params = [receiverPhoneNumber, senderPhoneNumber];
+  var params = [userId];
 
 	conn.query(sql, params, function(error, rows, fields){
 					if(error){
 									console.log(error);
 					}else{
 									if(!rows.length){
-                            console.log("Not connect!");
+                            console.log("Error");
 
-														var sql = "SELECT _connection FROM WAIT_CONNECTION WHERE (senderPhoneNumber = ? AND receiverPhoneNumber = ?)";
-
-													  var params = [senderPhoneNumber, receiverPhoneNumber];
-
-														conn.query(sql, params, function(error, rows, fields){
-															if(error){
-																console.log(error);
-															}else{
-																if(!rows.length){
-																	var sql = "INSERT INTO WAIT_CONNECTION (senderPhoneNumber, receiverPhoneNumber) VALUES (?, ?)";
-			  													var params = [senderPhoneNumber, receiverPhoneNumber];
-
-			  													conn.query(sql, params, function(error, rows, fields){
-			  															if(error){
-			  																console.log(error);
-			  															}else{
-			  																if(!rows.length){
-			  																	res.send('OK');
-			  																}else{
-			  																	res.send('Error');
-			  																}
-			  															}
-
-			  													});
-																}else{
-																	res.send('Data');
-																}
-															}
-
-														});
-
-
+														res.send("Error");
 									}else{
-											console.log("connect");
-											var topic = senderPhoneNumber + "+" + receiverPhoneNumber;
+											var choosingId = rows[0]._choosingId;
+											console.log("_choosingId : " + choosingId);
 
-											var sql = "UPDATE WAIT_CONNECTION SET _connection = true, Topic = ? WHERE senderPhoneNumber = ?";
+											var sql = "SELECT _choosingId FROM CHOOSE_ROLE WHERE _userId IN (SELECT _userId FROM USER WHERE PhoneNumber IN (SELECT ReceiverPhoneNumber FROM INVITE_USER WHERE _choosingId IN (SELECT _choosingId FROM CHOOSE_ROLE WHERE _userId = ?)))";
 
-											var params = [receiverPhoneNumber, ];
+											var params = [userId];
 
 											conn.query(sql, params, function(error, rows, fields){
 												if(error){
 													console.log(error);
 												}else{
-			                      res.send("CONNECT");
+													if(!rows.length){
+														console.log("Error");
+
+														res.send("No");
+													}else{
+
+													}
+												}
+											});
+
+											var sql = "INSERT INTO INVITE_USER (_isConnection, _choosingId, ReceiverPhoneNumber, InviteTime) VALUES(?, ?, ?, ?)";
+
+											var params = [true, choosingId, receiverPhoneNumber, inviteTime];
+
+											conn.query(sql, params, function(error, rows, fields){
+												if(error){
+													console.log(error);
+												}else{
+			                      res.send("Invite");
 												}
 											});
 
@@ -95,13 +86,14 @@ router.post(['/'], function(req, res, next){
 
 
 /* GET home page. */
-router.get(['/:senderPhoneNumber'], function(req, res, next) {
-	 var senderPhoneNumber = req.params.senderPhoneNumber;
+router.get(['/:choosingId/:receiverPhoneNumber'], function(req, res, next) {
+	 var choosingId = req.params.choosingId;
+	 var receiverPhoneNumber = req.params.receiverPhoneNumber;
 
 
-	 var sql = "SELECT Topic FROM WAIT_CONNECTION WHERE SenderPhoneNumber = ?";
+	 var sql = "SELECT _invitingId, _isConnection, InviteTime FROM INVITE_USER WHERE _choosingId = ? AND ReceiverPhoneNumber = ?";
 
-	 var params = [senderPhoneNumber];
+	 var params = [choosingId, receiverPhoneNumber];
 
 
 	 conn.query(sql, params, function(error, rows, fields){
@@ -113,8 +105,9 @@ router.get(['/:senderPhoneNumber'], function(req, res, next) {
 			 }else{
 			 	 var result = "";
 
+
 				 for(var i=0;i<rows.length; i++){
-					 result += rows[i].Topic + "/";
+					 result += rows[i]._invitingId + "/" + rows[i]._isConnection + "/" + rows[i].InviteTime + "\n";
 				 }
 
 				 res.send(result);

@@ -33,8 +33,9 @@ mqtt_client.on('message', function (topic, data) {
 // unsubscribe topic
 router.post(['/'], function(req, res, next){
 		var topic = req.body.topic;
+		console.log("topic : " + topic);
 		mqtt_client.subscribe(topic);
-		
+
 		res.send("OK");
 });
 
