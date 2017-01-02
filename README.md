@@ -1,6 +1,6 @@
-# Place of Chatting(PoC) - Website
+# MSG - Website
 
 ## Overview
-OCEAN IoT Platform contest
+Startup campus project
 
-### [Me](https://www.korchid.com)
+### [HOME](https://www.korchid.com)
