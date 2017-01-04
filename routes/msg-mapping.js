@@ -57,7 +57,18 @@ router.post(['/'], function(req, res, next){
 
 /* GET home page. */
 router.get(['/:phoneNumber'], function(req, res, next) {
-		var phoneNumber = req.params.phoneNumber;
+		var input = req.params.phoneNumber;
+
+		var trimPhoneNumber = input.split('-');
+		var phoneNumber = "";
+
+		console.log(trimPhoneNumber);
+
+		console.log(trimPhoneNumber.length);
+
+		for(var i=0; i<trimPhoneNumber.length; i++){
+			phoneNumber += trimPhoneNumber[i];
+		}
 
 		console.log("phoneNumber : " + phoneNumber);
 

@@ -8,7 +8,8 @@ var conn = mysql.createConnection({
 	host      : config.rds.host,
 	user      : config.rds.user,
 	password  : config.rds.password,
-	database  : config.rds.msgdatabase
+	database  : config.rds.msgdatabase,
+	dateStrings : 'date'
 });
 
 conn.connect();
@@ -58,10 +59,10 @@ router.post(['/'], function(req, res, next){
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
-		var userId = req.params.id;
+router.get(['/:userId/repos'], function(req, res, next) {
+		var userId = req.params.userId;
 
-		var sql = "SELECT Profile, Sex FROM USER_INFO WHERE _userId = ?";
+		var sql = "SELECT PhoneNumber, Nickname, Sex, Role, Birthday, Profile, Enable, Alert, WeekNumber, SendTimes FROM USER_SETTING INNER JOIN (SELECT PhoneNumber, Role, Z._userId, Nickname, Sex, Birthday, Profile, Topic, _choosingId  FROM USER_INFO INNER JOIN (SELECT Y._userId, Role, PhoneNumber, _choosingId, Topic FROM MAP_USER INNER JOIN (SELECT X._userId, Role, PhoneNumber, _choosingId FROM USER_ROLE INNER JOIN (SELECT U._userId, PhoneNumber, _choosingId, _roleId FROM USER AS U INNER JOIN CHOOSE_ROLE AS C ON U._userId = C._userId) AS X ON USER_ROLE._roleId = X._roleId) AS Y ON _parentId = Y._userId OR _childId = Y._userId) AS Z ON USER_INFO._userId = Z._userId) AS K ON K._userId = USER_SETTING._userId WHERE USER_SETTING._userId = ? GROUP BY PhoneNumber";
 
 		var params = [userId];
 
@@ -71,10 +72,18 @@ router.get(['/', '/:id'], function(req, res, next) {
 				if(error){
 					console.log(error);
 				}else{
-					for(var i=0; i<rows.length; i++){
-						result = "" + rows[i].Profile + "," + rows[i].Birthday + "," + rows[i].Sex + "\n";
+					if(!rows.length){
+						res.send("Error");
+					}else{
+
+						for(var i=0; i<rows.length; i++){
+							result = "PhoneNumber:" + rows[i].PhoneNumber + " / Nickname:" + rows[i].Nickname + " / Sex:" + rows[i].Sex + " / Role:" + rows[i].Role + " / Birthday:" + rows[i].Birthday + " / Profile:" + rows[i].Profile + " / Enable:" + rows[i].Enable + " / Alert:" + rows[i].Alert + " / WeekNumber:" + rows[i].WeekNumber + " / SendTimes:" + rows[i].SendTimes + "\n";
+
+						}
+						//res.json(rows[0]);
+						res.json(rows);
+						//res.send(result);
 					}
-					res.send(result);
 				}
 
 		});

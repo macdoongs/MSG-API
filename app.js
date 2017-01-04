@@ -31,19 +31,6 @@ conn.connect();
 
 
 var routes = require('./routes/index');
-//var topics = require('./routes/topics');
-var iot = require('./routes/iot');
-var chat = require('./routes/chat');
-var rooms = require('./routes/rooms');
-var sensor = require('./routes/sensor');
-//var login = require('./routes/login');
-var camera = require('./routes/camera');
-var sign_in = require('./routes/sign-in');
-var signup = require('./routes/signup');
-var streaming = require('./routes/streaming');
-var mapping = require('./routes/mapping');
-var cookie = require('./routes/cookie');
-var register = require('./routes/register');
 var sms_sender = require('./routes/sms-sender');
 var sms_check = require('./routes/sms-check');
 var dropbox_release = require('./routes/dropbox-release');
@@ -75,14 +62,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use('/', routes);
-app.use('/chat', chat);
-app.use('/rooms', rooms);
-app.use('/sensor', sensor);
-app.use('/signup', signup);
-app.use('/camera', camera);
-app.use('/streaming', streaming);
-app.use('/mapping', mapping);
-app.use('/register', register);
 app.use('/sms-sender', sms_sender);
 app.use('/dropbox-release', dropbox_release);
 app.use('/msg-signup', msg_signup);
@@ -97,25 +76,11 @@ app.use('/msg-login', msg_login);
 app.use('/msg-find-password', msg_find_password);
 app.use('/msg-wait-connection', msg_wait_connection);
 app.use('/msg-message-setting', msg_message_setting);
-// app.use('/users', users);
-// app.use('/topics', topics);
-//app.use('/iot', iot);
-
-//app.use('/login', login);
-//app.use('/sign-in', sign_in);
-
-//app.use('/cookie', cookie);
-
-
 
 
 
 //app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();
-
-// Cookie Test code
-app.get('/writecookie', cookie.writecookie);
-app.get('/readcookie', cookie.readcookie);
 
 
 app.use(session({
@@ -193,45 +158,7 @@ client.auth(config.redis.password);
 app.use(function(req,res,next){
       req.cache = client;
       next();
-})
-
-// Profile test code
-app.post('/profile',function(req,res,next){
-      req.accepts('application/json');
-
-      var key = req.body.name;
-      var value = JSON.stringify(req.body);
-
-      req.cache.set(key,value,function(err,data){
-           if(err){
-                 console.log(err);
-                 res.send("error "+err);
-                 return;
-           }
-					 console.log(key);
-           req.cache.expire(key,10);
-           res.json(value);
-           //console.log(value);
-      });
-})
-app.get('/profile/:name',function(req,res,next){
-      var key = req.params.name;
-
-			console.log(key);
-
-      req.cache.get(key,function(err,data){
-           if(err){
-                 console.log(err);
-                 res.send("error "+err);
-                 return;
-           }
-
-           var value = JSON.parse(data);
-					 console.log(data);
-           res.json(value);
-      });
 });
-
 
 // function ensureAuthenticated(req, res, next) {
 //     // 로그인이 되어 있으면, 다음 파이프라인으로 진행
@@ -290,17 +217,7 @@ app.post('/local-login',
 						 }
 	      });
 
-				 try{
-				 	if(req.session.passport.user.id == 110154195936516884946){
-				 		res.redirect('/rooms/' + req.session.passport.user.id);
-				 	}else if(req.session.passport.user.id == 'asdf' && req.session.passport.user.password == 'asdf'){
-				 		res.redirect('/rooms/' + req.session.passport.user.id);
-				 	}else{
-				 		res.send('Login Success!');
-				 	}
-				 }catch(exception){
-				 	console.log(exception);
-				 }
+				res.send('Login Success!');
 		}else{
 			res.redirect('/login_fail');
 		}
@@ -313,17 +230,9 @@ app.get('/login_success',  function(req, res, next) {
 			//console.log(req.session.key);
 			//console.log('Session : ' + req.session);
 			//console.log(Object.keys(req.session));
-			try{
-			if(req.session.passport.user.id == 110154195936516884946){
-				res.redirect('/rooms/' + req.session.passport.user.id);
-			}else if(req.session.passport.user.id == 'asdf' && req.session.passport.user.password == 'asdf'){
-				res.redirect('/rooms/' + req.session.passport.user.id);
-			}else{
-				res.send('Login Success!');
-			}
-		}catch(exception){
-			console.log(exception);
-		}
+
+			res.send('Login Success!');
+
 });
 
 
