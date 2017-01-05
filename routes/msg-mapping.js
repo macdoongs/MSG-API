@@ -26,12 +26,39 @@ var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
 
+var FCM = require('fcm-push');
+
+var serverKey = config.firebase.serverkey;
+var fcm = new FCM(serverKey);
+
+
 router.post(['/'], function(req, res, next){
 	var parentId = req.body.parentId;
 	var childId = req.body.childId;
 	var topic = parentId + "_" + childId;
+	var deviceToken = req.body.deviceToken;
 
+	var message = {
+    to: 'news', // required fill with device token or topics
+		collapse_key: 'your_collapse_key', 
+		data: {
+        your_custom_data_key: 'your_custom_data_value'
+    },
+    notification: {
+        title: 'Alert test',
+        body: 'hello'
+    }
+	};
 
+	//callback style
+	fcm.send(message, function(err, response){
+	    if (err) {
+	        console.log("Something has gone wrong!");
+	    } else {
+	        console.log("Successfully sent with response: ", response);
+	    }
+	});
+/*
 	console.log("parentId : " + parentId + ", childId : " + childId + ", Topic : " + topic);
 
 	var sql = "INSERT INTO MAP_USER (_mappingId, _parentId, _childId, Topic) SELECT null, ?, ?, ? FROM DUAL WHERE NOT EXISTS (SELECT * FROM MAP_USER WHERE _parentId = ? AND _childId = ?)";
@@ -51,7 +78,8 @@ router.post(['/'], function(req, res, next){
 									}
 					}
 			});
-
+*/
+	res.send("test");
 });
 
 
