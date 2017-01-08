@@ -19,47 +19,74 @@ var parser = new xml2js.Parser();
 
 var mqtt = require('mqtt');
 
-/**
- * Get port from environment and store in Express.
- */
+var morgan = require('morgan');
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+var os = require('os');
+var cluster = require('cluster');
 
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-var io = require('socket.io').listen(server);
-
-// usernames which are currently connected to the chat
-var usernames = {};
-
-var mqtt_client = mqtt.connect('mqtt://' + config.iot.mqttproxy);
-
-var data = {
-  'username':'',
-  'message':''
-};
-
-global.usecsebase = config.iot.usecsebase;
-global.usecsebaseport = config.iot.usecsebaseport;
-global.mobiushost = config.iot.mobiushost;
-
-var aeid = '';
-
-var cntid = 'chatting';
-
-global.topic = [];
+// http://programmingsummaries.tistory.com/384
+//워커 스케쥴을 Round Robin 방식으로 한다.
+cluster.schedulingPolicy = cluster.SCHED_RR;
 
 
-server.listen(port, function(){
-  console.log('Server Listen ' + port + ' port');
+var logDirectory = './log';
+
+// ensure log directory exists
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
+var FileStreamRotator = require('file-stream-rotator');
+
+// create a rotating write stream
+var accessLogStream = FileStreamRotator.getStream({
+    date_format: 'YYYYMMDD',
+    filename: logDirectory + '/access-%DATE%.log',
+    frequency: 'daily',
+    verbose: false
 });
-server.on('error', onError);
-server.on('listening', onListening);
+
+
+// setup the logger
+app.use( morgan('combined', {stream: accessLogStream}));
+
+
+var cpuCount = os.cpus().length;
+console.log('CPU Count:', cpuCount);
+
+
+var worker = [];
+
+if(cluster.isMaster) {
+    for(var i = 0; i < cpuCount; i++) {
+        worker[i] = cluster.fork();
+    }
+
+    cluster.on('death', function(worker) {
+        console.log('worker' + worker.pid + ' died --> start again');
+        cluster.fork();
+    });
+}else {
+
+    /**
+     * Get port from environment and store in Express.
+     */
+
+    var port = normalizePort(process.env.PORT || '3000');
+    app.set('port', port);
+
+    /**
+     * Create HTTP server.
+     */
+
+    var server = http.createServer(app);
+
+    server.listen(port, function(){
+      console.log('Server Listen ' + port + ' port');
+    });
+    server.on('error', onError);
+    server.on('listening', onListening);
+
+}
+
 
 /**
  * Normalize a port into a number, string, or false.

@@ -25,6 +25,7 @@
     "express": "~4.13.4",
     "express-session": "^1.14.1",
     "fcm-push": "^1.1.2",
+    "file-stream-rotator": "0.0.7",
     "morgan": "~1.7.0",
     "mqtt": "^1.12.0",
     "mysql": "^2.11.1",
