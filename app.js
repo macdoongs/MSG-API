@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
@@ -10,6 +10,9 @@ var config = require('config.json')('./config/config.json');
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 var redis = require('redis');
+var morgan = require('morgan');
+
+var fs = require('fs');
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -19,18 +22,33 @@ var TwitterStrategy = require('passport-twitter').Strategy;
 
 var app = express();
 
-var mysql = require('mysql');
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.ajouiotdb
+
+
+var logDirectory = './log';
+
+// ensure log directory exists
+if (!fs.existsSync(logDirectory)){
+    fs.mkdirSync(logDirectory);
+}
+
+var FileStreamRotator = require('file-stream-rotator');
+
+// create a rotating write stream
+var accessLogStream = FileStreamRotator.getStream({
+    date_format: 'YYYYMMDD',
+    filename: logDirectory + '/access-%DATE%.log',
+    frequency: 'daily',
+    verbose: false
 });
 
-conn.connect();
 
+// setup the logger
+//app.use( morgan('combined', {stream: accessLogStream}));
+app.use( morgan('dev', {stream: accessLogStream}));
 
-var routes = require('./routes/index');
+var mysql = require('mysql');
+
+var index = require('./routes/index');
 
 var dropbox_release = require('./routes/msg/dropbox-release');
 var sms_sender = require('./routes/msg/sms-sender');
@@ -45,7 +63,11 @@ var msg_mqtt = require('./routes/msg/mqtt');
 var msg_login = require('./routes/msg/login');
 var msg_find_password = require('./routes/msg/find-password');
 var msg_wait_connection = require('./routes/msg/wait-connection');
-var msg_message_setting = require('./routes/msg/message-setting')
+var msg_message_setting = require('./routes/msg/message-setting');
+
+
+
+
 
 console.log("My webpage start!");
 
@@ -55,14 +77,14 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'dist')));
 
-app.use('/', routes);
+app.use('/', index);
 app.use('/dropbox-release', dropbox_release);
 app.use('/msg/sms-sender', sms_sender);
 app.use('/msg/sms-check', sms_check);
@@ -77,7 +99,6 @@ app.use('/msg/login', msg_login);
 app.use('/msg/find-password', msg_find_password);
 app.use('/msg/wait-connection', msg_wait_connection);
 app.use('/msg/message-setting', msg_message_setting);
-
 
 
 //app.use(session({ secret: 'SECRET' }));

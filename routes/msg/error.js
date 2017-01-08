@@ -2,21 +2,20 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var mysql = require('mysql');
-
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.msgdatabase
-});
-
 var request = require('request');
 
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-conn.connect();
+
+var db = require('../../models/msg/db_action');
+var db_sql = require('../../models/msg/sql_action');
+
+db.connect(function(callback){
+	if(callback == '1'){
+		console.log("DB connect ok!");
+	}
+});
 
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
@@ -27,18 +26,6 @@ router.post(['/'], function(req, res, next){
 	var sql = "INSERT INTO ERROR (_userId , Log) VALUES (?, ?)";
 	var params = [userId, log];
 
-	conn.query(sql, params, function(error, rows, fields){
-			if(error){
-				console.log(error);
-			}else{
-				if(!rows.length){
-					res.send('OK');
-				}else{
-					res.send('Error');
-				}
-			}
-
-	});
 });
 
 
@@ -48,32 +35,25 @@ router.get(['/', '/:userId'], function(req, res, next) {
 
 		console.log("userId : " + userId);
 
-		var sql = "";
-		var params = [];
-
 		if(userId == undefined){
-			sql = "SELECT Log FROM ERROR";
-		}else{
-			sql = "SELECT Log FROM ERROR WHERE _userId = ?";
-			params.push(userId);
-		}
-
-		conn.query(sql, params, function(error, rows, fields){
-			if(error){
-				console.log(error);
-			}else{
-				if(!rows.length){
-					res.send("No Log");
+			db_sql.select_error(function(error, results_error){
+				if(error){
+					console.log(error);
+					res.send(results_error);
 				}else{
-					var result = "";
-
-					for(var i=0; i<rows.length; i++){
-						result += "" + rows[i].Log + "\n";
-					}
-					res.send(result);
+					res.send(results_error);
 				}
-			}
-		});
+			});
+		}else{
+			db_sql.select_user_error(userId, function(error, results_user_error){
+				if(error){
+					console.log(error);
+					res.send(results_user_error);
+				}else{
+					res.send(results_user_error);
+				}
+			});
+		}
 
 
 });

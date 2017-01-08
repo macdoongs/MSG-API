@@ -4,6 +4,8 @@
  * Module dependencies.
  */
 
+ //process.env.NODE_ENV = 'production';
+ process.env.NODE_ENV = 'development';
 
 var app = require('../app');
 var debug = require('debug')('myweb:server');
@@ -29,40 +31,27 @@ var cluster = require('cluster');
 cluster.schedulingPolicy = cluster.SCHED_RR;
 
 
-var logDirectory = './log';
-
-// ensure log directory exists
-fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
-
-var FileStreamRotator = require('file-stream-rotator');
-
-// create a rotating write stream
-var accessLogStream = FileStreamRotator.getStream({
-    date_format: 'YYYYMMDD',
-    filename: logDirectory + '/access-%DATE%.log',
-    frequency: 'daily',
-    verbose: false
-});
-
-
-// setup the logger
-app.use( morgan('combined', {stream: accessLogStream}));
-
-
 var cpuCount = os.cpus().length;
 console.log('CPU Count:', cpuCount);
 
 
+var db = require('../models/msg/db_action');
+var db_sql = require('../models/msg/sql_action');
+
 var worker = [];
 
 if(cluster.isMaster) {
-    for(var i = 0; i < cpuCount; i++) {
-        worker[i] = cluster.fork();
-    }
-
     cluster.on('death', function(worker) {
         console.log('worker' + worker.pid + ' died --> start again');
         cluster.fork();
+    });
+
+    db.connect(function(callback){
+      if(callback == '1'){
+        for(var i = 0; i < cpuCount; i++) {
+            worker[i] = cluster.fork();
+        }
+      }
     });
 }else {
 
