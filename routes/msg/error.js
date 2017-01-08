@@ -11,7 +11,13 @@ var parser = new xml2js.Parser();
 var db = require('../../models/msg/db_action');
 var db_sql = require('../../models/msg/sql_action');
 
-db.connect(function(callback){
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
+db.connect(host, port, user, password, database, function(callback){
 	if(callback == '1'){
 		console.log("DB connect ok!");
 	}
@@ -23,8 +29,25 @@ router.post(['/'], function(req, res, next){
 
 	console.log("userId : " + userId + ", log : " + log);
 
-	var sql = "INSERT INTO ERROR (_userId , Log) VALUES (?, ?)";
-	var params = [userId, log];
+	if(userId == undefined){
+		db_sql.insert_error(log, function(error, results_error){
+			if(error){
+				console.log(error);
+				res.send(results_error);
+			}else{
+				res.send(results_error);
+			}
+		});
+	}else{
+		db_sql.insert_user_error(userId, log, function(error, results_user_error){
+			if(error){
+				console.log(error);
+				res.send(results_user_error);
+			}else{
+				res.send(results_user_error);
+			}
+		});
+	}
 
 });
 

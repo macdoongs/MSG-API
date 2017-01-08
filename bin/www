@@ -38,6 +38,12 @@ console.log('CPU Count:', cpuCount);
 var db = require('../models/msg/db_action');
 var db_sql = require('../models/msg/sql_action');
 
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
 var worker = [];
 
 if(cluster.isMaster) {
@@ -46,7 +52,7 @@ if(cluster.isMaster) {
         cluster.fork();
     });
 
-    db.connect(function(callback){
+    db.connect(host, port, user, password, database, function(callback){
       if(callback == '1'){
         for(var i = 0; i < cpuCount; i++) {
             worker[i] = cluster.fork();

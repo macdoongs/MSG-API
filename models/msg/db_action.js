@@ -14,17 +14,9 @@
 
 var mysql = require('mysql');
 
-var config = require('config.json')('./config/config.json');
-
-var host = config.rds.host;
-var port = config.rds.port;
-var user = config.rds.user;
-var password = config.rds.password;
-var database =config.rds.msgdatabase;
-
 var mysql_pool = null;
 
-exports.connect = function (callback) {
+exports.connect = function (host, port, user, password, database, callback) {
     mysql_pool = mysql.createPool({
         host: host,
         port: port,
