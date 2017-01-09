@@ -2,12 +2,27 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var mysql = require('mysql');
-
 var request = require('request');
 
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
+
+var find_password_model = require('../../models/msg/find-password.model');
+
+var db = require('../../models/msg/db_action');
+var db_sql = require('../../models/msg/sql_action');
+
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
+db.connect(host, port, user, password, database, function(callback){
+	if(callback == '1'){
+		console.log("DB connect ok!");
+	}
+});
 
 
 /******************************
@@ -24,12 +39,12 @@ router.post(['/'], function(req, res, next){
 		phoneNumber += trimPhoneNumber[i];
 	}
 
-	db_sql.select_user_phone_number(phoneNumber, function(error, results_user){
+	find_password_model.find_password(phoneNumber, function(error, results_password){
 		if(error){
-			//console.log("error : " + error);
-			res.send(results_user);
+			//console.log(error);
+			res.send(results_password);
 		}else{
-			res.send(results_user);
+			res.send(results_password);
 		}
 	});
 

@@ -29,6 +29,9 @@ router.use(function(req,res,next){
       next();
 });
 
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var phoneNumber = req.body.phoneNumber;
 	var authCode = req.body.authCode;

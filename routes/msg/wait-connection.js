@@ -21,7 +21,9 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
 	var receiverPhoneNumber = req.body.receiverPhoneNumber;

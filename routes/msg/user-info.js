@@ -13,7 +13,9 @@ var conn = mysql.createConnection({
 
 conn.connect();
 
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
 	var profile = req.body.profile;

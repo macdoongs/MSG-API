@@ -13,7 +13,9 @@ var conn = mysql.createConnection({
 
 conn.connect();
 
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var mappingId = req.body.mappingId;
 	var time = req.body.time;

@@ -31,7 +31,9 @@ var FCM = require('fcm-push');
 var serverKey = config.firebase.serverkey;
 var fcm = new FCM(serverKey);
 
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var parentId = req.body.parentId;
 	var childId = req.body.childId;
@@ -40,7 +42,7 @@ router.post(['/'], function(req, res, next){
 
 	var message = {
     to: 'news', // required fill with device token or topics
-		collapse_key: 'your_collapse_key', 
+		collapse_key: 'your_collapse_key',
 		data: {
         your_custom_data_key: 'your_custom_data_value'
     },

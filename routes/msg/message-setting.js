@@ -13,7 +13,9 @@ var conn = mysql.createConnection({
 
 conn.connect();
 
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var swEnable = req.body.swEnable;
 	var swAlert = req.body.swAlert;

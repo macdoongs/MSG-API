@@ -19,7 +19,9 @@ exports.select_error = function(callback) {
 
 
 exports.select_user_error = function(userId, callback) {
-   var sql = util.format("SELECT * FROM error WHERE user_id = %d", userId);
+   var sql = util.format("SELECT * FROM error WHERE (" +
+     "user_id = %d)",
+      userId);
    db.getResult(sql, '', function (err, select_user_error) {
        callback(err, select_user_error);
    });
@@ -72,8 +74,18 @@ exports.select_user_phone_number = function(phoneNumber, callback){
       'phone_number_sn)' +
       '= (\'%s\')',
       phoneNumber);
-  db.getResult(sql, '', function (err, results_error) {
-    callback(err, results_error);
+  db.getResult(sql, '', function (err, results_phone) {
+    callback(err, results_phone);
+  });
+};
+
+exports.select_user_password = function(phoneNumber, callback){
+  var sql = util.format('SELECT password_sn FROM user WHERE (' +
+      'phone_number_sn' +
+      '= \'%s\')',
+      phoneNumber);
+  db.getResult(sql, '', function (err, results_password) {
+    callback(err, results_password);
   });
 };
 
@@ -81,20 +93,47 @@ exports.select_user_phone_number = function(phoneNumber, callback){
  * user_information table query
  */
 exports.insert_user_information = function(userId, nickname, sex, birthday, profile, callback) {
-    console.time('insert_user_information');
-    var sql = util.format('INSERT INTO user_information (' +
-        'user_id, nickname_sn, sex_sn, birthday_dt, profile_ln) ' +
-        'VALUE (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\' )',
-        userId, nickname, sex, birthday, profile);
-    db.getResult(sql, '', function (err, results) {
-        console.timeEnd('insert_user');
-        callback(err, results);
-    });
- };
+  console.time('insert_user_information');
+  var sql = util.format('INSERT INTO user_information (' +
+      'user_id, nickname_sn, sex_sn, birthday_dt, profile_ln) ' +
+      'VALUE (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\' )',
+      userId, nickname, sex, birthday, profile);
+  db.getResult(sql, '', function (err, results) {
+      console.timeEnd('insert_user');
+      callback(err, results);
+  });
+};
 
 /*
- * user table query
+ * user message query
  */
+
+ exports.insert_message = function(message, callback) {
+   console.time('insert_message');
+   var sql = util.format('INSERT INTO message (' +
+       'message) ' +
+       'VALUE (\'%s\')',
+       message);
+   db.getResult(sql, '', function (err, results) {
+       console.timeEnd('insert_message');
+       callback(err, results);
+   });
+ };
+
+ exports.insert_send_message = function(messageId, senderId, receiverId, callback) {
+   console.time('insert_send_message');
+   var sql = util.format('INSERT INTO send_message (' +
+       'message_id, sender_id, receiver_id) ' +
+       'VALUE (\'%s\', \'%s\', \'%s\')',
+       messageId, senderId, receiverId);
+   db.getResult(sql, '', function (err, results) {
+       console.timeEnd('insert_user');
+       callback(err, results);
+   });
+ };
+
+
+
 
 
 exports.update_ts_mdcn_mdl = function (mdcn, mdl, ri, callback) {
