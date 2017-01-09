@@ -7,6 +7,7 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
+var error_model = require('../../models/msg/error.model');
 
 var db = require('../../models/msg/db_action');
 var db_sql = require('../../models/msg/sql_action');
@@ -23,61 +24,39 @@ db.connect(host, port, user, password, database, function(callback){
 	}
 });
 
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
 	var log = req.body.log;
 
 	console.log("userId : " + userId + ", log : " + log);
 
-	if(userId == undefined){
-		db_sql.insert_error(log, function(error, results_error){
-			if(error){
-				console.log(error);
-				res.send(results_error);
-			}else{
-				res.send(results_error);
-			}
-		});
-	}else{
-		db_sql.insert_user_error(userId, log, function(error, results_user_error){
-			if(error){
-				console.log(error);
-				res.send(results_user_error);
-			}else{
-				res.send(results_user_error);
-			}
-		});
-	}
+	error_model.submit_error(userId, log, function(error, results_error){
+		if(error){
+			//console.log(error);
+			res.send(results_error);
+		}else{
+			res.send(results_error);
+		}
+	});
 
 });
 
-
-/* GET home page. */
 router.get(['/', '/:userId'], function(req, res, next) {
 		var userId = req.params.userId;
 
-		console.log("userId : " + userId);
+		//console.log("userId : " + userId);
 
-		if(userId == undefined){
-			db_sql.select_error(function(error, results_error){
-				if(error){
-					console.log(error);
-					res.send(results_error);
-				}else{
-					res.send(results_error);
-				}
-			});
-		}else{
-			db_sql.select_user_error(userId, function(error, results_user_error){
-				if(error){
-					console.log(error);
-					res.send(results_user_error);
-				}else{
-					res.send(results_user_error);
-				}
-			});
-		}
-
+		error_model.load_error(userId, function(error, results_error){
+			if(error){
+				//console.log(error);
+				res.send(results_error);
+			}else{
+				res.send(results_error);
+			}
+		});
 
 });
 

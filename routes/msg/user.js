@@ -2,19 +2,24 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var mysql = require('mysql');
+var db = require('../../models/msg/db_action');
+var db_sql = require('../../models/msg/sql_action');
 
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.msgdatabase,
-	dateStrings : 'date'
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
+db.connect(host, port, user, password, database, function(callback){
+	if(callback == '1'){
+		console.log("DB connect ok!");
+	}
 });
 
-conn.connect();
-
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
 	var profile = req.body.profile;
@@ -22,6 +27,15 @@ router.post(['/'], function(req, res, next){
 
 	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex);
 
+	db_sql.select_user(log, function(error, results_error){
+		if(error){
+			console.log(error);
+			res.send(results_error);
+		}else{
+			res.send(results_error);
+		}
+	});
+/*
 	var sql = "SELECT * FROM USER_INFO WHERE _userId = ?";
 	var params = [userId];
 
@@ -52,7 +66,7 @@ router.post(['/'], function(req, res, next){
 
 	});
 
-
+*/
 
 
 });

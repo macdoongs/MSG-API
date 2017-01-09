@@ -32,7 +32,6 @@ cluster.schedulingPolicy = cluster.SCHED_RR;
 
 
 var cpuCount = os.cpus().length;
-console.log('CPU Count:', cpuCount);
 
 
 var db = require('../models/msg/db_action');
@@ -52,6 +51,13 @@ if(cluster.isMaster) {
         cluster.fork();
     });
 
+    console.log('CPU Count:', cpuCount);
+
+    for(var i = 0; i < cpuCount; i++) {
+        worker[i] = cluster.fork();
+    }
+
+/*
     db.connect(host, port, user, password, database, function(callback){
       if(callback == '1'){
         for(var i = 0; i < cpuCount; i++) {
@@ -59,6 +65,8 @@ if(cluster.isMaster) {
         }
       }
     });
+*/
+
 }else {
 
     /**

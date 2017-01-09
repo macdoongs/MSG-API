@@ -2,23 +2,30 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var mysql = require('mysql');
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.msgdatabase
-});
-
 var request = require('request');
 
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-conn.connect();
+var db = require('../../models/msg/db_action');
+var db_sql = require('../../models/msg/sql_action');
+
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
+db.connect(host, port, user, password, database, function(callback){
+	if(callback == '1'){
+		console.log("DB connect ok!");
+	}
+});
 
 
-
+/******************************
+ *          route             *
+ ******************************/
 router.post(['/'], function(req, res, next) {
 	var input = req.body.phoneNumber;
 	var password = req.body.password;
@@ -26,84 +33,50 @@ router.post(['/'], function(req, res, next) {
 	var trimPhoneNumber = input.split('-');
 	var phoneNumber = "";
 
-	console.log(trimPhoneNumber);
+	//console.log(trimPhoneNumber);
 
-	console.log(trimPhoneNumber.length);
+	//console.log(trimPhoneNumber.length);
 
 	for(var i=0; i<trimPhoneNumber.length; i++){
 		phoneNumber += trimPhoneNumber[i];
 	}
 
-	console.log("phoneNumber : " + phoneNumber + ", password : " + password);
+	//console.log("phoneNumber : " + phoneNumber + ", password : " + password);
 
-	var sql = 'SELECT _userId FROM USER WHERE PhoneNumber = ?';
-
-	var params = [phoneNumber];
-
-	conn.query(sql, params, function(error, rows, fields){
-					if(error){
-									console.log(error);
-					}else{
-									if(!rows.length){
-													console.log("No id, Insert!");
-
-													var sql = 'INSERT INTO USER (PhoneNumber, Password) VALUES (?, ?)';
-													var params = [phoneNumber, password];
-
-													conn.query(sql, params, function(err, rows, fields){
-																	if(err){
-																					console.log(err);
-																					res.send("Error");
-																	} else{
-																					res.send("OK");
-																	}
-												 });
-									}else{
-													console.log("Already have id.");
-													res.send("" + rows[0]._userId);
-									}
-
-					}
+	db_sql.select_user_phone_number(phoneNumber, function(error, results_user){
+		if(error){
+			console.log("error : " + error);
+			res.send(results_user);
+		}else{
+			db_sql.insert_user(phoneNumber, password, function(error, results_user){
+				if(error){
+					console.log("error : " + error);
+					res.send(results_user);
+				}else{
+					res.send(results_user);
+				}
 			});
+		}
+	});
 
 });
 
 
-/* GET home page. */
 router.get(['/:phoneNumber'], function(req, res, next) {
 	var input = req.params.phoneNumber;
 
 	var trimPhoneNumber = input.split('-');
 	var phoneNumber = "";
 
-	console.log(trimPhoneNumber);
+	//console.log(trimPhoneNumber);
 
-	console.log(trimPhoneNumber.length);
+	//console.log(trimPhoneNumber.length);
 
 	for(var i=0; i<trimPhoneNumber.length; i++){
 		phoneNumber += trimPhoneNumber[i];
 	}
 
-	console.log("phoneNumber : " + phoneNumber);
-
-	var sql = 'SELECT _userId FROM USER WHERE PhoneNumber = ?';
-
-	var params = [phoneNumber];
-
-	conn.query(sql, params, function(error, rows, fields){
-					if(error){
-									console.log(error);
-					}else{
-									if(!rows.length){
-													console.log("No id, Insert!");
-													res.send("No");
-									}else{
-													console.log("Already have id.");
-													res.send("" + rows[0]._userId);
-									}
-
-					}
-			});
+	//console.log("phoneNumber : " + phoneNumber);
 
 });
 

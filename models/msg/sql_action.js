@@ -7,20 +7,22 @@ var _this = this;
 
 const max_lim = 1000;
 
-
+/*
+ * error table query
+ */
 exports.select_error = function(callback) {
-    var sql = util.format("SELECT * FROM error");
-    db.getResult(sql, '', function (err, results_error) {
-      callback(err, results_error);
-    });
+   var sql = util.format("SELECT * FROM error");
+   db.getResult(sql, '', function (err, results_error) {
+     callback(err, results_error);
+   });
 };
 
 
 exports.select_user_error = function(userId, callback) {
-    var sql = util.format("SELECT * FROM error WHERE user_id = %d", userId);
-    db.getResult(sql, '', function (err, select_user_error) {
-        callback(err, select_user_error);
-    });
+   var sql = util.format("SELECT * FROM error WHERE user_id = %d", userId);
+   db.getResult(sql, '', function (err, select_user_error) {
+       callback(err, select_user_error);
+   });
 };
 
 exports.insert_error = function(log, callback) {
@@ -46,6 +48,54 @@ exports.insert_user_error = function(userId, log, callback) {
         callback(err, results);
     });
 };
+
+
+
+
+/*
+ * user table query
+ */
+exports.insert_user = function(phoneNumber, password, callback) {
+   console.time('insert_user');
+   var sql = util.format('INSERT INTO user (' +
+       'phone_number_sn, password_sn) ' +
+       'VALUE (\'%s\', \'%s\')',
+       phoneNumber, password);
+   db.getResult(sql, '', function (err, results) {
+       console.timeEnd('insert_user');
+       callback(err, results);
+   });
+};
+
+exports.select_user_phone_number = function(phoneNumber, callback){
+  var sql = util.format('SELECT * FROM user WHERE (' +
+      'phone_number_sn)' +
+      '= (\'%s\')',
+      phoneNumber);
+  db.getResult(sql, '', function (err, results_error) {
+    callback(err, results_error);
+  });
+};
+
+/*
+ * user_information table query
+ */
+exports.insert_user_information = function(userId, nickname, sex, birthday, profile, callback) {
+    console.time('insert_user_information');
+    var sql = util.format('INSERT INTO user_information (' +
+        'user_id, nickname_sn, sex_sn, birthday_dt, profile_ln) ' +
+        'VALUE (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\' )',
+        userId, nickname, sex, birthday, profile);
+    db.getResult(sql, '', function (err, results) {
+        console.timeEnd('insert_user');
+        callback(err, results);
+    });
+ };
+
+/*
+ * user table query
+ */
+
 
 exports.update_ts_mdcn_mdl = function (mdcn, mdl, ri, callback) {
     var sql = util.format("update ts set mdcn = \'%s\', mdl = \'%s\' where ri = \'%s\'", mdcn, mdl, ri);

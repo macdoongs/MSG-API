@@ -23,7 +23,7 @@ exports.connect = function (host, port, user, password, database, callback) {
         user: user,
         password: password,
         database: database,
-        connectionLimit: 100,
+        connectionLimit: 500,
         waitForConnections: true,
         debug: false,
         acquireTimeout: 50000,
