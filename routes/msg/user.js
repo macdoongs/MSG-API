@@ -2,71 +2,12 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var db = require('../../models/msg/db_action');
-var db_sql = require('../../models/msg/sql_action');
 
-var host = config.rds.host;
-var port = config.rds.port;
-var user = config.rds.user;
-var password = config.rds.password;
-var database = config.rds.msgdatabase;
-
-db.connect(host, port, user, password, database, function(callback){
-	if(callback == '1'){
-		console.log("DB connect ok!");
-	}
-});
 
 /******************************
  *          route             *
  ******************************/
 router.post(['/'], function(req, res, next){
-	var userId = req.body.userId;
-	var profile = req.body.profile;
-	var sex = req.body.sex;
-
-	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex);
-
-	db_sql.select_user(log, function(error, results_error){
-		if(error){
-			console.log(error);
-			res.send(results_error);
-		}else{
-			res.send(results_error);
-		}
-	});
-/*
-	var sql = "SELECT * FROM USER_INFO WHERE _userId = ?";
-	var params = [userId];
-
-	conn.query(sql, params, function(error, rows, fields){
-		if(error){
-			console.log(error);
-		}else{
-			if(!rows.length){
-				var sql = "INSERT INTO USER_INFO (_userId, profile , sex) VALUES (?, ?, ?)";
-				var params = [userId, profile, sex];
-
-				conn.query(sql, params, function(error, rows, fields){
-						if(error){
-							console.log(error);
-						}else{
-							if(!rows.length){
-								res.send('OK');
-							}else{
-								res.send('Error');
-							}
-						}
-				});
-			}else{
-				res.send('Already');
-			}
-		}
-
-
-	});
-
-*/
 
 
 });
@@ -81,27 +22,6 @@ router.get(['/:userId/repos'], function(req, res, next) {
 		var params = [userId];
 
 		var result = "";
-
-		conn.query(sql, params, function(error, rows, fields){
-				if(error){
-					console.log(error);
-				}else{
-					if(!rows.length){
-						res.send("Error");
-					}else{
-
-						for(var i=0; i<rows.length; i++){
-							result = "PhoneNumber:" + rows[i].PhoneNumber + " / Nickname:" + rows[i].Nickname + " / Sex:" + rows[i].Sex + " / Role:" + rows[i].Role + " / Birthday:" + rows[i].Birthday + " / Profile:" + rows[i].Profile + " / Enable:" + rows[i].Enable + " / Alert:" + rows[i].Alert + " / WeekNumber:" + rows[i].WeekNumber + " / SendTimes:" + rows[i].SendTimes + "\n";
-
-						}
-						//res.json(rows[0]);
-						res.json(rows);
-						//res.send(result);
-					}
-				}
-
-		});
-
 
 });
 

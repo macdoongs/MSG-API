@@ -19,7 +19,16 @@ mqtt_client.on('connect', function () {
 
 mqtt_client.on('message', function (topic, data) {
 		console.log('message : ' + data);
-		chat_model.chat(16, 17, "hi", function(error, results_chat){
+
+		//var tempString = '{ "senderId" : 16, "receiverId" : 17, "message" : "good!"		}'
+
+		var dataObject = JSON.parse(data);
+
+		var senderId = dataObject.senderId;
+		var receiverId = dataObject.receiverId;
+		var message = dataObject.message;
+
+		chat_model.chat(senderId, receiverId, message, function(error, results_chat){
 			if(error){
 				console.log(error);
 				console.log(results_chat);
@@ -35,18 +44,19 @@ mqtt_client.on('message', function (topic, data) {
 /******************************
  *          route             *
  ******************************/
-// unsubscribe topic
+// subscribe topic
 router.post(['/'], function(req, res, next){
 		var topic = req.body.topic;
-		console.log("topic : " + topic);
+		console.log("subscribe topic : " + topic);
 		mqtt_client.subscribe(topic);
 
 		res.send("OK");
 });
 
-// subscribe topic
+// unsubscribe topic
 router.get(['/:topic'], function(req, res, next) {
 		var topic = req.params.topic;
+		console.log("unsubscribe topic : " + topic);
 		mqtt_client.unsubscribe(topic);
 
 		res.send("OK");

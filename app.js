@@ -63,8 +63,8 @@ var msg_chat = require('./routes/msg/chat');
 var msg_login = require('./routes/msg/login');
 var msg_find_password = require('./routes/msg/find-password');
 var msg_wait_connection = require('./routes/msg/wait-connection');
-var msg_message_setting = require('./routes/msg/message-setting');
-
+var msg_user_setting = require('./routes/msg/user-setting');
+var msg_load_chat = require('./routes/msg/load-chat');
 
 
 
@@ -98,8 +98,8 @@ app.use('/msg/chat', msg_chat);
 app.use('/msg/login', msg_login);
 app.use('/msg/find-password', msg_find_password);
 app.use('/msg/wait-connection', msg_wait_connection);
-app.use('/msg/message-setting', msg_message_setting);
-
+app.use('/msg/user-setting', msg_user_setting);
+app.use('/msg/load-chat', msg_load_chat);
 
 //app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();

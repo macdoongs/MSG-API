@@ -2,69 +2,41 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var mysql = require('mysql');
+var user_info_model = require('../../models/msg/user-info.model');
 
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.msgdatabase
-});
-
-conn.connect();
 
 /******************************
  *          route             *
  ******************************/
 router.post(['/'], function(req, res, next){
 	var userId = req.body.userId;
-	var profile = req.body.profile;
-	var sex = req.body.sex;
 	var nickname = req.body.nickname;
+	var sex = req.body.sex;
+	var birthday = req.body.birthday;
+	var profile = req.body.profile;
 
-	console.log("userId : " + userId + ", profile : " + profile + ", sex : " + sex + ", nickname : " + nickname);
-
-	var sql = "INSERT INTO USER_INFO (_userId, Profile, Sex, Nickname) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Profile = ?, Sex = ?, Nickname = ?";
-	var params = [userId, profile, sex, nickname, profile, sex, nickname];
-
-	conn.query(sql, params, function(error, rows, fields){
+	user_info_model.register_user_information(userId, nickname, sex, birthday, profile, function(error, results_register_information){
 		if(error){
-			console.log(error);
+			res.send(results_register_information);
 		}else{
-			if(!rows.length){
-				console.log('OK');
-				res.send('OK');
-			}else{
-				console.log('Error');
-				res.send('Error');
-			}
+			res.send(results_register_information);
 		}
-
-
 	});
+
+
 });
 
 
 /* GET home page. */
-router.get(['/', '/:id'], function(req, res, next) {
+router.get(['/:id'], function(req, res, next) {
 	var userId = req.params.id;
 
-	var sql = "SELECT Profile, Sex FROM USER_INFO WHERE _userId = ?";
-
-	var params = [userId];
-
-	var result = "";
-
-	conn.query(sql, params, function(error, rows, fields){
-			if(error){
-				console.log(error);
-			}else{
-				for(var i=0; i<rows.length; i++){
-					result = "" + rows[i].Profile + "," + rows[i].Birthday + "," + rows[i].Sex + "\n";
-				}
-				res.send(result);
-			}
-
+	user_info_model.load_user_information(userId, function(error, results_load_information){
+		if(error){
+			res.send(results_load_information);
+		}else{
+			res.send(results_load_information);
+		}
 	});
 
 });

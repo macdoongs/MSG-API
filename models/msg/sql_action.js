@@ -99,19 +99,94 @@ exports.insert_user_information = function(userId, nickname, sex, birthday, prof
       'VALUE (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\' )',
       userId, nickname, sex, birthday, profile);
   db.getResult(sql, '', function (err, results) {
-      console.timeEnd('insert_user');
+      console.timeEnd('insert_user_information');
       callback(err, results);
   });
 };
 
+
 /*
- * user message query
+ * user_setting table query
+ */
+ exports.insert_user_setting = function(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, callback) {
+   console.time('insert_user_setting');
+   var sql = util.format('INSERT INTO user_setting (' +
+       'user_id, message_alert, reserve_enable, reserve_alert, week_number, reserve_number) ' +
+       'VALUE (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', \'%s\')',
+       userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber);
+   db.getResult(sql, '', function (err, results) {
+       console.timeEnd('insert_user_setting');
+       callback(err, results);
+   });
+ };
+
+ exports.select_user_setting = function(userId, callback){
+   var sql = util.format('SELECT * FROM user_setting WHERE ( ' +
+    'user_id = \'%s\')',
+    userId);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+ };
+
+ exports.update_user_setting = function (userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, callback) {
+   console.time('update_user_setting');
+   var sql = util.format("UPDATE user_setting SET " +
+    "message_alert = %s, reserve_enable = %s, reserve_alert = %s, week_number = \'%s\', reserve_number = \'%s\', update_dtm = now() " +
+    "WHERE user_id = \'%s\'",
+    messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber,
+    userId);
+   db.getResult(sql, '', function (err, results) {
+      console.time('update_user_setting');
+      callback(err, results);
+   });
+ };
+
+/*
+ * user_information table query
+ */
+exports.insert_user_information = function(userId, nickname, sex, birthday, profile, callback) {
+  console.time('insert_user_information');
+  var sql = util.format('INSERT INTO user_information (' +
+      'user_id, nickname_sn, sex_sn, birthday_dt, profile_ln) ' +
+      'VALUE (%s, \'%s\', \'%s\', \'%s\', \'%s\')',
+      userId, nickname, sex, birthday, profile);
+  db.getResult(sql, '', function (err, results) {
+      console.timeEnd('insert_user_information');
+      callback(err, results);
+  });
+};
+
+exports.select_user_information = function(userId, callback){
+  var sql = util.format('SELECT * FROM user_information WHERE ( ' +
+   'user_id = %s)',
+   userId);
+   db.getResult(sql, '', function (err, results) {
+       callback(err, results);
+   });
+};
+
+exports.update_user_information = function(userId, nickname, sex, birthday, profile, callback) {
+  console.time('update_user_information');
+  var sql = util.format("UPDATE user_information SET " +
+   "nickname_sn = \'%s\', sex_sn = \'%s\', birthday_dt = \'%s\', profile_ln = \'%s\', update_dtm = now() " +
+   "WHERE user_id = %s",
+   nickname, sex, birthday, profile,
+   userId);
+  db.getResult(sql, '', function (err, results) {
+     console.time('update_user_information');
+     callback(err, results);
+  });
+};
+
+/*
+ * message, send_message table query
  */
 
  exports.insert_message = function(message, callback) {
    console.time('insert_message');
    var sql = util.format('INSERT INTO message (' +
-       'message) ' +
+       'content_txt) ' +
        'VALUE (\'%s\')',
        message);
    db.getResult(sql, '', function (err, results) {
@@ -127,10 +202,29 @@ exports.insert_user_information = function(userId, nickname, sex, birthday, prof
        'VALUE (\'%s\', \'%s\', \'%s\')',
        messageId, senderId, receiverId);
    db.getResult(sql, '', function (err, results) {
-       console.timeEnd('insert_user');
+       console.timeEnd('insert_send_message');
        callback(err, results);
    });
  };
+
+exports.select_user_send_message = function(senderId, receiverId, callback){
+  var sql = util.format('SELECT send_dtm, content_txt, unread_check FROM send_message INNER JOIN message ' +
+   'ON send_message.message_id = message.message_id ' +
+   'WHERE sender_id = \'%s\' AND receiver_id = \'%s\'',
+   senderId, receiverId);
+   db.getResult(sql, '', function (err, results) {
+       callback(err, results);
+   });
+};
+
+
+exports.select_user_all = function(userId, callback){
+  var sql = util.format("",
+   userId);
+   db.getResult(sql, '', function (err, results) {
+       callback(err, results);
+   });
+};
 
 
 
