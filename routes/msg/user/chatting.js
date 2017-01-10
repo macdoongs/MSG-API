@@ -56,7 +56,7 @@ mqtt_client.on('message', function (topic, data) {
 });
 
 
-router.get(['/:senderId/:receiverId'], function(req, res, next){
+router.get(['/sender/:senderId/receiver/:receiverId'], function(req, res, next){
 		var senderId = req.params.senderId;
 		var receiverId = req.params.receiverId;
 

@@ -260,6 +260,10 @@ exports.insert_user_choose_role = function(userId, roleId, callback){
    });
 };
 
+/*
+ * invite_user table query
+ */
+
 exports.insert_user_invite_user = function(chooseRoleId, receiverPhoneNumber, callback){
   var sql = util.format("INSERT INTO invite_user (choose_role_id, receiver_phone_number_sn)" +
     "VALUE (%s, \'%s\')",
@@ -270,64 +274,54 @@ exports.insert_user_invite_user = function(chooseRoleId, receiverPhoneNumber, ca
 };
 
 
-//--------------------------------------------------------------------
+/*
+ * map_user table query
+ */
 
+exports.insert_user_map_user = function(parentId, childId, topic, callback){
+ var sql = util.format("INSERT INTO map_user (parent_id, child_id, topic_mn)" +
+   "VALUE (%s, %s, \'%s\')",
+   parentId, childId, topic);
+   db.getResult(sql, '', function (err, results) {
+       callback(err, results);
+   });
+};
 
+/*
+ * reserve_message table query
+ */
 
-exports.update_ts_mdcn_mdl = function (mdcn, mdl, ri, callback) {
-    var sql = util.format("update ts set mdcn = \'%s\', mdl = \'%s\' where ri = \'%s\'", mdcn, mdl, ri);
+ exports.insert_user_reserve_message = function(senderId, receiverId, reservationMessageId, reserveDTM, callback){
+  var sql = util.format("INSERT INTO reserve_message (sender_id, receiver_id, reservation_message_id, reserve_dtm)" +
+    "VALUE (%s, %s, %s, \'%s\')",
+    senderId, receiverId, reservationMessageId, reserveDTM);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+ };
+
+/*
+ * reservation_message table query
+ */
+
+exports.insert_reservation_message = function(reservationMessageType, content, callback){
+  var sql = util.format("INSERT INTO reservation_message (reservation_message_type, content_txt)" +
+    "VALUE (%s, \'%s\')",
+    reservationMessageType, content);
     db.getResult(sql, '', function (err, results) {
         callback(err, results);
     });
 };
 
-exports.update_cb_poa_csi = function (poa, csi, ri, callback) {
-    console.time('update_cb_poa_csi');
-    var sql = util.format('update cb set poa = \'%s\', csi = \'%s\' where ri=\'%s\'', poa, csi, ri);
-    db.getResult(sql, '', function (err, results) {
-        console.timeEnd('update_cb_poa_csi');
-        callback(err, results);
-    });
-};
+/*
+ * reservation_message_type table query
+ */
 
-
-exports.delete_ri_lookup = function (ri, callback) {
-    var sql = util.format("delete from lookup where ri = \'%s\'", ri);
-    db.getResult(sql, '', function (err, delete_Obj) {
-        if(!err) {
-            callback(err, delete_Obj);
-        }
-    });
-};
-
-exports.delete_lookup = function (ri, pi_list, pi_index, found_Obj, found_Cnt, callback) {
-    var cur_pi = [];
-    cur_pi.push(pi_list[pi_index]);
-
-    if(pi_index == 0) {
-        console.time('delete_lookup');
-    }
-
-    var sql = util.format("delete a.* from (select ri from lookup where pi in ("+JSON.stringify(cur_pi).replace('[','').replace(']','') + ")) b left join lookup as a on b.ri = a.ri");
-    db.getResult(sql, '', function (err, search_Obj) {
-        if(!err) {
-            found_Cnt += search_Obj.affectedRows;
-            if(++pi_index >= pi_list.length) {
-                sql = util.format("delete from lookup where ri = \'%s\'", pi_list[0]);
-                db.getResult(sql, '', function (err, search_Obj) {
-                    if(!err) {
-                        console.timeEnd('delete_lookup');
-                        found_Cnt += search_Obj.affectedRows;
-                        console.log('deleted ' + found_Cnt + ' resource(s).');
-                    }
-                    callback(err, found_Obj);
-                });
-            }
-            else {
-                _this.delete_lookup(ri, pi_list, pi_index, found_Obj, found_Cnt, function (err, found_Obj) {
-                    callback(err, found_Obj);
-                });
-            }
-        }
-    });
+exports.insert_reservation_message_type = function(typeName, callback){
+ var sql = util.format("INSERT INTO reservation_message_type (reservation_message_type)" +
+   "VALUE (\'%s\')",
+   typeName);
+   db.getResult(sql, '', function (err, results) {
+       callback(err, results);
+   });
 };

@@ -43,8 +43,8 @@ router.post(['/'], function(req, res, next){
 });
 
 
-router.get(['/:choosingId/:receiverPhoneNumber'], function(req, res, next) {
-	 var choosingId = req.params.choosingId;
+router.get(['/:userId/:receiverPhoneNumber'], function(req, res, next) {
+	 var choosingId = req.params.userId;
 	 var receiverPhoneNumber = req.params.receiverPhoneNumber;
 
 
