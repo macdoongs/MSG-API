@@ -7,7 +7,7 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-var chat_model = require('../../models/msg/chat.model');
+var chatting_model = require('../../models/msg/chatting.model');
 
 
 var mqtt = require('mqtt');
@@ -28,7 +28,7 @@ mqtt_client.on('message', function (topic, data) {
 		var receiverId = dataObject.receiverId;
 		var message = dataObject.message;
 
-		chat_model.chat(senderId, receiverId, message, function(error, results_chat){
+		chatting_model.chat(senderId, receiverId, message, function(error, results_chat){
 			if(error){
 				console.log(error);
 				console.log(results_chat);
@@ -45,7 +45,7 @@ mqtt_client.on('message', function (topic, data) {
  *          route             *
  ******************************/
 // subscribe topic
-router.post(['/'], function(req, res, next){
+router.post(['/topic'], function(req, res, next){
 		var topic = req.body.topic;
 		console.log("subscribe topic : " + topic);
 		mqtt_client.subscribe(topic);
@@ -54,7 +54,7 @@ router.post(['/'], function(req, res, next){
 });
 
 // unsubscribe topic
-router.get(['/:topic'], function(req, res, next) {
+router.get(['/topic/:topic'], function(req, res, next) {
 		var topic = req.params.topic;
 		console.log("unsubscribe topic : " + topic);
 		mqtt_client.unsubscribe(topic);

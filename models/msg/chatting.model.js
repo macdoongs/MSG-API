@@ -24,7 +24,7 @@ exports.chat = function(senderId, receiverId, message, callback){
   });
 };
 
-exports.load_chat = function(senderId, receiverId, callback){
+exports.load_chatting = function(senderId, receiverId, callback){
   //console.log("load_chat");
   db_sql.select_user_send_message(senderId, receiverId, function(error, results_load_chat){
     if(error){

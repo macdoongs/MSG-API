@@ -53,18 +53,15 @@ var index = require('./routes/index');
 var dropbox_release = require('./routes/msg/dropbox-release');
 var sms_sender = require('./routes/msg/sms-sender');
 var sms_check = require('./routes/msg/sms-check');
-var msg_signup = require('./routes/msg/signup');
 var msg_mapping = require('./routes/msg/mapping');
 var msg_error = require('./routes/msg/error');
 var msg_user = require('./routes/msg/user');
-var msg_user_info = require('./routes/msg/user-info');
 var msg_reservation = require('./routes/msg/reservation');
-var msg_chat = require('./routes/msg/chat');
+var msg_chatting = require('./routes/msg/chatting');
 var msg_login = require('./routes/msg/login');
 var msg_find_password = require('./routes/msg/find-password');
 var msg_wait_connection = require('./routes/msg/wait-connection');
-var msg_user_setting = require('./routes/msg/user-setting');
-var msg_load_chat = require('./routes/msg/load-chat');
+var msg_load_chatting = require('./routes/msg/load-chatting');
 
 
 
@@ -84,22 +81,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'dist')));
 
+// Web page
 app.use('/', index);
+app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
-app.use('/msg/sms-sender', sms_sender);
-app.use('/msg/sms-check', sms_check);
-app.use('/msg/signup', msg_signup);
+// Android
+app.use('/msg/user/sender', sms_sender);
+app.use('/msg/sms/check', sms_check);
 app.use('/msg/mapping', msg_mapping);
 app.use('/msg/error', msg_error);
 app.use('/msg/user', msg_user);
-app.use('/msg/user-info', msg_user_info);
 app.use('/msg/reservation', msg_reservation);
-app.use('/msg/chat', msg_chat);
+app.use('/msg/chatting', msg_chatting);
 app.use('/msg/login', msg_login);
 app.use('/msg/find-password', msg_find_password);
 app.use('/msg/wait-connection', msg_wait_connection);
-app.use('/msg/user-setting', msg_user_setting);
-app.use('/msg/load-chat', msg_load_chat);
+app.use('/msg/load-chatting', msg_load_chatting);
 
 //app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();

@@ -30,9 +30,6 @@ exports.register_user_information = function(userId, nickname, sex, birthday, pr
       }
     }
   });
-/*
-
-*/
 };
 
 exports.load_user_information = function(userId, callback){

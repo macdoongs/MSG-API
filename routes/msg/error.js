@@ -27,7 +27,7 @@ db.connect(host, port, user, password, database, function(callback){
 /******************************
  *          route             *
  ******************************/
-router.post(['/'], function(req, res, next){
+router.post(['/user'], function(req, res, next){
 	var userId = req.body.userId;
 	var log = req.body.log;
 
@@ -44,7 +44,7 @@ router.post(['/'], function(req, res, next){
 
 });
 
-router.get(['/', '/:userId'], function(req, res, next) {
+router.get(['/', '/user/:userId'], function(req, res, next) {
 		var userId = req.params.userId;
 
 		//console.log("userId : " + userId);

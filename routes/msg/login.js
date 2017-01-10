@@ -11,20 +11,6 @@ var crypto = require('crypto');
 
 var key = config.crypto.key;      // 암호화, 복호화를 위한 키
 
-var db = require('../../models/msg/db_action');
-var db_sql = require('../../models/msg/sql_action');
-
-var host = config.rds.host;
-var port = config.rds.port;
-var user = config.rds.user;
-var password = config.rds.password;
-var database = config.rds.msgdatabase;
-
-db.connect(host, port, user, password, database, function(callback){
-	if(callback == '1'){
-		console.log("DB connect ok!");
-	}
-});
 
 var login_model = require('../../models/msg/login.model');
 
