@@ -9,6 +9,7 @@ var parser = new xml2js.Parser();
 
 var error_model = require('../../models/msg/error.model');
 
+
 var db = require('../../models/msg/db_action');
 var db_sql = require('../../models/msg/sql_action');
 
@@ -20,9 +21,10 @@ var database = config.rds.msgdatabase;
 
 db.connect(host, port, user, password, database, function(callback){
 	if(callback == '1'){
-		console.log("DB connect ok!");
+		//console.log("DB connect ok!");
 	}
 });
+
 
 /******************************
  *          route             *

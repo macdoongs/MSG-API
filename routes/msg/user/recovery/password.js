@@ -7,10 +7,10 @@ var request = require('request');
 var xml2js = require('xml2js');
 var parser = new xml2js.Parser();
 
-var find_password_model = require('../../models/msg/find-password.model');
+var recovery_model = require('../../../../models/msg/recovery.model');
 
-var db = require('../../models/msg/db_action');
-var db_sql = require('../../models/msg/sql_action');
+var db = require('../../../../models/msg/db_action');
+var db_sql = require('../../../../models/msg/sql_action');
 
 var host = config.rds.host;
 var port = config.rds.port;
@@ -20,7 +20,7 @@ var database = config.rds.msgdatabase;
 
 db.connect(host, port, user, password, database, function(callback){
 	if(callback == '1'){
-		console.log("DB connect ok!");
+		//console.log("DB connect ok!");
 	}
 });
 
@@ -39,7 +39,7 @@ router.post(['/'], function(req, res, next){
 		phoneNumber += trimPhoneNumber[i];
 	}
 
-	find_password_model.find_password(phoneNumber, function(error, results_password){
+	recovery_model.find_password(phoneNumber, function(error, results_password){
 		if(error){
 			//console.log(error);
 			res.send(results_password);

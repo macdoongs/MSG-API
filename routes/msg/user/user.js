@@ -2,11 +2,23 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var user_model = require('../../models/msg/user.model');
+var user_model = require('../../../models/msg/user.model');
 
-var user_info_model = require('../../models/msg/user-info.model');
+var db = require('../../../models/msg/db_action');
+var db_sql = require('../../../models/msg/sql_action');
 
-var user_setting_model = require('../../models/msg/user-setting.model');
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
+db.connect(host, port, user, password, database, function(callback){
+	if(callback == '1'){
+		//console.log("DB connect ok!");
+	}
+});
+
 
 /******************************
  *          route             *
@@ -38,6 +50,19 @@ router.post(['/signup'], function(req, res, next){
 	});
 });
 
+router.post(['/load'], function(req, res, next){
+	var userId = req.body.userId;
+
+	user_model.load_user(userId, function(error, results_signup){
+		if(error){
+			console.log("error : " + error);
+			res.send(results_signup);
+		}else{
+			res.send(results_signup);
+		}
+	});
+});
+
 router.post(['/login'], function(req, res, next){
 	var input = req.body.phoneNumber;
 	var inputPassword = req.body.password;
@@ -55,7 +80,7 @@ router.post(['/login'], function(req, res, next){
 
 	//console.log("phoneNumber : " + phoneNumber + ", password : " + inputPassword);
 
-	user_model.app_login(phoneNumber, inputPassword, function(error, result){
+	user_model.login(phoneNumber, inputPassword, function(error, result){
 		//console.log("error : " + error + ", result : " + result);
 		res.send(result);
 	});
@@ -81,7 +106,7 @@ router.post(['/info'], function(req, res, next){
 	var birthday = req.body.birthday;
 	var profile = req.body.profile;
 
-	user_info_model.register_user_information(userId, nickname, sex, birthday, profile, function(error, results_register_information){
+	user_model.register_user_information(userId, nickname, sex, birthday, profile, function(error, results_register_information){
 		if(error){
 			res.send(results_register_information);
 		}else{
@@ -95,7 +120,7 @@ router.post(['/info'], function(req, res, next){
 router.get(['/:userId/info'], function(req, res, next) {
 	var userId = req.params.userId;
 
-	user_info_model.load_user_information(userId, function(error, results_load_information){
+	user_model.load_user_information(userId, function(error, results_load_information){
 		if(error){
 			res.send(results_load_information);
 		}else{
@@ -114,21 +139,49 @@ router.post(['/setting'], function(req, res, next){
 	var weekNumber = req.body.weekNumber;
 	var reserveNumber = req.body.reserveNumber;
 
-	user_setting_model.register_user_setting(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_register_setting){
+	user_model.register_user_setting(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_register_setting){
 		if(error){
 			res.send(results_register_setting);
 		}else{
 			res.send(results_register_setting);
 		}
 	});
-
 });
 
+router.put(['/setting'], function(req, res, next){
+	var userId = req.body.userId;
+	var messageAlert = req.body.messageAlert;
+	var reserveEnable = req.body.reserveEnable;
+	var reserveAlert = req.body.reserveAlert;
+	var weekNumber = req.body.weekNumber;
+	var reserveNumber = req.body.reserveNumber;
+
+	user_model.register_user_setting(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_register_setting){
+		if(error){
+			res.send(results_register_setting);
+		}else{
+			res.send(results_register_setting);
+		}
+	});
+});
 
 router.get(['/:userId/setting'], function(req, res, next) {
 		var userId = req.params.userId;
 
-		user_setting_model.load_user_setting(userId, function(error, results_load_setting){
+		user_model.load_user_setting(userId, function(error, results_load_setting){
+			if(error){
+				res.send(results_load_setting);
+			}else{
+				res.send(results_load_setting);
+			}
+		});
+
+});
+
+router.delete(['/:userId/setting'], function(req, res, next) {
+		var userId = req.params.userId;
+
+		user_model.load_user_setting(userId, function(error, results_load_setting){
 			if(error){
 				res.send(results_load_setting);
 			}else{

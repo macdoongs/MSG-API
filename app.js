@@ -48,25 +48,23 @@ app.use( morgan('dev', {stream: accessLogStream}));
 
 var mysql = require('mysql');
 
-var index = require('./routes/index');
+var index = require('./routes/web/index');
 
 var dropbox_release = require('./routes/msg/dropbox-release');
-var sms_sender = require('./routes/msg/sms-sender');
-var sms_check = require('./routes/msg/sms-check');
-var msg_mapping = require('./routes/msg/mapping');
+var sms_sender = require('./routes/msg/auth/sms/send');
+var sms_check = require('./routes/msg/auth/sms/check');
+var msg_mapping = require('./routes/msg/user/mapping');
 var msg_error = require('./routes/msg/error');
-var msg_user = require('./routes/msg/user');
-var msg_reservation = require('./routes/msg/reservation');
-var msg_chatting = require('./routes/msg/chatting');
-var msg_login = require('./routes/msg/login');
-var msg_find_password = require('./routes/msg/find-password');
-var msg_wait_connection = require('./routes/msg/wait-connection');
-var msg_load_chatting = require('./routes/msg/load-chatting');
+var msg_user = require('./routes/msg/user/user');
+var msg_reservation = require('./routes/msg/user/reservation');
+var msg_chatting = require('./routes/msg/user/chatting');
+var msg_recovery_password = require('./routes/msg/user/recovery/password');
+var msg_invitation = require('./routes/msg/user/invitation');
 
 
 
 
-console.log("My webpage start!");
+//console.log("My webpage start!");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -85,18 +83,17 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/', index);
 app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
+
 // Android
-app.use('/msg/user/sender', sms_sender);
+app.use('/msg/sms/sender', sms_sender);
 app.use('/msg/sms/check', sms_check);
 app.use('/msg/mapping', msg_mapping);
 app.use('/msg/error', msg_error);
 app.use('/msg/user', msg_user);
+app.use('/msg/user/recovery/password', msg_recovery_password);
 app.use('/msg/reservation', msg_reservation);
 app.use('/msg/chatting', msg_chatting);
-app.use('/msg/login', msg_login);
-app.use('/msg/find-password', msg_find_password);
-app.use('/msg/wait-connection', msg_wait_connection);
-app.use('/msg/load-chatting', msg_load_chatting);
+app.use('/msg/invitation', msg_invitation);
 
 //app.use(session({ secret: 'SECRET' }));
 //var session = passport.session();

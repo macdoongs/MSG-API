@@ -21,7 +21,7 @@ exports.signup = function(phoneNumber, password, callback){
 
 };
 
-exports.app_login = function(phoneNumber, password, callback){
+exports.login = function(phoneNumber, password, callback){
   //console.log("app_login");
   //console.log("phoneNumber : " + phoneNumber + ", password : " + password);
   db_sql.select_user_phone_number(phoneNumber, function(error, results_login){
@@ -39,12 +39,125 @@ exports.app_login = function(phoneNumber, password, callback){
 
 exports.load_user = function(userId, callback){
   //console.log('load_user_setting');
-  db_sql.select_user_all(userId, function(error, results_error){
+  db_sql.select_user_all_data(userId, function(error, results_error){
     if(error){
       //console.log(error);
       callback(true, results_error);
     }else{
       callback(null, results_error);
+    }
+  });
+};
+
+exports.register_user_information = function(userId, nickname, sex, birthday, profile, callback){
+  //console.log("register_user_setting");
+
+  db_sql.select_user_information(userId, function(error, results_check){
+    if(error){
+      callback(true, results_check);
+    }else{
+      //console.log(results_check[0]);
+      if(results_check[0] == undefined){
+        db_sql.insert_user_information(userId, nickname, sex, birthday, profile, function(error, results_insert){
+          if(error){
+            //console.log(error);
+            callback(true, results_insert);
+          }else{
+            callback(null, results_insert);
+          }
+        });
+      }else{
+        db_sql.update_user_information(userId, nickname, sex, birthday, profile, function(error, results_update){
+          if(error){
+            //console.log(error);
+            callback(true, results_update);
+          }else{
+            callback(null, results_update);
+          }
+        });
+      }
+    }
+  });
+};
+
+
+exports.load_user_information = function(userId, callback){
+  //console.log('load_user_setting');
+  db_sql.select_user_information(userId, function(error, results_error){
+    if(error){
+      //console.log(error);
+      callback(true, results_error);
+    }else{
+      callback(null, results_error);
+    }
+  });
+};
+
+
+exports.delete_setting = function(userId, callback){
+  db_sql.delete_user_setting(userId, function(error, results_delete){
+    if(error){
+      //console.log(error);
+      callback(true, results_delete);
+    }else{
+      callback(null, results_delete);
+    }
+  });
+};
+
+
+exports.register_user_setting = function(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, callback){
+  //console.log("register_user_setting");
+
+  db_sql.select_user_setting(userId, function(error, results_check){
+    if(error){
+      callback(true, results_check);
+    }else{
+      console.log(results_check[0]);
+      if(results_check[0] == undefined){
+        db_sql.insert_user_setting(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_insert){
+          if(error){
+            //console.log(error);
+            callback(true, results_insert);
+          }else{
+            callback(null, results_insert);
+          }
+        });
+      }else{
+        db_sql.update_user_setting(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_insert){
+          if(error){
+            //console.log(error);
+            callback(true, results_insert);
+          }else{
+            callback(null, results_insert);
+          }
+        });
+      }
+    }
+  });
+
+};
+
+exports.load_user_setting = function(userId, callback){
+  //console.log('load_user_setting');
+  db_sql.select_user_setting(userId, function(error, results_error){
+    if(error){
+      //console.log(error);
+      callback(true, results_error);
+    }else{
+      callback(null, results_error);
+    }
+  });
+};
+
+
+exports.delete_setting = function(userId, callback){
+  db_sql.delete_user_setting(userId, function(error, results_delete){
+    if(error){
+      //console.log(error);
+      callback(true, results_delete);
+    }else{
+      callback(null, results_delete);
     }
   });
 };

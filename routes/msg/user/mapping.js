@@ -2,17 +2,21 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
-var mysql = require('mysql');
 
-var conn = mysql.createConnection({
-	host      : config.rds.host,
-	user      : config.rds.user,
-	password  : config.rds.password,
-	database  : config.rds.msgdatabase
+var db = require('../../../models/msg/db_action');
+var db_sql = require('../../../models/msg/sql_action');
+
+var host = config.rds.host;
+var port = config.rds.port;
+var user = config.rds.user;
+var password = config.rds.password;
+var database = config.rds.msgdatabase;
+
+db.connect(host, port, user, password, database, function(callback){
+	if(callback == '1'){
+		//console.log("DB connect ok!");
+	}
 });
-
-conn.connect();
-
 
 
 var crypto = require('crypto');
@@ -106,27 +110,6 @@ router.get(['/:phoneNumber'], function(req, res, next) {
 
 		var params = [phoneNumber, phoneNumber];
 
-		conn.query(sql, params, function(error, rows, fields){
-			if(error){
-				console.log(error);
-			}else{
-				if(!rows.length){
-					res.send("No");
-				}else{
-					var result = "";
-
-					for(var i=0; i<rows.length; i++){
-						result += "_parentId :" + rows[i]._parentId + "/_childId :" + rows[i]._childId + "/Topic :" + rows[i].Topic + "\n";
-					}
-
-					res.send(result);
-				}
-
-
-
-			}
-
-		});
 
 
 });
