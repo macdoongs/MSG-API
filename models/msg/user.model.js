@@ -32,7 +32,20 @@ exports.login = function(phoneNumber, password, callback){
       //console.log(results_login);
       if(results_login[0].password_sn == password){
         callback(null, results_login);
+      }else{
+        callback(null, null);
       }
+    }
+  });
+};
+
+exports.duplicate_check = function(phoneNumber, callback){
+  db_sql.select_user_phone_number(phoneNumber, function(error, results_duplicate_check){
+    if(error){
+      //console.log("error : " + error);
+      callback(true, results_duplicate_check);
+    }else{
+      callback(null, results_duplicate_check);
     }
   });
 };
