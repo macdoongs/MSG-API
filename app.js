@@ -85,15 +85,15 @@ app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
 
 // Android
-app.use('/msg/sms/sender', sms_sender);
-app.use('/msg/sms/check', sms_check);
-app.use('/msg/mapping', msg_mapping);
+app.use('/msg/auth/sms/send', sms_sender);
+app.use('/msg/auth/sms/check', sms_check);
+app.use('/msg/user/mapping', msg_mapping);
 app.use('/msg/error', msg_error);
 app.use('/msg/user', msg_user);
 app.use('/msg/user/recovery/password', msg_recovery_password);
-app.use('/msg/reservation', msg_reservation);
-app.use('/msg/chatting', msg_chatting);
-app.use('/msg/invitation', msg_invitation);
+app.use('/msg/user/reservation', msg_reservation);
+app.use('/msg/user/chatting', msg_chatting);
+app.use('/msg/user/invitation', msg_invitation);
 
 
 client = redis.createClient(config.redis.port, config.redis.host);
