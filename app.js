@@ -85,15 +85,9 @@ app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
 
 // Android
-<<<<<<< HEAD
 app.use('/msg/auth/sms/send', sms_sender);
 app.use('/msg/auth/sms/check', sms_check);
 app.use('/msg/user/mapping', msg_mapping);
-=======
-app.use('/msg/auth/sms/send', sms_send);
-app.use('/msg/auth/sms/check', sms_check);
-app.use('/msg/mapping', msg_mapping);
->>>>>>> 60d861f0bae304550d1bdb6de9087bdf5c08241c
 app.use('/msg/error', msg_error);
 app.use('/msg/user', msg_user);
 app.use('/msg/user/recovery/password', msg_recovery_password);
