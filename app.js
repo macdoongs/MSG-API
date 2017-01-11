@@ -51,7 +51,7 @@ var mysql = require('mysql');
 var index = require('./routes/web/index');
 
 var dropbox_release = require('./routes/msg/dropbox-release');
-var sms_sender = require('./routes/msg/auth/sms/send');
+var sms_send = require('./routes/msg/auth/sms/send');
 var sms_check = require('./routes/msg/auth/sms/check');
 var msg_mapping = require('./routes/msg/user/mapping');
 var msg_error = require('./routes/msg/error');
@@ -85,9 +85,15 @@ app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
 
 // Android
+<<<<<<< HEAD
 app.use('/msg/auth/sms/send', sms_sender);
 app.use('/msg/auth/sms/check', sms_check);
 app.use('/msg/user/mapping', msg_mapping);
+=======
+app.use('/msg/auth/sms/send', sms_send);
+app.use('/msg/auth/sms/check', sms_check);
+app.use('/msg/mapping', msg_mapping);
+>>>>>>> 60d861f0bae304550d1bdb6de9087bdf5c08241c
 app.use('/msg/error', msg_error);
 app.use('/msg/user', msg_user);
 app.use('/msg/user/recovery/password', msg_recovery_password);

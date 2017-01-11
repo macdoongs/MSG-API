@@ -87,14 +87,22 @@ router.post(['/login'], function(req, res, next){
 
 });
 
-router.get(['/:userId/repos'], function(req, res, next) {
-		var userId = req.params.userId;
+router.get(['/:phoneNumber/duplicate'], function(req, res, next){
+	var phoneNumber = req.params.phoneNumber;
 
-		var sql = "SELECT PhoneNumber, Nickname, Sex, Role, Birthday, Profile, Enable, Alert, WeekNumber, SendTimes FROM USER_SETTING INNER JOIN (SELECT PhoneNumber, Role, Z._userId, Nickname, Sex, Birthday, Profile, Topic, _choosingId  FROM USER_INFO INNER JOIN (SELECT Y._userId, Role, PhoneNumber, _choosingId, Topic FROM MAP_USER INNER JOIN (SELECT X._userId, Role, PhoneNumber, _choosingId FROM USER_ROLE INNER JOIN (SELECT U._userId, PhoneNumber, _choosingId, _roleId FROM USER AS U INNER JOIN CHOOSE_ROLE AS C ON U._userId = C._userId) AS X ON USER_ROLE._roleId = X._roleId) AS Y ON _parentId = Y._userId OR _childId = Y._userId) AS Z ON USER_INFO._userId = Z._userId) AS K ON K._userId = USER_SETTING._userId WHERE USER_SETTING._userId = ? GROUP BY PhoneNumber";
+	user_model.duplicate_check(phoneNumber, function(error, results_duplicate_check){
+		if(error){
+			res.send(results_duplicate_check);
+		}else{
+			res.send(results_duplicate_check);
+		}
+	});
+});
 
-		var params = [userId];
+router.get(['/:phoneNumber'], function(req, res, next) {
+		var userId = req.params.phoneNumber;
 
-		var result = "";
+
 
 });
 
