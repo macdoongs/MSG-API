@@ -90,7 +90,7 @@ exports.select_user_password = function(phoneNumber, callback){
 
 
 exports.update_user_device_token = function(userId, deviceToken, callback){
-  var sql = util.format('UPDATE user SET (device_token_ln = \'%s\' ' +
+  var sql = util.format('UPDATE user SET device_token_ln = \'%s\' ' +
       'WHERE user_id = %s',
       deviceToken, userId);
   db.getResult(sql, '', function (err, results_password) {

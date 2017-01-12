@@ -10,7 +10,7 @@ exports.register = function(userId, deviceToken, callback){
       //console.log("error : " + error);
       callback(true, results_register);
     }else{
-      console.log(results_message);
+      console.log(results_register);
       callback(null, results_register)
     }
 
