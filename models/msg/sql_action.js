@@ -89,6 +89,15 @@ exports.select_user_password = function(phoneNumber, callback){
 };
 
 
+exports.update_user_device_token = function(userId, deviceToken, callback){
+  var sql = util.format('UPDATE user SET device_token_ln = \'%s\' ' +
+      'WHERE user_id = %s',
+      deviceToken, userId);
+  db.getResult(sql, '', function (err, results_password) {
+    callback(err, results_password);
+  });
+};
+
 /*
  * user_setting table query
  */
@@ -241,6 +250,10 @@ exports.select_role_id = function(roleName, callback){
         callback(err, results);
     });
 };
+
+/*
+ * user_role, choose_role table query
+ */
 
 exports.select_user_choose_role = function(userId, roleId, callback){
   var sql = util.format("SELECT * FROM choose_role " +

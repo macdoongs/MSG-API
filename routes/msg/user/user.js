@@ -23,6 +23,10 @@ db.connect(host, port, user, password, database, function(callback){
 /******************************
  *          route             *
  ******************************/
+router.get(['/'], function(req, res, next){
+	
+});
+
 router.post(['/signup'], function(req, res, next){
 	var input = req.body.phoneNumber;
 	var password = req.body.password;

@@ -46,7 +46,7 @@ var database = config.rds.msgdatabase;
 var worker = [];
 
 if(cluster.isMaster) {
-    cluster.on('death', function(worker) {
+    cluster.on('exit', function(worker) {
         console.log('worker' + worker.pid + ' died --> start again');
         cluster.fork();
     });
