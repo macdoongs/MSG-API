@@ -48,19 +48,21 @@ app.use( morgan('dev', {stream: accessLogStream}));
 
 var mysql = require('mysql');
 
+// Web page
 var index = require('./routes/web/index');
-
 var dropbox_release = require('./routes/msg/dropbox-release');
+
+// Android
 var sms_send = require('./routes/msg/auth/sms/send');
 var sms_check = require('./routes/msg/auth/sms/check');
-var msg_mapping = require('./routes/msg/user/mapping');
 var msg_error = require('./routes/msg/error');
 var msg_user = require('./routes/msg/user/user');
+var msg_mapping = require('./routes/msg/user/mapping');
 var msg_reservation = require('./routes/msg/user/reservation');
 var msg_chatting = require('./routes/msg/user/chatting');
 var msg_recovery_password = require('./routes/msg/user/recovery/password');
 var msg_invitation = require('./routes/msg/user/invitation');
-
+var msg_firebase = require('./routes/msg/firebase/firebase');
 
 
 
@@ -81,19 +83,20 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // Web page
 app.use('/', index);
-app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
+app.use('/msg/release/dropbox', dropbox_release);
 
 // Android
-app.use('/msg/auth/sms/send', sms_sender);
-app.use('/msg/auth/sms/check', sms_check);
-app.use('/msg/user/mapping', msg_mapping);
 app.use('/msg/error', msg_error);
+app.use('/msg/firebase', msg_firebase);
 app.use('/msg/user', msg_user);
-app.use('/msg/user/recovery/password', msg_recovery_password);
+app.use('/msg/user/mapping', msg_mapping);
 app.use('/msg/user/reservation', msg_reservation);
 app.use('/msg/user/chatting', msg_chatting);
 app.use('/msg/user/invitation', msg_invitation);
+app.use('/msg/user/recovery/password', msg_recovery_password);
+app.use('/msg/auth/sms/send', sms_send);
+app.use('/msg/auth/sms/check', sms_check);
 
 
 client = redis.createClient(config.redis.port, config.redis.host);

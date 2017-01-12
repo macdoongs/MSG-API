@@ -45,7 +45,7 @@ router.post(['/'], function(req, res, next){
 	var childId = req.body.childId;
 	var deviceToken = req.body.deviceToken;
 	var topic = parentId + "_" + childId;
-
+	
 
 	mapping_model.map_user(parentId, childId, topic, function(error, results_map){
 		if(error){
