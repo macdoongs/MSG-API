@@ -260,6 +260,16 @@ exports.insert_user_choose_role = function(userId, roleId, callback){
    });
 };
 
+exports.select_user_choose_role_id = function(userId, receiverPhoneNumber, callback){
+  var sql = util.format("select choose_role.choose_role_id from choose_role join invite_user " +
+  "where user_id = %s and receiver_phone_number_sn = \'%s\'"+
+  "group by choose_role.choose_role_id",
+   userId, receiverPhoneNumber);
+   db.getResult(sql, '', function (err, results) {
+       callback(err, results);
+   });
+};
+
 /*
  * invite_user table query
  */
@@ -268,6 +278,16 @@ exports.insert_user_invite_user = function(chooseRoleId, receiverPhoneNumber, ca
   var sql = util.format("INSERT INTO invite_user (choose_role_id, receiver_phone_number_sn)" +
     "VALUE (%s, \'%s\')",
     chooseRoleId, receiverPhoneNumber);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+};
+
+
+exports.select_user_invite_user = function(chooseRoleId, callback){
+  var sql = util.format("SELECT * FROM invite_user WHERE " +
+    "choose_role_id = %s",
+    chooseRoleId);
     db.getResult(sql, '', function (err, results) {
         callback(err, results);
     });
@@ -286,6 +306,8 @@ exports.insert_user_map_user = function(parentId, childId, topic, callback){
        callback(err, results);
    });
 };
+
+
 
 /*
  * reserve_message table query

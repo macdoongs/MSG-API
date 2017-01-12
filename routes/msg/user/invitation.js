@@ -43,16 +43,17 @@ router.post(['/'], function(req, res, next){
 });
 
 
-router.get(['/:userId/:receiverPhoneNumber'], function(req, res, next) {
-	 var choosingId = req.params.userId;
+router.get(['/sender/:userId/receiver/:receiverPhoneNumber'], function(req, res, next) {
+	 var userId = req.params.userId;
 	 var receiverPhoneNumber = req.params.receiverPhoneNumber;
 
-
-	 var sql = "SELECT _invitingId, _isConnection, InviteTime FROM INVITE_USER WHERE _choosingId = ? AND ReceiverPhoneNumber = ?";
-
-	 var params = [choosingId, receiverPhoneNumber];
-
-
+	 invitation_model.load_user_invite_user(userId, receiverPhoneNumber, function(error, results_invite){
+		 if(error){
+			 res.send(results_invite);
+		 }else{
+			 res.send(results_invite);
+		 }
+	 });
 });
 
 

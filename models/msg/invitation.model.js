@@ -11,16 +11,24 @@ exports.invite_user = function(userId, receiverPhoneNumber, roleName, callback){
 			callback(true, results_role_id);
 		}else{
       var roleId = results_role_id[0].user_role_id;
-      console.log("roleId : " + roleId);
+      console.log("user_role_id : " + roleId);
 
       db_sql.select_user_choose_role(userId, roleId, function(error, results_role){
     		if(error){
     			console.log("error : " + error);
     			callback(true, results_role);
     		}else{
-          var chooseRoleId = results_role[0].choose_role_id;
-          console.log(chooseRoleId);
-          if(results_role[0].choose_role_id == null){
+          try {
+            var chooseRoleId = results_role[0].choose_role_id;
+            console.log(chooseRoleId);
+          } catch (e) {
+            console.log("Error : " + e);
+          } finally {
+
+          }
+
+
+          if(chooseRoleId == undefined){
             db_sql.insert_user_choose_role(userId, roleId, function(error, results_choose){
       				if(error){
       					console.log("error : " + error);
@@ -54,4 +62,28 @@ exports.invite_user = function(userId, receiverPhoneNumber, roleName, callback){
 	     });
      }
    });
+};
+
+
+exports.load_user_invite_user = function(senderId, receiverPhoneNumber, callback){
+  db_sql.select_user_choose_role_id(senderId, receiverPhoneNumber, function(error, result_choose){
+    if(error){
+      callback(true, result_choose);
+    }else{
+      try {
+        var chooseRoleId = result_choose[1].choose_role_id;
+      } catch (e) {
+        console.log("Error : " + e);
+      } finally {
+
+      }
+      db_sql.select_user_invite_user(chooseRoleId, function(error, results_invite){
+        if(error){
+          callback(true, results_invite);
+        }else{
+          callback(null, results_invite);
+        }
+      });
+    }
+  });
 };

@@ -85,7 +85,7 @@ app.use('/release/dropbox', dropbox_release);
 app.use('/dropbox-release', dropbox_release);
 
 // Android
-app.use('/msg/auth/sms/send', sms_sender);
+app.use('/msg/auth/sms/send', sms_send);
 app.use('/msg/auth/sms/check', sms_check);
 app.use('/msg/user/mapping', msg_mapping);
 app.use('/msg/error', msg_error);
