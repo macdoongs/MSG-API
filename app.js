@@ -87,12 +87,6 @@ app.use('/dropbox-release', dropbox_release);
 app.use('/msg/release/dropbox', dropbox_release);
 
 // Android
-<<<<<<< HEAD
-app.use('/msg/auth/sms/send', sms_send);
-app.use('/msg/auth/sms/check', sms_check);
-app.use('/msg/user/mapping', msg_mapping);
-=======
->>>>>>> 46406f92247981877059228d0c88afdf65e7836f
 app.use('/msg/error', msg_error);
 app.use('/msg/firebase', msg_firebase);
 app.use('/msg/user', msg_user);
