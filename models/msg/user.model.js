@@ -13,7 +13,21 @@ exports.signup = function(phoneNumber, password, callback){
 					console.log("error : " + error);
 					callback(true, results_user);
 				}else{
-					callback(null, results_user);
+          var userId = results_user.insertId;
+
+          db_sql.insert_user_information_id(userId, function(error, results_insert_information){
+            if(error){
+              callback(true, results_insert_information);
+            }else{
+              db_sql.insert_user_setting_id(userId, function(error, results_insert_setting){
+                if(error){
+                  callback(true, results_insert_setting);
+                }else{
+                  callback(null, results_insert_setting);
+                }
+              });
+            }
+          });
 				}
 			});
 		}

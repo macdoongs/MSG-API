@@ -101,6 +101,18 @@ exports.update_user_device_token = function(userId, deviceToken, callback){
 /*
  * user_setting table query
  */
+ exports.insert_user_setting_id = function(userId, callback){
+   console.time('insert_user_setting_id');
+   var sql = util.format('INSERT INTO user_setting (' +
+     'user_id ) ' +
+     'VALUE (%s)',
+     userId);
+   db.getResult(sql, '', function (err, results) {
+       console.timeEnd('insert_user_setting_id');
+       callback(err, results);
+   });
+ };
+
  exports.insert_user_setting = function(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, callback) {
    console.time('insert_user_setting');
    var sql = util.format('INSERT INTO user_setting (' +
@@ -148,6 +160,18 @@ exports.update_user_device_token = function(userId, deviceToken, callback){
 /*
  * user_information table query
  */
+exports.insert_user_information_id = function(userId, callback){
+  console.time('insert_user_information_id');
+  var sql = util.format('INSERT INTO user_information (' +
+    'user_id ) ' +
+    'VALUE (%s)',
+    userId);
+  db.getResult(sql, '', function (err, results) {
+      console.timeEnd('insert_user_information_id');
+      callback(err, results);
+  });
+};
+
 exports.insert_user_information = function(userId, nickname, sex, birthday, profile, callback) {
   console.time('insert_user_information');
   var sql = util.format('INSERT INTO user_information (' +
