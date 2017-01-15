@@ -45,7 +45,7 @@ router.post(['/'], function(req, res, next){
 	var childId = req.body.childId;
 	var deviceToken = req.body.deviceToken;
 	var topic = parentId + "_" + childId;
-	
+
 
 	mapping_model.map_user(parentId, childId, topic, function(error, results_map){
 		if(error){
@@ -91,27 +91,17 @@ router.post(['/'], function(req, res, next){
 
 
 /* GET home page. */
-router.get(['/:phoneNumber'], function(req, res, next) {
-		var input = req.params.phoneNumber;
+router.get(['/me/:userId/myRole/:userRole'], function(req, res, next) {
+		var userId = req.params.userId;
+		var userRole = req.params.userRole;
 
-		var trimPhoneNumber = input.split('-');
-		var phoneNumber = "";
-
-		console.log(trimPhoneNumber);
-
-		console.log(trimPhoneNumber.length);
-
-		for(var i=0; i<trimPhoneNumber.length; i++){
-			phoneNumber += trimPhoneNumber[i];
-		}
-
-		console.log("phoneNumber : " + phoneNumber);
-
-		var sql = "(SELECT * FROM MAP_USER WHERE _childId IN (SELECT _userId FROM USER WHERE PhoneNumber = ?)) UNION (SELECT * FROM MAP_USER WHERE _parentId IN (SELECT _userId FROM USER WHERE PhoneNumber = ?))";
-
-		var params = [phoneNumber, phoneNumber];
-
-
+		mapping_model.load_map_user(userId, userRole, function(error, results_map){
+			if(error){
+	      res.send(results_map);
+	    }else{
+	      res.send(results_map);
+	    }
+		});
 
 });
 

@@ -321,10 +321,10 @@ exports.insert_user_invite_user = function(chooseRoleId, receiverPhoneNumber, ca
 };
 
 
-exports.select_user_invite_user = function(chooseRoleId, callback){
+exports.select_user_invite_user = function(chooseRoleId, receiverPhoneNumber, callback){
   var sql = util.format("SELECT * FROM invite_user WHERE " +
-    "choose_role_id = %s",
-    chooseRoleId);
+    "choose_role_id = %s AND receiver_phone_number_sn = \'%s\'",
+    chooseRoleId, receiverPhoneNumber);
     db.getResult(sql, '', function (err, results) {
         callback(err, results);
     });
@@ -344,6 +344,26 @@ exports.insert_user_map_user = function(parentId, childId, topic, callback){
    });
 };
 
+
+exports.select_parent_map_user = function (userId, callback) {
+  var sql = util.format("select nickname_sn, phone_number_sn, profile_ln, child_id as user_id, topic_mn from user_information " +
+    " join (select phone_number_sn, child_id, topic_mn from user join map_user on user.user_id = map_user.child_id where parent_id = %s) as u_1 " +
+    "on u_1.child_id = user_information.user_id",
+    userId);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+};
+
+exports.select_child_map_user = function (userId, callback) {
+  var sql = util.format("select nickname_sn, phone_number_sn, profile_ln, parent_id as user_id, topic_mn from user_information "+
+    " join (select phone_number_sn, parent_id, topic_mn from user join map_user on user.user_id = map_user.parent_id where child_id = %s) as u_1 " +
+    "on u_1.parent_id = user_information.user_id",
+    userId);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+}
 
 
 /*

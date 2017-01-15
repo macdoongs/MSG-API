@@ -44,12 +44,23 @@ exports.login = function(phoneNumber, password, callback){
       callback(true, results_login);
     }else{
       //console.log(results_login);
-      if(results_login[0].password_sn == password){
-        callback(null, results_login);
-      }else{
+      try {
+        var password_sn = results_login[0].password_sn;
+
+        if(password_sn == password){
+          callback(null, results_login);
+        }else{
+          callback(null, null);
+        }
+      } catch (e) {
         callback(null, null);
+      } finally {
+
+
       }
+
     }
+
   });
 };
 

@@ -89,14 +89,21 @@ router.post(['/login'], function(req, res, next){
 		if(error){
 			res.send(result);
 		}else{
-			var userId = result[0].user_id;
-			user_model.load_user(userId, function(error, result_load){
-				if(error){
-					res.send(result_load);
-				}else{
-					res.send(result_load);
-				}
-			});
+			if(result == null){
+				var result = [];
+
+				res.send(result);
+			}else{
+				var userId = result[0].user_id;
+				user_model.load_user(userId, function(error, result_load){
+					if(error){
+						res.send(result_load);
+					}else{
+						res.send(result_load);
+					}
+				});
+			}
+
 		}
 	});
 
