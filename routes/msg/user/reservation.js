@@ -46,4 +46,27 @@ router.get(['/:userId'], function(req, res, next) {
 });
 
 
+router.get(['/message'], function(req, res, next){
+	reservation_model.load_reservation_message(function (error, results_load_reservation_message){
+		if(error){
+			res.send(results_load_reservation_message);
+		}else{
+			res.send(results_load_reservation_message);
+		}
+	});
+});
+
+
+router.get(['/message/type/:typeId'], function(req, res, next){
+	var typeId = req.params.typeId;
+
+	reservation_model.load_type_reservation_message(typeId, function (error, results_load_reservation_message){
+		if(error){
+			res.send(results_load_reservation_message);
+		}else{
+			res.send(results_load_reservation_message);
+		}
+	});
+});
+
 module.exports = router;

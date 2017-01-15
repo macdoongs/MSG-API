@@ -392,6 +392,24 @@ exports.insert_reservation_message = function(reservationMessageType, content, c
     });
 };
 
+exports.select_reservation_message = function (callback) {
+  var sql = util.format("SELECT * FROM reservation_message");
+  console.log(sql);
+  db.getResult(sql, '', function (err, results) {
+      callback(err, results);
+  });
+}
+
+
+exports.select_type_reservation_message = function(reservation_message_type_id, callback){
+  var sql = util.format("SELECT * FROM reservation_message WHERE reservation_message_type_id = %s",
+  reservation_message_type_id);
+  db.getResult(sql, '', function (err, results) {
+      callback(err, results);
+  });
+};
+
+
 /*
  * reservation_message_type table query
  */
