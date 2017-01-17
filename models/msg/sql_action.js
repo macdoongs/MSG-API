@@ -331,15 +331,40 @@ exports.select_user_invite_user = function(chooseRoleId, receiverPhoneNumber, ca
 };
 
 
+exports.select_connection_invite_user = function(senderId, receiverPhoneNumber, callback){
+  var sql = util.format("select * from invite_user where choose_role_id " +
+    "in (select choose_role_id from choose_role where user_id " +
+    "in (select user_id from user where phone_number_sn = \'%s\')) " +
+    "and receiver_phone_number_sn in (select phone_number_sn from user where user_id = %s)"
+    , receiverPhoneNumber, senderId);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+
+};
+
+
+exports.update_connection_invite_user_id = function(inviteUserId, callback){
+  console.time('update_connection_invite_user_id');
+  var sql = util.format("update invite_user set connection = 1 where invite_user_id = %s",
+    inviteUserId);
+    db.getResult(sql, '', function (err, results) {
+        console.timeEnd('update_connection_invite_user_id');
+        callback(err, results);
+    });
+};
+
 /*
  * map_user table query
  */
 
 exports.insert_user_map_user = function(parentId, childId, topic, callback){
- var sql = util.format("INSERT INTO map_user (parent_id, child_id, topic_mn)" +
+  console.time('insert_user_map_user');
+  var sql = util.format("INSERT INTO map_user (parent_id, child_id, topic_mn)" +
    "VALUE (%s, %s, \'%s\')",
    parentId, childId, topic);
    db.getResult(sql, '', function (err, results) {
+     console.timeEnd('insert_user_map_user');
        callback(err, results);
    });
 };
@@ -394,7 +419,6 @@ exports.insert_reservation_message = function(reservationMessageType, content, c
 
 exports.select_reservation_message = function (callback) {
   var sql = util.format("SELECT * FROM reservation_message");
-  console.log(sql);
   db.getResult(sql, '', function (err, results) {
       callback(err, results);
   });

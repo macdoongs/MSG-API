@@ -33,9 +33,16 @@ router.post(['/'], function(req, res, next){
 	var receiverPhoneNumber = req.body.receiverPhoneNumber;
 	var roleName = req.body.roleName;
 
-	invitation_model.invite_user(userId, receiverPhoneNumber, roleName, function(error, results_invite){
+	invitation_model.invite_user_connection(userId, receiverPhoneNumber, roleName, function(error, results_invite){
 		if(error){
-			res.send(results_invite);
+			var resultObject = new Object();
+
+			resultObject.invitation = false;
+			resultObject.connection = false;
+
+			var resultJson = JSON.stringify(resultObject);
+
+			res.send(resultJson);
 		}else{
 			res.send(results_invite);
 		}
@@ -43,11 +50,12 @@ router.post(['/'], function(req, res, next){
 });
 
 
-router.get(['/sender/:userId/receiver/:receiverPhoneNumber'], function(req, res, next) {
-	 var userId = req.params.userId;
-	 var receiverPhoneNumber = req.params.receiverPhoneNumber;
+router.post(['/connection'], function(req, res, next) {
+	 var userId = req.body.senderId;
+	 var roleName = req.body.roleName;
+	 var receiverPhoneNumber = req.body.receiverPhoneNumber;
 
-	 invitation_model.load_user_invite_user(userId, receiverPhoneNumber, function(error, results_invite){
+	 invitation_model.update_both_invitation(userId, receiverPhoneNumber, roleName, function(error, results_invite){
 		 if(error){
 			 res.send(results_invite);
 		 }else{
@@ -55,6 +63,9 @@ router.get(['/sender/:userId/receiver/:receiverPhoneNumber'], function(req, res,
 		 }
 	 });
 });
+
+
+
 
 
 module.exports = router;

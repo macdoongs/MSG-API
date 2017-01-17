@@ -2,7 +2,8 @@
 var db_sql = require('./sql_action');
 
 
-exports.invite_user = function(userId, receiverPhoneNumber, roleName, callback){
+
+function invite_user (userId, receiverPhoneNumber, roleName, callback){
   //console.log("invite_user");
   //console.log("phoneNumber : " + phoneNumber + ", password : " + password);
 
@@ -63,7 +64,7 @@ exports.invite_user = function(userId, receiverPhoneNumber, roleName, callback){
 	     });
      }
    });
-};
+}
 
 
 exports.load_user_invite_user = function(senderId, receiverPhoneNumber, callback){
@@ -88,4 +89,60 @@ exports.load_user_invite_user = function(senderId, receiverPhoneNumber, callback
       });
     }
   });
+};
+
+
+exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleName, callback){
+  db_sql.select_connection_invite_user(senderId, receiverPhoneNumber, function(error, results_check){
+    if(error){
+      callback(true, results_check);
+    }else{
+      var resultObject = new Object();
+
+      console.log(results_check);
+
+      if(results_check.length > 0){
+        if(results_check[0].connection == 0){
+          db_sql.update_connection_invite_user_id(results_check[0].invite_user_id, function(error, result_connect){
+            if(error){
+              callback(true, result_connect);
+            }else{
+              resultObject.invitation = true;
+              resultObject.connection = true;
+              console.log(result_connect);
+
+              var resultJson = JSON.stringify(resultObject);
+
+              callback(null, resultJson);
+            }
+          });
+        }else{
+          resultObject.invitation = false;
+          resultObject.connection = true;
+
+          var resultJson = JSON.stringify(resultObject);
+
+          callback(null, resultJson);
+        }
+      }else{
+
+        invite_user(senderId, receiverPhoneNumber, roleName, function(error, results_invite){
+          if(error){
+            callback(true, results_invite);
+          }else{
+            resultObject.invitation = true;
+            resultObject.connection = false;
+
+            var resultJson = JSON.stringify(resultObject);
+
+            callback(null, resultJson);
+          }
+        });
+
+
+      }
+    }
+  });
+
+
 };
