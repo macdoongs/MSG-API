@@ -24,7 +24,7 @@ db.connect(host, port, user, password, database, function(callback){
  *          route             *
  ******************************/
 router.get(['/'], function(req, res, next){
-	
+
 });
 
 router.post(['/signup'], function(req, res, next){
@@ -54,8 +54,8 @@ router.post(['/signup'], function(req, res, next){
 	});
 });
 
-router.post(['/load'], function(req, res, next){
-	var userId = req.body.userId;
+router.get(['/load/:userId'], function(req, res, next){
+	var userId = req.params.userId;
 
 	user_model.load_user(userId, function(error, results_signup){
 		if(error){

@@ -3,19 +3,39 @@ var db_sql = require('./sql_action');
 
 exports.signup = function(phoneNumber, password, callback){
   console.log("signup");
-  db_sql.select_user_phone_number(phoneNumber, function(error, results_user){
+
+  var resultObject = new Object();
+
+  resultObject.phoneNumber = phoneNumber;
+
+  db_sql.select_user_phone_number(phoneNumber, function(error, results_select){
 		if(error){
-			console.log("error : " + error);
-			callback(true, results_user);
+			console.log("error : " + results_select);
+			callback(true, results_select);
 		}else{
-			db_sql.insert_user(phoneNumber, password, function(error, results_user){
-				if(error){
-					console.log("error : " + error);
-					callback(true, results_user);
-				}else{
-					callback(null, results_user);
-				}
-			});
+       if(results_select.length > 0){
+         resultObject.duplicate = true;
+         resultObject.signup = false;
+
+         var resultJson = JSON.stringify(resultObject);
+
+         callback(null, resultJson);
+       }else{
+  			db_sql.insert_user(phoneNumber, password, function(error, results_insert){
+  				if(error){
+  					console.log("error : " + results_insert);
+  					callback(true, results_insert);
+  				}else{
+            resultObject.duplicate = false;
+            resultObject.signup = true;
+
+            var resultJson = JSON.stringify(resultObject);
+
+            callback(null, resultJson);
+  				}
+  			});
+
+       }
 		}
 	});
 
@@ -25,39 +45,93 @@ exports.login = function(phoneNumber, password, callback){
   //console.log("app_login");
   //console.log("phoneNumber : " + phoneNumber + ", password : " + password);
   db_sql.select_user_phone_number(phoneNumber, function(error, results_login){
+    var resultObject = new Object();
+
+    resultObject.phoneNumber = phoneNumber;
+
     if(error){
-      //console.log("error : " + error);
+      console.log("error : " + results_login);
       callback(true, results_login);
     }else{
       //console.log(results_login);
-      if(results_login[0].password_sn == password){
-        callback(null, results_login);
+      if(results_login.length > 0){
+        resultObject.id = "true";
+        if(results_login[0].password_sn == password){
+          resultObject.login = "true";
+        }else{
+          resultObject.login = "false";
+        }
       }else{
-        callback(null, null);
+        resultObject.id = "false";
+        resultObject.login = "false";
       }
+
+      var resultJson = JSON.stringify(resultObject);
+
+      callback(null, resultJson);
     }
   });
 };
 
 exports.duplicate_check = function(phoneNumber, callback){
   db_sql.select_user_phone_number(phoneNumber, function(error, results_duplicate_check){
+    var resultObject = new Object();
+
+    resultObject.phoneNumber = phoneNumber;
+
     if(error){
       //console.log("error : " + error);
       callback(true, results_duplicate_check);
     }else{
-      callback(null, results_duplicate_check);
+      console.log(results_duplicate_check);
+      if(results_duplicate_check.length > 0){
+        resultObject.duplicate = true;
+      }else{
+        resultObject.duplicate = false;
+      }
+
+      var resultJson = JSON.stringify(resultObject);
+
+      callback(null, resultJson);
     }
   });
 };
 
 exports.load_user = function(userId, callback){
   //console.log('load_user_setting');
-  db_sql.select_user_all_data(userId, function(error, results_error){
+  db_sql.select_user_all_data(userId, function(error, results_select){
+    var resultObject = new Object();
+
     if(error){
       //console.log(error);
-      callback(true, results_error);
+      callback(true, results_select);
     }else{
-      callback(null, results_error);
+
+      if(results_select.length > 0){
+        resultObject.load = true;
+
+        var userObject = new Object();
+
+        userObject.user_id = results_select[0].user_id;
+        userObject.nickname_sn = results_select[0].nickname_sn;
+        userObject.birthday_dt = results_select[0].birthday_dt;
+        userObject.profile_ln = results_select[0].profile_ln;
+        userObject.message_alert = results_select[0].message_alert;
+        userObject.reserve_enable = results_select[0].reserve_enable;
+        userObject.reserve_alert = results_select[0].reserve_alert;
+        userObject.week_number = results_select[0].week_number;
+        userObject.reserve_number = results_select[0].reserve_number;
+        userObject.role_number = results_select.length;
+      }else{
+        resultObject.load = false;
+
+        userObject = null;
+      }
+      resultObject.user = userObject;
+
+      var resultJson = JSON.stringify(resultObject);
+
+      callback(null, resultJson);
     }
   });
 };
