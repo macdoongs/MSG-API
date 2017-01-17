@@ -1,6 +1,32 @@
 
 var db_sql = require('./sql_action');
 
+exports.duplicate_check = function(phoneNumber, callback){
+  db_sql.select_user_phone_number(phoneNumber, function(error, results_duplicate_check){
+    var resultObject = new Object();
+
+    resultObject.phoneNumber = phoneNumber;
+
+    if(error){
+      //console.log("error : " + error);
+      callback(true, results_duplicate_check);
+    }else{
+      console.log(results_duplicate_check);
+      if(results_duplicate_check.length > 0){
+        resultObject.duplicate = true;
+      }else{
+        resultObject.duplicate = false;
+      }
+
+
+      var resultJson = JSON.stringify(resultObject);
+
+      callback(null, resultJson);
+    }
+  });
+};
+
+
 exports.signup = function(phoneNumber, password, callback){
   console.log("signup");
 
@@ -54,54 +80,63 @@ exports.login = function(phoneNumber, password, callback){
       console.log("error : " + results_login);
       callback(true, results_login);
     }else{
-      //console.log(results_login);
+      console.log(results_login);
       if(results_login.length > 0){
-        resultObject.id = "true";
+        resultObject.check_id = "true";
         if(results_login[0].password_sn == password){
           resultObject.login = "true";
+          var userId = results_login[0].user_id;
+
+          load_data(userId, function(error, dataJson){
+            var dataObject = JSON.parse(dataJson);
+
+            resultObject.user = dataObject;
+
+            var resultJson = JSON.stringify(resultObject);
+
+            if(error){
+              callback(true, resultJson);
+            }else{
+              console.log(resultJson);
+              callback(null, resultJson);
+            }
+          });
         }else{
           resultObject.login = "false";
+
+          var resultJson = JSON.stringify(resultObject);
+
+          callback(null, resultJson);
         }
       }else{
-        resultObject.id = "false";
+        resultObject.check = "false";
         resultObject.login = "false";
+
+        var resultJson = JSON.stringify(resultObject);
+
+        callback(null, resultJson);
       }
 
-      var resultJson = JSON.stringify(resultObject);
-
-      callback(null, resultJson);
 
     }
 
   });
 };
 
-exports.duplicate_check = function(phoneNumber, callback){
-  db_sql.select_user_phone_number(phoneNumber, function(error, results_duplicate_check){
-    var resultObject = new Object();
-
-    resultObject.phoneNumber = phoneNumber;
-
-    if(error){
-      //console.log("error : " + error);
-      callback(true, results_duplicate_check);
-    }else{
-      console.log(results_duplicate_check);
-      if(results_duplicate_check.length > 0){
-        resultObject.duplicate = true;
-      }else{
-        resultObject.duplicate = false;
-      }
-
-      var resultJson = JSON.stringify(resultObject);
-
-      callback(null, resultJson);
-    }
-  });
-};
 
 exports.load_user = function(userId, callback){
-  //console.log('load_user_setting');
+  load_data(userId, function(error, result){
+    if(error){
+      callback(true, result);
+    }else{
+      callback(null, result);
+    }
+  });
+};
+
+function load_data (userId, callback){
+  console.log("userId : " + userId);
+
   db_sql.select_user_all_data(userId, function(error, results_select){
     var resultObject = new Object();
 

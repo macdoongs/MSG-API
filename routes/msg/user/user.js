@@ -84,26 +84,12 @@ router.post(['/login'], function(req, res, next){
 
 	//console.log("phoneNumber : " + phoneNumber + ", password : " + inputPassword);
 
-	user_model.login(phoneNumber, inputPassword, function(error, result){
+	user_model.login(phoneNumber, inputPassword, function(error, results_login){
 		//console.log("error : " + error + ", result : " + result);
 		if(error){
-			res.send(result);
+			res.send(results_login);
 		}else{
-			if(result == null){
-				var result = [];
-
-				res.send(result);
-			}else{
-				var userId = result[0].user_id;
-				user_model.load_user(userId, function(error, result_load){
-					if(error){
-						res.send(result_load);
-					}else{
-						res.send(result_load);
-					}
-				});
-			}
-
+			res.send(results_login);
 		}
 	});
 
