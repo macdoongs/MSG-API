@@ -94,18 +94,29 @@ exports.load_user_invite_user = function(senderId, receiverPhoneNumber, callback
 
 exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleName, callback){
   db_sql.select_connection_invite_user(senderId, receiverPhoneNumber, function(error, results_check){
-    if(error){
-      callback(true, results_check);
-    }else{
-      var resultObject = new Object();
+    var resultObject = new Object();
 
+    if(error){
+
+			resultObject.invitation = false;
+			resultObject.connection = false;
+
+			var resultJson = JSON.stringify(resultObject);
+
+      callback(true, resultJson);
+    }else{
       console.log(results_check);
 
       if(results_check.length > 0){
         if(results_check[0].connection == 0){
           db_sql.update_connection_invite_user_id(results_check[0].invite_user_id, function(error, result_connect){
             if(error){
-              callback(true, result_connect);
+              resultObject.invitation = true;
+        			resultObject.connection = false;
+
+              var resultJson = JSON.stringify(resultObject);
+
+              callback(true, resultJson);
             }else{
               resultObject.invitation = true;
               resultObject.connection = true;

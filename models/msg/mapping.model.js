@@ -2,12 +2,30 @@
 var db_sql = require('./sql_action');
 
 
-exports.map_user = function(parentId, childId, topic, callback){
+exports.map_user = function(parentId, childId, topic, deviceToken, callback){
   db_sql.insert_user_map_user(parentId, childId, topic, function(error, results_map){
+    var resultObject = new Object();
+
     if(error){
-      callback(true, results_map);
+      resultObject.mapping = false;
+
+      resultObject.mappingData = null;
+
+      callback(true, resultObject);
     }else{
-      callback(null, results_map);
+      resultObject.mapping = true;
+
+      var userMapObject = new Object();
+
+      userMapObject.topic = topic;
+      userMapObject.parentId = parentId;
+      userMapObject.childId = childId;
+
+      resultObject.mappingData = userMapObject;
+
+      var resultJson = JSON.stringify(resultObject);
+
+      callback(null, resultJson);
     }
   });
 };

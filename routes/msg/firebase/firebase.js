@@ -31,16 +31,22 @@ router.post(['/register'], function(req, res, next){
   var userId = Number(req.body.userId);
 
 
-  var firebaseObject = {
-    "userId" : userId,
-    "deviceToken":deviceToken
-  }
 
   firebase_model.register(userId, deviceToken, function(error, result){
-    res.send(result);
-  })
+		var resultObject = new Object();
 
-  var firebaseString = JSON.stringify(firebaseObject);
+		if(error){
+			resultObject.register = false;
+		}else{
+			resultObject.register = true;
+		}
+
+		var resultJson = JSON.stringify(resultObject);
+
+    res.send(resultJson);
+  });
+
+  //var firebaseString = JSON.stringify(firebaseObject);
 
   //res.send(firebaseString);
 
