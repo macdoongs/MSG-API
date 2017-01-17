@@ -101,6 +101,18 @@ exports.update_user_device_token = function(userId, deviceToken, callback){
 /*
  * user_setting table query
  */
+ exports.insert_user_setting_id = function(userId, callback){
+   console.time('insert_user_setting_id');
+   var sql = util.format('INSERT INTO user_setting (' +
+     'user_id ) ' +
+     'VALUE (%s)',
+     userId);
+   db.getResult(sql, '', function (err, results) {
+       console.timeEnd('insert_user_setting_id');
+       callback(err, results);
+   });
+ };
+
  exports.insert_user_setting = function(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, callback) {
    console.time('insert_user_setting');
    var sql = util.format('INSERT INTO user_setting (' +
@@ -148,6 +160,18 @@ exports.update_user_device_token = function(userId, deviceToken, callback){
 /*
  * user_information table query
  */
+exports.insert_user_information_id = function(userId, callback){
+  console.time('insert_user_information_id');
+  var sql = util.format('INSERT INTO user_information (' +
+    'user_id ) ' +
+    'VALUE (%s)',
+    userId);
+  db.getResult(sql, '', function (err, results) {
+      console.timeEnd('insert_user_information_id');
+      callback(err, results);
+  });
+};
+
 exports.insert_user_information = function(userId, nickname, sex, birthday, profile, callback) {
   console.time('insert_user_information');
   var sql = util.format('INSERT INTO user_information (' +
@@ -297,10 +321,10 @@ exports.insert_user_invite_user = function(chooseRoleId, receiverPhoneNumber, ca
 };
 
 
-exports.select_user_invite_user = function(chooseRoleId, callback){
+exports.select_user_invite_user = function(chooseRoleId, receiverPhoneNumber, callback){
   var sql = util.format("SELECT * FROM invite_user WHERE " +
-    "choose_role_id = %s",
-    chooseRoleId);
+    "choose_role_id = %s AND receiver_phone_number_sn = \'%s\'",
+    chooseRoleId, receiverPhoneNumber);
     db.getResult(sql, '', function (err, results) {
         callback(err, results);
     });
@@ -320,6 +344,26 @@ exports.insert_user_map_user = function(parentId, childId, topic, callback){
    });
 };
 
+
+exports.select_parent_map_user = function (userId, callback) {
+  var sql = util.format("select nickname_sn, phone_number_sn, profile_ln, child_id as user_id, topic_mn from user_information " +
+    " join (select phone_number_sn, child_id, topic_mn from user join map_user on user.user_id = map_user.child_id where parent_id = %s) as u_1 " +
+    "on u_1.child_id = user_information.user_id",
+    userId);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+};
+
+exports.select_child_map_user = function (userId, callback) {
+  var sql = util.format("select nickname_sn, phone_number_sn, profile_ln, parent_id as user_id, topic_mn from user_information "+
+    " join (select phone_number_sn, parent_id, topic_mn from user join map_user on user.user_id = map_user.parent_id where child_id = %s) as u_1 " +
+    "on u_1.parent_id = user_information.user_id",
+    userId);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+}
 
 
 /*
@@ -347,6 +391,24 @@ exports.insert_reservation_message = function(reservationMessageType, content, c
         callback(err, results);
     });
 };
+
+exports.select_reservation_message = function (callback) {
+  var sql = util.format("SELECT * FROM reservation_message");
+  console.log(sql);
+  db.getResult(sql, '', function (err, results) {
+      callback(err, results);
+  });
+}
+
+
+exports.select_type_reservation_message = function(reservation_message_type_id, callback){
+  var sql = util.format("SELECT * FROM reservation_message WHERE reservation_message_type_id = %s",
+  reservation_message_type_id);
+  db.getResult(sql, '', function (err, results) {
+      callback(err, results);
+  });
+};
+
 
 /*
  * reservation_message_type table query

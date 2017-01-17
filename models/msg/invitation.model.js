@@ -5,6 +5,7 @@ var db_sql = require('./sql_action');
 exports.invite_user = function(userId, receiverPhoneNumber, roleName, callback){
   //console.log("invite_user");
   //console.log("phoneNumber : " + phoneNumber + ", password : " + password);
+
   db_sql.select_role_id(roleName, function(error, results_role_id){
 		if(error){
 			console.log("error : " + error);
@@ -71,13 +72,14 @@ exports.load_user_invite_user = function(senderId, receiverPhoneNumber, callback
       callback(true, result_choose);
     }else{
       try {
+        console.log(result_choose);
         var chooseRoleId = result_choose[1].choose_role_id;
       } catch (e) {
         console.log("Error : " + e);
       } finally {
 
       }
-      db_sql.select_user_invite_user(chooseRoleId, function(error, results_invite){
+      db_sql.select_user_invite_user(chooseRoleId, receiverPhoneNumber, function(error, results_invite){
         if(error){
           callback(true, results_invite);
         }else{

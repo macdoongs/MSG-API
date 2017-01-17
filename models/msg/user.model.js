@@ -36,6 +36,7 @@ exports.signup = function(phoneNumber, password, callback){
   			});
 
        }
+
 		}
 	});
 
@@ -69,7 +70,9 @@ exports.login = function(phoneNumber, password, callback){
       var resultJson = JSON.stringify(resultObject);
 
       callback(null, resultJson);
+
     }
+
   });
 };
 

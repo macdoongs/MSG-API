@@ -86,7 +86,25 @@ router.post(['/login'], function(req, res, next){
 
 	user_model.login(phoneNumber, inputPassword, function(error, result){
 		//console.log("error : " + error + ", result : " + result);
-		res.send(result);
+		if(error){
+			res.send(result);
+		}else{
+			if(result == null){
+				var result = [];
+
+				res.send(result);
+			}else{
+				var userId = result[0].user_id;
+				user_model.load_user(userId, function(error, result_load){
+					if(error){
+						res.send(result_load);
+					}else{
+						res.send(result_load);
+					}
+				});
+			}
+
+		}
 	});
 
 });
@@ -98,7 +116,11 @@ router.get(['/:phoneNumber/duplicate'], function(req, res, next){
 		if(error){
 			res.send(results_duplicate_check);
 		}else{
-			res.send(results_duplicate_check);
+			if(results_duplicate_check[0] == null){
+				res.send("OK");
+			}else{
+				res.send(results_duplicate_check);
+			}
 		}
 	});
 });

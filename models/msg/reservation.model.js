@@ -11,3 +11,24 @@ exports.reserve_message = function(senderId, receiverId, reservationMessageId, r
     }
   });
 };
+
+// doesn't work this function...
+exports.load_reservation_message = function(callback){
+  db_sql.select_reservation_message(function(error, results_load_reservation_message){
+    if(error){
+      callback(true, results_load_reservation_message);
+    }else{
+      callback(null, results_load_reservation_message);
+    }
+  });
+};
+
+exports.load_type_reservation_message = function(reservationMessageType, callback){
+  db_sql.select_type_reservation_message(reservationMessageType, function(error, results_load_reservation_message){
+    if(error){
+      callback(true, results_load_reservation_message);
+    }else{
+      callback(null, results_load_reservation_message);
+    }
+  });
+};
