@@ -29,7 +29,13 @@ db.connect(host, port, user, password, database, function(callback){
  *          route             *
  ******************************/
 router.post(['/'], function(req, res, next){
-	var input = req.body.phoneNumber;
+
+
+});
+
+
+router.get(['/:phoneNumber'], function(req, res, next) {
+	var input = req.params.phoneNumber;
 
 	var trimPhoneNumber = input.split('-');
 
@@ -47,12 +53,6 @@ router.post(['/'], function(req, res, next){
 			res.send(results_password);
 		}
 	});
-
-});
-
-
-router.get(['/'], function(req, res, next) {
-
 });
 
 

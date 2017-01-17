@@ -82,9 +82,9 @@ exports.login = function(phoneNumber, password, callback){
     }else{
       console.log(results_login);
       if(results_login.length > 0){
-        resultObject.check_id = "true";
+        resultObject.check_id = true;
         if(results_login[0].password_sn == password){
-          resultObject.login = "true";
+          resultObject.login = true;
           var userId = results_login[0].user_id;
 
           load_data(userId, function(error, dataJson){
@@ -102,15 +102,15 @@ exports.login = function(phoneNumber, password, callback){
             }
           });
         }else{
-          resultObject.login = "false";
+          resultObject.login = false;
 
           var resultJson = JSON.stringify(resultObject);
 
           callback(null, resultJson);
         }
       }else{
-        resultObject.check = "false";
-        resultObject.login = "false";
+        resultObject.check = false;
+        resultObject.login = false;
 
         var resultJson = JSON.stringify(resultObject);
 
