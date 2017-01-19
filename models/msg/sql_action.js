@@ -58,7 +58,7 @@ exports.select_user_error = function(userId, callback) {
 exports.insert_user = function(phoneNumber, password, callback) {
    console.time('insert_user');
    var sql = util.format('INSERT INTO user (' +
-       'phone_number_sn, password_sn) ' +
+       'phone_number_sn, password_ln) ' +
        'VALUE (\'%s\', \'%s\')',
        phoneNumber, password);
    db.getResult(sql, '', function (err, results) {
@@ -79,7 +79,7 @@ exports.select_user_phone_number = function(phoneNumber, callback){
 };
 
 exports.select_user_password = function(phoneNumber, callback){
-  var sql = util.format('SELECT password_sn FROM user WHERE (' +
+  var sql = util.format('SELECT password_ln FROM user WHERE (' +
       'phone_number_sn' +
       '= \'%s\')',
       phoneNumber);

@@ -40,6 +40,42 @@ var fcm = new FCM(serverKey);
 /******************************
  *          route             *
  ******************************/
+router.get(['/'], function(req, res, next){
+	var message = {
+		to: deviceToken, // required fill with device token or topics
+		collapse_key: 'your_collapse_key',
+		data: {
+				mapping: true,
+		},
+		notification: {
+				title: '알림',
+				body: '연결되었습니다.'
+		}
+	};
+
+	//callback style
+	fcm.send(message, function(err, response){
+			if (err) {
+					console.log("Something has gone wrong!");
+			} else {
+					console.log("Successfully sent with response: ", response);
+			}
+	});
+	/*
+	//promise style
+	fcm.send(message)
+		.then(function(response){
+				console.log("Successfully sent with response: ", response);
+		})
+		.catch(function(err){
+				console.log("Something has gone wrong!");
+				console.error(err);
+		})
+	*/
+
+
+});
+
 router.post(['/'], function(req, res, next){
 	var parentId = req.body.parentId;
 	var childId = req.body.childId;

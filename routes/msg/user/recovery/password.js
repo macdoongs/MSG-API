@@ -35,15 +35,7 @@ router.post(['/'], function(req, res, next){
 
 
 router.get(['/:phoneNumber'], function(req, res, next) {
-	var input = req.params.phoneNumber;
-
-	var trimPhoneNumber = input.split('-');
-
-	var phoneNumber = "";
-
-	for(var i=0; i<trimPhoneNumber.length; i++){
-		phoneNumber += trimPhoneNumber[i];
-	}
+	var phoneNumber = req.params.phoneNumber;
 
 	recovery_model.find_password(phoneNumber, function(error, results_password){
 		if(error){

@@ -44,7 +44,7 @@ router.post(['/'], function(req, res, next){
 
 
 router.post(['/connection'], function(req, res, next) {
-	 var userId = req.body.senderId;
+	 var userId = req.body.userId;
 	 var roleName = req.body.roleName;
 	 var receiverPhoneNumber = req.body.receiverPhoneNumber;
 
@@ -52,7 +52,14 @@ router.post(['/connection'], function(req, res, next) {
 		 if(error){
 			 res.send(results_invite);
 		 }else{
-			 res.send(results_invite);
+			 console.log(results_invite);
+			 var resultObject = JSON.parse(results_invite);
+
+			 if(resultObject.connection){
+				 console.log('redirect');
+				 res.redirect('http://localhost/msg/user/mapping');
+			 }
+
 		 }
 	 });
 });

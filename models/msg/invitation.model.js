@@ -94,10 +94,13 @@ exports.load_user_invite_user = function(senderId, receiverPhoneNumber, callback
 
 exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleName, callback){
   db_sql.select_connection_invite_user(senderId, receiverPhoneNumber, function(error, results_check){
+    console.log('senderId : ' + senderId + ', receiverPhoneNumber : ' + receiverPhoneNumber);
+
     var resultObject = new Object();
 
     if(error){
-
+      console.log(results_check);
+      resultObject.sender = false;
 			resultObject.invitation = false;
 			resultObject.connection = false;
 
@@ -111,6 +114,7 @@ exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleNam
         if(results_check[0].connection == 0){
           db_sql.update_connection_invite_user_id(results_check[0].invite_user_id, function(error, result_connect){
             if(error){
+              resultObject.sender = true;
               resultObject.invitation = true;
         			resultObject.connection = false;
 
@@ -118,6 +122,7 @@ exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleNam
 
               callback(true, resultJson);
             }else{
+              resultObject.sender = true;
               resultObject.invitation = true;
               resultObject.connection = true;
               console.log(result_connect);
@@ -128,6 +133,7 @@ exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleNam
             }
           });
         }else{
+          resultObject.sender = true;
           resultObject.invitation = false;
           resultObject.connection = true;
 
@@ -139,8 +145,15 @@ exports.invite_user_connection = function(senderId, receiverPhoneNumber, roleNam
 
         invite_user(senderId, receiverPhoneNumber, roleName, function(error, results_invite){
           if(error){
-            callback(true, results_invite);
+            resultObject.sender = false;
+            resultObject.invitation = false;
+            resultObject.connection = false;
+
+            var resultJson = JSON.stringify(resultObject);
+
+            callback(null, resultJson);
           }else{
+            resultObject.sender = false;
             resultObject.invitation = true;
             resultObject.connection = false;
 

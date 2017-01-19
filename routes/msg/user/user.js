@@ -28,21 +28,8 @@ router.get(['/'], function(req, res, next){
 });
 
 router.post(['/signup'], function(req, res, next){
-	var input = req.body.phoneNumber;
+	var phoneNumber = req.body.phoneNumber;
 	var password = req.body.password;
-
-	var trimPhoneNumber = input.split('-');
-	var phoneNumber = "";
-
-	//console.log(trimPhoneNumber);
-
-	//console.log(trimPhoneNumber.length);
-
-	for(var i=0; i<trimPhoneNumber.length; i++){
-		phoneNumber += trimPhoneNumber[i];
-	}
-
-	//console.log("phoneNumber : " + phoneNumber + ", password : " + password);
 
 	user_model.signup(phoneNumber, password, function(error, results_signup){
 		if(error){
@@ -68,23 +55,10 @@ router.get(['/load/:userId'], function(req, res, next){
 });
 
 router.post(['/login'], function(req, res, next){
-	var input = req.body.phoneNumber;
-	var inputPassword = req.body.password;
+	var phoneNumber = req.body.phoneNumber;
+	var password = req.body.password;
 
-	var trimPhoneNumber = input.split('-');
-	var phoneNumber = "";
-
-	//console.log(trimPhoneNumber);
-
-	//console.log(trimPhoneNumber.length);
-
-	for(var i=0; i<trimPhoneNumber.length; i++){
-		phoneNumber += trimPhoneNumber[i];
-	}
-
-	//console.log("phoneNumber : " + phoneNumber + ", password : " + inputPassword);
-
-	user_model.login(phoneNumber, inputPassword, function(error, results_login){
+	user_model.login(phoneNumber, password, function(error, results_login){
 		//console.log("error : " + error + ", result : " + result);
 		if(error){
 			res.send(results_login);
@@ -92,7 +66,6 @@ router.post(['/login'], function(req, res, next){
 			res.send(results_login);
 		}
 	});
-
 });
 
 router.get(['/:phoneNumber/duplicate'], function(req, res, next){
@@ -102,11 +75,7 @@ router.get(['/:phoneNumber/duplicate'], function(req, res, next){
 		if(error){
 			res.send(results_duplicate_check);
 		}else{
-			if(results_duplicate_check[0] == null){
-				res.send("OK");
-			}else{
-				res.send(results_duplicate_check);
-			}
+			res.send(results_duplicate_check);
 		}
 	});
 });
@@ -115,7 +84,7 @@ router.get(['/:phoneNumber'], function(req, res, next) {
 		var userId = req.params.phoneNumber;
 
 
-
+		res.send("TODO");
 });
 
 

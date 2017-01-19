@@ -1,5 +1,10 @@
 
+//var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcryptjs');
+
 var db_sql = require('./sql_action');
+
+const saltRounds = 10;
 
 exports.duplicate_check = function(phoneNumber, callback){
   db_sql.select_user_phone_number(phoneNumber, function(error, results_duplicate_check){
@@ -11,7 +16,7 @@ exports.duplicate_check = function(phoneNumber, callback){
       //console.log("error : " + error);
       callback(true, results_duplicate_check);
     }else{
-      console.log(results_duplicate_check);
+      //console.log(results_duplicate_check);
       if(results_duplicate_check.length > 0){
         resultObject.duplicate = true;
       }else{
@@ -32,96 +37,151 @@ exports.signup = function(phoneNumber, password, callback){
 
   var resultObject = new Object();
 
-  resultObject.phoneNumber = phoneNumber;
+  trimUserInput(phoneNumber, function(trimmedPhoneNumber){
+    resultObject.phoneNumber = trimmedPhoneNumber;
 
-  db_sql.select_user_phone_number(phoneNumber, function(error, results_select){
-		if(error){
-			console.log("error : " + results_select);
-			callback(true, results_select);
-		}else{
-       if(results_select.length > 0){
-         resultObject.duplicate = true;
-         resultObject.signup = false;
+    db_sql.select_user_phone_number(trimmedPhoneNumber, function(error, results_select){
+  		if(error){
+        resultObject.duplicate = false;
+        resultObject.signup = false;
 
-         var resultJson = JSON.stringify(resultObject);
+        var resultJson = JSON.stringify(resultObject);
 
-         callback(null, resultJson);
-       }else{
-  			db_sql.insert_user(phoneNumber, password, function(error, results_insert){
-  				if(error){
-  					console.log("error : " + results_insert);
-  					callback(true, results_insert);
-  				}else{
-            resultObject.duplicate = false;
-            resultObject.signup = true;
+  			console.log("error : " + results_select);
+  			callback(true, results_select);
+  		}else{
+         if(results_select.length > 0){
+           resultObject.duplicate = true;
+           resultObject.signup = false;
 
-            var resultJson = JSON.stringify(resultObject);
+           var resultJson = JSON.stringify(resultObject);
 
-            callback(null, resultJson);
-  				}
-  			});
+           callback(null, resultJson);
+         }else{
+            // bcrypt - password
+            bcrypt.genSalt(saltRounds, function(error, salt){
+             if(error){
+              console.log(error);
+             }else{
+               bcrypt.hash(password, salt, function(error, hash){
+                 db_sql.insert_user(trimmedPhoneNumber, hash, function(error, results_insert){
+          				if(error){
+                    resultObject.duplicate = false;
+                    resultObject.signup = false;
 
-       }
+          					console.log("error : " + results_insert);
+          					callback(true, results_insert);
+          				}else{
+                    resultObject.duplicate = false;
+                    resultObject.signup = true;
 
-		}
-	});
+                    var resultJson = JSON.stringify(resultObject);
+
+                    callback(null, resultJson);
+          				}
+          			 });
+               });
+             }
+
+           });
+
+        }
+  		}
+
+  	});
+  });
 
 };
 
 exports.login = function(phoneNumber, password, callback){
   //console.log("app_login");
   //console.log("phoneNumber : " + phoneNumber + ", password : " + password);
-  db_sql.select_user_phone_number(phoneNumber, function(error, results_login){
-    var resultObject = new Object();
+  trimUserInput(phoneNumber, function(trimmedPhoneNumber){
+    db_sql.select_user_phone_number(trimmedPhoneNumber, function(error, results_login){
+      var resultObject = new Object();
 
-    resultObject.phoneNumber = phoneNumber;
+      resultObject.phoneNumber = trimmedPhoneNumber;
 
-    if(error){
-      console.log("error : " + results_login);
-      callback(true, results_login);
-    }else{
-      console.log(results_login);
-      if(results_login.length > 0){
-        resultObject.check_id = true;
-        if(results_login[0].password_sn == password){
-          resultObject.login = true;
-          var userId = results_login[0].user_id;
+      if(error){
+        console.log("error : " + results_login);
+        callback(true, results_login);
+      }else{
+        //console.log(results_login);
+        if(results_login.length > 0){
+          resultObject.check_id = true;
 
-          load_data(userId, function(error, dataJson){
-            var dataObject = JSON.parse(dataJson);
-
-            resultObject.user = dataObject;
-
-            var resultJson = JSON.stringify(resultObject);
-
+          bcrypt.compare(password, results_login[0].password_ln , function(error, results_check){
             if(error){
+              resultObject.login = false;
+              resultObject.user = null;
+
+              var resultJson = JSON.stringify(resultObject);
+
               callback(true, resultJson);
             }else{
-              console.log(resultJson);
-              callback(null, resultJson);
+              console.log(results_check);
+              if(results_check){
+                resultObject.login = true;
+
+                var userId = results_login[0].user_id;
+
+                load_data(userId, function(error, dataJson){
+                  var dataObject = JSON.parse(dataJson);
+
+                  resultObject.user = dataObject;
+
+                  var resultJson = JSON.stringify(resultObject);
+
+                  if(error){
+                    callback(true, resultJson);
+                  }else{
+                    console.log(resultJson);
+                    callback(null, resultJson);
+                  }
+                });
+              }else{
+                resultObject.login = false;
+                resultObject.user = null;
+
+                var resultJson = JSON.stringify(resultObject);
+                callback(null, resultJson);
+              }
             }
           });
         }else{
+          resultObject.check = false;
           resultObject.login = false;
 
           var resultJson = JSON.stringify(resultObject);
 
           callback(null, resultJson);
         }
-      }else{
-        resultObject.check = false;
-        resultObject.login = false;
 
-        var resultJson = JSON.stringify(resultObject);
 
-        callback(null, resultJson);
       }
 
-
-    }
-
+    });
   });
 };
+
+exports.trimUserInputData = function(userPhoneNumber, callback){
+  trimUserInput(userPhoneNumber, function(results){
+    callback(results);
+  });
+};
+
+function trimUserInput(userPhoneNumber, callback){
+	var input = userPhoneNumber;
+
+	var trimmedPhoneNumberArray = input.split('-');
+	var trimmedPhoneNumber = "";
+
+	for(var i=0; i<trimmedPhoneNumberArray.length; i++){
+		trimmedPhoneNumber += trimmedPhoneNumberArray[i];
+	}
+
+	callback(trimmedPhoneNumber);
+}
 
 
 exports.load_user = function(userId, callback){
