@@ -67,6 +67,14 @@ exports.insert_user = function(phoneNumber, password, callback) {
    });
 };
 
+exports.insert_user_token = function(phoneNumber, loginToken, callback){
+  var sql = util.format('UPDATE user set login_token_ln = \'%s\' '+
+    'WHERE phone_number_sn = \'%s\'',
+    loginToken, phoneNumber);
+  db.getResult(sql, '', function (err, results_phone) {
+    callback(err, results_phone);
+  });
+};
 
 exports.select_user_phone_number = function(phoneNumber, callback){
   var sql = util.format('SELECT * FROM user WHERE (' +
@@ -90,10 +98,12 @@ exports.select_user_password = function(phoneNumber, callback){
 
 
 exports.update_user_device_token = function(userId, deviceToken, callback){
+  console.time('update_user_device_token');
   var sql = util.format('UPDATE user SET device_token_ln = \'%s\' ' +
       'WHERE user_id = %s',
       deviceToken, userId);
   db.getResult(sql, '', function (err, results_password) {
+    console.timeEnd('update_user_device_token');
     callback(err, results_password);
   });
 };
@@ -101,6 +111,7 @@ exports.update_user_device_token = function(userId, deviceToken, callback){
 /*
  * user_setting table query
  */
+
  exports.insert_user_setting_id = function(userId, callback){
    console.time('insert_user_setting_id');
    var sql = util.format('INSERT INTO user_setting (' +

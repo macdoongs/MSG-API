@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.6.7",
+    "bcryptjs": "^2.4.0",
     "body-parser": "~1.15.1",
     "config.json": "0.0.4",
     "connect-redis": "^3.1.0",

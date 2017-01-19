@@ -1,8 +1,14 @@
 
-//var bcrypt = require('bcrypt-nodejs');
+// sign with default (HMAC SHA256)
+var jwt = require('jsonwebtoken');
+
 var bcrypt = require('bcryptjs');
 
 var db_sql = require('./sql_action');
+
+var config = require('config.json')('./config/config.json');
+
+var secretKey = config.jwt.secretKey;
 
 const saltRounds = 10;
 
@@ -69,15 +75,42 @@ exports.signup = function(phoneNumber, password, callback){
                     resultObject.duplicate = false;
                     resultObject.signup = false;
 
+
           					console.log("error : " + results_insert);
           					callback(true, results_insert);
           				}else{
                     resultObject.duplicate = false;
                     resultObject.signup = true;
 
-                    var resultJson = JSON.stringify(resultObject);
+                    var userId = results_insert.insertId;
 
-                    callback(null, resultJson);
+                    console.log('userId : ' + userId);
+
+                    db_sql.insert_user_setting_id(userId, function(error, result_insert_setting){
+                      if(error){
+                        resultObject.setting = false;
+                      }else{
+                        resultObject.setting = true;
+
+                        db_sql.insert_user_information_id(userId, function(error, result_insert_setting){
+                          if(error){
+
+                            resultObject.information = false;
+
+                            var resultJson = JSON.stringify(resultObject);
+
+                            callback(null, resultJson);
+                          }else{
+
+                            resultObject.information = true;
+
+                            var resultJson = JSON.stringify(resultObject);
+
+                            callback(null, resultJson);
+                          }
+                        });
+                      }
+                    });
           				}
           			 });
                });
@@ -113,7 +146,7 @@ exports.login = function(phoneNumber, password, callback){
           bcrypt.compare(password, results_login[0].password_ln , function(error, results_check){
             if(error){
               resultObject.login = false;
-              resultObject.user = null;
+              resultObject.token = null;
 
               var resultJson = JSON.stringify(resultObject);
 
@@ -125,23 +158,31 @@ exports.login = function(phoneNumber, password, callback){
 
                 var userId = results_login[0].user_id;
 
-                load_data(userId, function(error, dataJson){
-                  var dataObject = JSON.parse(dataJson);
+                var token = jwt.sign({
+                  data: resultObject
+                }, secretKey, { expiresIn: '1h' });
 
-                  resultObject.user = dataObject;
+                console.log("token : " + token);
 
-                  var resultJson = JSON.stringify(resultObject);
+                jwt.verify(token, secretKey, function(err, decoded) {
+                  console.log("data : " + decoded.data);
+                });
 
+                resultObject.token = token;
+
+                var resultJson = JSON.stringify(resultObject);
+
+                db_sql.insert_user_token(trimmedPhoneNumber, token, function(error, result_insert){
                   if(error){
-                    callback(true, resultJson);
-                  }else{
-                    console.log(resultJson);
                     callback(null, resultJson);
+                  }else{
+                    callback(true, resultJson);
                   }
                 });
+
               }else{
                 resultObject.login = false;
-                resultObject.user = null;
+                resultObject.token = null;
 
                 var resultJson = JSON.stringify(resultObject);
                 callback(null, resultJson);
@@ -149,8 +190,9 @@ exports.login = function(phoneNumber, password, callback){
             }
           });
         }else{
-          resultObject.check = false;
+          resultObject.check_id = false;
           resultObject.login = false;
+          resultObject.token = null;
 
           var resultJson = JSON.stringify(resultObject);
 
