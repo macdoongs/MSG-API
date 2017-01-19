@@ -89,13 +89,13 @@ router.get(['/:phoneNumber'], function(req, res, next) {
 
 
 router.post(['/info'], function(req, res, next){
-	var userId = req.body.userId;
+	var loginToken = req.body.loginToken;
 	var nickname = req.body.nickname;
 	var sex = req.body.sex;
 	var birthday = req.body.birthday;
 	var profile = req.body.profile;
 
-	user_model.register_user_information(userId, nickname, sex, birthday, profile, function(error, results_register_information){
+	user_model.register_user_information(loginToken, nickname, sex, birthday, profile, function(error, results_register_information){
 		if(error){
 			res.send(results_register_information);
 		}else{
@@ -121,14 +121,14 @@ router.get(['/:userId/info'], function(req, res, next) {
 
 
 router.post(['/setting'], function(req, res, next){
-	var userId = req.body.userId;
+	var loginToken = req.body.loginToken;
 	var messageAlert = req.body.messageAlert;
 	var reserveEnable = req.body.reserveEnable;
 	var reserveAlert = req.body.reserveAlert;
 	var weekNumber = req.body.weekNumber;
 	var reserveNumber = req.body.reserveNumber;
 
-	user_model.register_user_setting(userId, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_register_setting){
+	user_model.register_user_setting(loginToken, messageAlert, reserveEnable, reserveAlert, weekNumber, reserveNumber, function(error, results_register_setting){
 		if(error){
 			res.send(results_register_setting);
 		}else{

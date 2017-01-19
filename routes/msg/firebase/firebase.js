@@ -28,9 +28,9 @@ db.connect(host, port, user, password, database, function(callback){
 
 router.post(['/register'], function(req, res, next){
   var deviceToken = req.body.deviceToken;
-  var userId = Number(req.body.userId);
+  var loginToken = req.body.loginToken;
 
-  firebase_model.register(userId, deviceToken, function(error, result){
+  firebase_model.register(loginToken, deviceToken, function(error, result){
 		if(error){
 			res.send(result);
 		}else{

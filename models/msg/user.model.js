@@ -59,6 +59,8 @@ exports.signup = function(phoneNumber, password, callback){
          if(results_select.length > 0){
            resultObject.duplicate = true;
            resultObject.signup = false;
+           resultObject.setting = false;
+           resultObject.information = false;
 
            var resultJson = JSON.stringify(resultObject);
 
@@ -74,10 +76,14 @@ exports.signup = function(phoneNumber, password, callback){
           				if(error){
                     resultObject.duplicate = false;
                     resultObject.signup = false;
-
+                    resultObject.setting = false;
+                    resultObject.information = false;
 
           					console.log("error : " + results_insert);
-          					callback(true, results_insert);
+
+                    var resultJson = JSON.stringify(resultObject);
+
+          					callback(true, resultJson);
           				}else{
                     resultObject.duplicate = false;
                     resultObject.signup = true;
@@ -89,6 +95,12 @@ exports.signup = function(phoneNumber, password, callback){
                     db_sql.insert_user_setting_id(userId, function(error, result_insert_setting){
                       if(error){
                         resultObject.setting = false;
+                        resultObject.information = false;
+
+                        var resultJson = JSON.stringify(resultObject);
+
+                        callback(true, resultJson);
+
                       }else{
                         resultObject.setting = true;
 
@@ -99,7 +111,7 @@ exports.signup = function(phoneNumber, password, callback){
 
                             var resultJson = JSON.stringify(resultObject);
 
-                            callback(null, resultJson);
+                            callback(true, resultJson);
                           }else{
 
                             resultObject.information = true;
@@ -276,16 +288,16 @@ function load_data (userId, callback){
   });
 };
 
-exports.register_user_information = function(userId, nickname, sex, birthday, profile, callback){
+exports.register_user_information = function(loginToken, nickname, sex, birthday, profile, callback){
   //console.log("register_user_setting");
 
-  db_sql.select_user_information(userId, function(error, results_check){
+  db_sql.select_user_information(loginToken, function(error, results_check){
     if(error){
       callback(true, results_check);
     }else{
-      //console.log(results_check[0]);
+      console.log(results_check[0]);
       if(results_check[0] == undefined){
-        db_sql.insert_user_information(userId, nickname, sex, birthday, profile, function(error, results_insert){
+        db_sql.insert_user_information(loginToken, nickname, sex, birthday, profile, function(error, results_insert){
           if(error){
             //console.log(error);
             callback(true, results_insert);
@@ -294,7 +306,7 @@ exports.register_user_information = function(userId, nickname, sex, birthday, pr
           }
         });
       }else{
-        db_sql.update_user_information(userId, nickname, sex, birthday, profile, function(error, results_update){
+        db_sql.update_user_information(loginToken, nickname, sex, birthday, profile, function(error, results_update){
           if(error){
             //console.log(error);
             callback(true, results_update);

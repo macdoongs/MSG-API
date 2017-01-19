@@ -1,11 +1,13 @@
 
 var db_sql = require('./sql_action');
 
-exports.register = function(userId, deviceToken, callback){
+
+
+exports.register = function(loginToken, deviceToken, callback){
   //console.log("chat");
   //console.log("phoneNumber : " + phoneNumber + ", password : " + password);
 
-  db_sql.update_user_device_token(userId, deviceToken, function(error, results_register){
+  db_sql.update_user_device_token(loginToken, deviceToken, function(error, results_register){
     var resultObject = new Object();
 
     if(error){
@@ -14,20 +16,18 @@ exports.register = function(userId, deviceToken, callback){
 
       var resultJson = JSON.stringify(resultObject);
 
-      callback(true, results_register);
+      callback(true, resultJson);
     }else{
-      console.log(results_register);
-
-
-  		if(error){
-  			resultObject.register = false;
-  		}else{
-  			resultObject.register = true;
-  		}
+      //console.log(results_register);
+      if(results_register.affectedRows == 0){
+        resultObject.register = false;
+      }else{
+  		  resultObject.register = true;
+      }
 
   		var resultJson = JSON.stringify(resultObject);
 
-      callback(null, results_register)
+      callback(null, resultJson)
     }
 
   });

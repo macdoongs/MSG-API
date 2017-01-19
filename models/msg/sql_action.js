@@ -97,11 +97,11 @@ exports.select_user_password = function(phoneNumber, callback){
 };
 
 
-exports.update_user_device_token = function(userId, deviceToken, callback){
+exports.update_user_device_token = function(loginToken, deviceToken, callback){
   console.time('update_user_device_token');
   var sql = util.format('UPDATE user SET device_token_ln = \'%s\' ' +
-      'WHERE user_id = %s',
-      deviceToken, userId);
+      'WHERE login_token_ln = \'%s\' ',
+      deviceToken, loginToken);
   db.getResult(sql, '', function (err, results_password) {
     console.timeEnd('update_user_device_token');
     callback(err, results_password);
@@ -195,22 +195,22 @@ exports.insert_user_information = function(userId, nickname, sex, birthday, prof
   });
 };
 
-exports.select_user_information = function(userId, callback){
-  var sql = util.format('SELECT * FROM user_information WHERE ( ' +
-   'user_id = %s)',
-   userId);
+exports.select_user_information = function(loginToken, callback){
+  var sql = util.format('SELECT * FROM user_information WHERE ' +
+   'user_id IN (SELECT user_id FROM user WHERE login_token_ln = \'%s\')',
+   loginToken);
    db.getResult(sql, '', function (err, results) {
        callback(err, results);
    });
 };
 
-exports.update_user_information = function(userId, nickname, sex, birthday, profile, callback) {
+exports.update_user_information = function(loginToken, nickname, sex, birthday, profile, callback) {
   console.time('update_user_information');
   var sql = util.format("UPDATE user_information SET " +
    "nickname_sn = \'%s\', sex_sn = \'%s\', birthday_dt = \'%s\', profile_ln = \'%s\', update_dtm = now() " +
-   "WHERE user_id = %s",
+   "WHERE login_token_ln = \'%s\'",
    nickname, sex, birthday, profile,
-   userId);
+   loginToken);
   db.getResult(sql, '', function (err, results) {
      console.time('update_user_information');
      callback(err, results);
