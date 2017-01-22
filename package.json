@@ -15,7 +15,7 @@
     "url": "https://github.com/mac0314/portfolio-site/issues"
   },
   "dependencies": {
-    "aws-sdk": "^2.6.7",
+    "aws-sdk": "^2.7.27",
     "bcryptjs": "^2.4.0",
     "body-parser": "~1.15.1",
     "config.json": "0.0.4",
