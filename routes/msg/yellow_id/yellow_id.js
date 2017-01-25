@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var config = require('config.json')('./config/config.json');
 
+var redis = require('redis');
+
+
 var yellow_id = require('../../../models/msg/yellow_id.model');
 
 var db = require('../../../models/msg/db_action');
@@ -17,7 +20,12 @@ db.connect(host, port, user, password, database, function(callback){
 	if(callback == '1'){
 		//console.log("DB connect ok!");
 	}
+
 });
+
+
+client = redis.createClient(config.redis.port, config.redis.host);
+client.auth(config.redis.password);
 
 
 /******************************
@@ -45,18 +53,23 @@ router.get(['/keyboard'], function(req, res, next){
 	res.send(resultJson);
 });
 
+
+
 // 메시지 수신 및 자동응답 API
 router.post(['/message'], function(req, res, next){
 	var userKey = req.body.user_key;
 	var type = req.body.type;
 	var content = req.body.content;
 
+	client.sadd("MSG:YellowID:user:friend", userKey);
+	client.sadd("MSG:YellowID:user:chat_room", userKey);
+
 	//console.log("user_key : " + user_key);
 	//console.log("type : " + type);
 	//console.log("content : " + content);
 
 	yellow_id.register_yellow_id_message(userKey, type, content, function(error, result){
-		console.log(result);
+		//console.log(result);
 	});
 
 
@@ -136,24 +149,30 @@ router.post(['/message'], function(req, res, next){
 
 // 친구 추가 알림 API
 router.post(['/friend'], function(req, res, next){
-	var user_key = req.body.user_key;
-	//console.log("user_key : " + user_key);
+	var userKey = req.body.user_key;
+	//console.log("userKey : " + userKey);
 
-	yellow_id.insert_kakao_user_key(user_key, function(error, result_insert){
+	yellow_id.insert_kakao_user_key(userKey, function(error, result_insert){
+/*
 		if(error){
 			res.send(result_insert);
 		}else{
 			res.send(result_insert);
 		}
+*/
 	});
 
-	//res.send("SUCCESS");
+	client.sadd("MSG:YellowID:user:friend", userKey);
+
+	res.send("SUCCESS");
 });
 
 // 친구 차단 알림 API
 router.delete(['/friend/:user_key'], function(req, res, next){
-	var user_key = req.params.user_key;
-	//console.log("user_key : " + user_key);
+	var userKey = req.params.user_key;
+	//console.log("userKey : " + userKey);
+
+	client.srem("MSG:YellowID:user:friend", userKey);
 
 	res.send("SUCCESS");
 });
@@ -161,8 +180,10 @@ router.delete(['/friend/:user_key'], function(req, res, next){
 
 // 채팅방 나가기
 router.delete(['/chat_room/:user_key'], function(req, res, next){
-	var user_key = req.params.user_key;
-	//console.log("user_key : " + user_key);
+	var userKey = req.params.user_key;
+	//console.log("userKey : " + userKey);
+
+	client.srem("MSG:YellowID:user:chat_room", userKey);
 
 	res.send("SUCCESS");
 });
