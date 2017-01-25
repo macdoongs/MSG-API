@@ -436,9 +436,9 @@ exports.select_reservation_message = function (callback) {
 }
 
 
-exports.select_type_reservation_message = function(reservation_message_type_id, callback){
+exports.select_type_reservation_message = function(reservationMessageTypeId, callback){
   var sql = util.format("SELECT * FROM reservation_message WHERE reservation_message_type_id = %s",
-  reservation_message_type_id);
+  reservationMessageTypeId);
   db.getResult(sql, '', function (err, results) {
       callback(err, results);
   });
@@ -450,10 +450,66 @@ exports.select_type_reservation_message = function(reservation_message_type_id, 
  */
 
 exports.insert_reservation_message_type = function(typeName, callback){
+ console.time('insert_reservation_message_type');
  var sql = util.format("INSERT INTO reservation_message_type (reservation_message_type)" +
    "VALUE (\'%s\')",
    typeName);
    db.getResult(sql, '', function (err, results) {
-       callback(err, results);
+     console.timeEnd('insert_reservation_message_type');
+     callback(err, results);
    });
 };
+
+/*
+ * kakao_user table query
+ */
+
+exports.insert_kakao_user_key = function(userKey, callback){
+  console.time('insert_kakao_user_key');
+  var sql = util.format("INSERT INTO kakao_user (kakao_user_key_sn)" +
+    "VALUE (\'%s\')",
+    userKey);
+    db.getResult(sql, '', function (err, results) {
+        console.timeEnd('insert_kakao_user_key');
+        callback(err, results);
+    });
+};
+
+exports.select_kakao_user_key = function(userKey, callback){
+  var sql = util.format("SELECT * FROM kakao_user WHERE kakao_user_key_sn = \'%s\'",
+    userKey);
+    db.getResult(sql, '', function (err, results) {
+        callback(err, results);
+    });
+};
+
+
+/*
+ * yellow_id_message table query
+ */
+
+exports.insert_yellow_id_message = function(type, message, callback){
+  console.time('insert_yellow_id_message');
+  var sql = util.format("INSERT INTO yellow_id_message (yellow_id_message_type_sn, yellow_id_message_txt) " +
+    "VALUE (\'%s\', \'%s\')",
+    type, message);
+    db.getResult(sql, '', function (err, results) {
+        console.timeEnd('insert_yellow_id_message');
+        callback(err, results);
+    });
+}
+
+/*
+ * yellow_id_message table query
+ */
+
+exports.insert_yellow_id_request = function(kakaoUserId, yellowIdMessageId, callback){
+  console.time('insert_yellow_id_request');
+  var sql = util.format("INSERT INTO yellow_id_request (kakao_user_id, yellow_id_message_id)" +
+    "VALUE (\'%s\', \'%s\')",
+    kakaoUserId, yellowIdMessageId);
+    db.getResult(sql, '', function (err, results) {
+        console.timeEnd('insert_yellow_id_request');
+        callback(err, results);
+    });
+}
