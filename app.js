@@ -67,6 +67,8 @@ var msg_recovery_password = require('./routes/msg/user/recovery/password');
 var msg_invitation = require('./routes/msg/user/invitation');
 var msg_picture = require('./routes/msg/user/repository/picture');
 
+var msg_yellow_id = require('./routes/msg/yellow_id/yellow_id');
+
 var msg_firebase = require('./routes/msg/firebase/firebase');
 
 
@@ -93,6 +95,7 @@ app.use('/msg/release/dropbox', dropbox_release);
 // Android
 app.use('/msg/error', msg_error);
 app.use('/msg/firebase', msg_firebase);
+app.use('/msg/yellow_id', msg_yellow_id);
 
 app.use('/msg/user', msg_user);
 app.use('/msg/user/mapping', msg_mapping);
@@ -104,7 +107,6 @@ app.use('/msg/user/repository/picture', msg_picture);
 
 app.use('/msg/auth/sms/send', sms_send);
 app.use('/msg/auth/sms/check', sms_check);
-
 
 client = redis.createClient(config.redis.port, config.redis.host);
 client.auth(config.redis.password);

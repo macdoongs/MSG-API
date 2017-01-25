@@ -20,7 +20,6 @@ exports.uploadProfile = function(loginToken, fileName, image, callback){
   };
 
   params.Key = "com.korchid.msg/image/profile/" + fileName + ".png";
-  params.Body = image;
 
   s3Bucket.putObject(params, function(err, data){
       if (err) {
@@ -76,7 +75,7 @@ exports.downloadProfile = function(loginToken, fileName, callback){
 
       resultObject.download = true;
       resultObject.key = params.Key;
-      resultObject.body = params.Body;
+      resultObject.body = data.Body;
 
       var resultJson = JSON.stringify(resultObject);
 
