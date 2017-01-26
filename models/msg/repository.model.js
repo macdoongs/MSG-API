@@ -2,7 +2,7 @@
 var db_sql = require('./sql_action');
 
 var AWS = require('aws-sdk');
-AWS.config.loadFromPath(' ../../config/s3_config.json');
+AWS.config.loadFromPath('./config/s3_config.json');
 var s3Bucket = new AWS.S3( { params: {Bucket: 'korchid'} } );
 
 
