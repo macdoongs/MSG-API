@@ -42,9 +42,9 @@ router.get(['/keyboard'], function(req, res, next){
 	//var buttonArray = ["1", "2", "3"];
 	var buttonArray = new Array();
 
-	buttonArray.push("안녕");
-	buttonArray.push("참여");
-	buttonArray.push("도와줘");
+	//buttonArray.push("안녕~");
+	//buttonArray.push("뭘 도와주는데?");
+	buttonArray.push("신청");
 
 	resultObject.buttons = buttonArray;
 
@@ -89,7 +89,8 @@ router.post(['/message'], function(req, res, next){
 					"(예 : 내일 영하 10도로 매우 춥다네요. 엄마 옷 따뜻하게 입어요~ → 전날 저녁 / 엄마 식사 하셨어요? → 식사시간)\n" +
 					"4. 생신, 기념일 알림\n 부모님 생신,기념일 2주전/1주전/당일 알림을 드립니다.";
 	}else if(content == "신청"){
-		text = "신청해주셔서 감사합니다. 모집이 끝난 후 다시 찾아뵙겠습니다.";
+		isThereLink = true;
+		text = "신청해주셔서 감사합니다. ";
 		/*
 		text = "참여해주셔서 감사합니다. 다음 설문에 답해주시면 이후 맞춤 서비스를 제공해드리겠습니다.";
 		isThereLink = true;
@@ -114,8 +115,8 @@ router.post(['/message'], function(req, res, next){
 	if(isThereLink){
 		var messageButtonObject = new Object();
 
-		var label = "구글 설문지";
-		var url = "https://www.korchid.com";
+		var label = "신청 양식";
+		var url = "http://bit.ly/2kuYx7H";
 
 		messageButtonObject.label = label;
 		messageButtonObject.url = url;
@@ -132,9 +133,9 @@ router.post(['/message'], function(req, res, next){
 
 		var buttonArray = new Array();
 
-		buttonArray.push("안녕");
-		buttonArray.push("도와줘");
-		buttonArray.push("참여");
+		//buttonArray.push("안녕~");
+		//buttonArray.push("도와줘");
+		buttonArray.push("신청");
 
 		keyboardObject.buttons = buttonArray;
 
@@ -152,19 +153,22 @@ router.post(['/friend'], function(req, res, next){
 	var userKey = req.body.user_key;
 	//console.log("userKey : " + userKey);
 
-	yellow_id.insert_kakao_user_key(userKey, function(error, result_insert){
+	yellow_id.register_kakao_user_key(userKey, function(error, result_insert){
 /*
 		if(error){
 			res.send(result_insert);
 		}else{
 			res.send(result_insert);
 		}
+
+
 */
+
+		client.sadd("MSG:YellowID:user:friend", userKey);
+
+		res.send("SUCCESS");
 	});
 
-	client.sadd("MSG:YellowID:user:friend", userKey);
-
-	res.send("SUCCESS");
 });
 
 // 친구 차단 알림 API
