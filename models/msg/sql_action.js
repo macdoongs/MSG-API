@@ -96,6 +96,15 @@ exports.select_user_password = function(phoneNumber, callback){
   });
 };
 
+exports.update_user_password = function(phoneNumber, password, callback){
+  console.time('update_user_password');
+  var sql = util.format('UPDATE user SET password_ln = \'%s\' WHERE phone_number_sn = \'%s\' ',
+      password, phoneNumber);
+  db.getResult(sql, '', function (err, results_password) {
+    console.timeEnd('update_user_password');
+    callback(err, results_password);
+  });
+};
 
 exports.update_user_device_token = function(loginToken, deviceToken, callback){
   console.time('update_user_device_token');

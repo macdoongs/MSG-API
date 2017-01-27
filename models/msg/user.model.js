@@ -218,6 +218,43 @@ exports.login = function(phoneNumber, password, callback){
   });
 };
 
+
+exports.change_password = function(phoneNumber, password, callback){
+  console.log('change_password');
+
+  trimUserInput(phoneNumber, function(trimmedPhoneNumber){
+    // bcrypt - password
+    var resultObject = new Object();
+
+    bcrypt.genSalt(saltRounds, function(error, salt){
+      if(error){
+       console.log(error);
+      }else{
+        bcrypt.hash(password, salt, function(error, hash){
+          db_sql.update_user_password(trimmedPhoneNumber, hash, function(error, results_update){
+            if(error){
+              resultObject.phoneNumber = trimmedPhoneNumber;
+              resultObject.change = false;
+
+              var resultJson = JSON.stringify(resultObject);
+
+              callback(null, resultJson);
+            }else{
+              resultObject.phoneNumber = trimmedPhoneNumber;
+              resultObject.change = true;
+
+              var resultJson = JSON.stringify(resultObject);
+
+              callback(null, resultJson);
+            }
+          });
+        });
+      }
+    });
+  });
+};
+
+
 exports.trimUserInputData = function(userPhoneNumber, callback){
   trimUserInput(userPhoneNumber, function(results){
     callback(results);
