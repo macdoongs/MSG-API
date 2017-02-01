@@ -53,3 +53,7 @@ node_modules/
 # gitignore directory #
 #######################
 gitignore/
+
+# uploads #
+###########
+uploads/

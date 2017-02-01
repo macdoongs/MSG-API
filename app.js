@@ -82,7 +82,7 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(morgan('dev'));
 app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended:false}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended:false, parameterLimit: 1000000}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'dist')));
