@@ -31,95 +31,9 @@ db.connect(host, port, user, password, database, function(callback){
 
 
 router.post(['/'], function(req, res, next){
-
-	var resultObject = new Object();
-
-	var params = {
-    Key: 'Path',
-		ACL:'public-read',
-    Body: 'Image',
-    ContentEncoding: 'jpg',
-    ContentType: 'image/jpeg',
-		ContentLength: ''
-  };
-
-
-	var form = new multiparty.Form();
-
-  // get field name & value
-  form.on('field',function(name,value){
-       console.log('normal field / name = '+name+' , value = '+value);
-  });
-
-  // file upload handling
-  form.on('part',function(part){
-       var filename;
-       var size;
-       if (part.filename) {
-             filename = part.filename;
-             size = part.byteCount;
-       }else{
-             part.resume();
-
-       }
-
-			params.Key = "com.korchid.msg/image/profile/" + filename;
-
-			params.Body = part;
-			params.ContentLength = part.byteCount;
-
-			 s3Bucket.putObject(params, function(err, data){
-					 if (err) {
-						 resultObject.upload = false;
-						 resultObject.key = null;
-						 resultObject.body = null;
-
-						 console.log('Error uploading data: ', data);
-					 } else {
-						 resultObject.upload = true;
-						 resultObject.key = params.Key;
-						 resultObject.body = params.Body;
-
-
-
-						 console.log('succesfully uploaded the image!');
-					 }
-
-
-					 	var resultJson = JSON.stringify(resultObject);
-
-						res.send(resultJson);
-			 });
-
-/*
-       console.log("Write Streaming file :"+filename);
-       var writeStream = fs.createWriteStream('uploads/'+filename);
-       writeStream.filename = filename;
-       part.pipe(writeStream);
-
-       part.on('data',function(chunk){
-             console.log(filename+' read '+ chunk.length + 'bytes');
-       });
-
-       part.on('end',function(){
-             console.log(filename+' Part read complete');
-             writeStream.end();
-       });
-			 */
-  });
-
-
-  // all uploads are completed
-  form.on('close',function(){
-       //res.send(resultJson);
-  });
-
-  // track progress
-  form.on('progress',function(byteRead, byteExpected){
-       console.log(' Reading total  '+ byteRead + '/' + byteExpected);
-  });
-
-  form.parse(req);
+	repository_model.uploadProfile(req, res, "", function(error, result){
+		res.send(result);
+	});
 
 });
 
@@ -132,7 +46,8 @@ router.get(['/:loginToken'], function(req, res, next){
     if(error){
       res.send(resultDownload);
     }else{
-      res.send(resultDownload);
+			res.writeHead(200, {'Content-Type': 'image/png'});
+    	res.end(resultDownload); // Send the file data to the browser
     }
   });
 
