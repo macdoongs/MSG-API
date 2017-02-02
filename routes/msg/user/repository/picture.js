@@ -9,6 +9,8 @@ var fs = require('fs');
 var util = require('util');
 
 var AWS = require('aws-sdk');
+AWS.config.loadFromPath('./config/s3_config.json');
+var s3Bucket = new AWS.S3( { params: {Bucket: 'korchid'} } );
 
 var repository_model = require('../../../../models/msg/repository.model');
 
@@ -30,6 +32,18 @@ db.connect(host, port, user, password, database, function(callback){
 
 router.post(['/'], function(req, res, next){
 
+	var resultObject = new Object();
+
+	var params = {
+    Key: 'Path',
+		ACL:'public-read',
+    Body: 'Image',
+    ContentEncoding: 'jpg',
+    ContentType: 'image/jpeg',
+		ContentLength: ''
+  };
+
+
 	var form = new multiparty.Form();
 
   // get field name & value
@@ -49,35 +63,63 @@ router.post(['/'], function(req, res, next){
 
        }
 
+			params.Key = "com.korchid.msg/image/profile/" + filename;
+
+			params.Body = part;
+			params.ContentLength = part.byteCount;
+
+			 s3Bucket.putObject(params, function(err, data){
+					 if (err) {
+						 resultObject.upload = false;
+						 resultObject.key = null;
+						 resultObject.body = null;
+
+						 console.log('Error uploading data: ', data);
+					 } else {
+						 resultObject.upload = true;
+						 resultObject.key = params.Key;
+						 resultObject.body = params.Body;
+
+
+
+						 console.log('succesfully uploaded the image!');
+					 }
+
+
+					 	var resultJson = JSON.stringify(resultObject);
+
+						res.send(resultJson);
+			 });
+
+/*
        console.log("Write Streaming file :"+filename);
        var writeStream = fs.createWriteStream('uploads/'+filename);
        writeStream.filename = filename;
        part.pipe(writeStream);
 
        part.on('data',function(chunk){
-             console.log(filename+' read '+chunk.length + 'bytes');
+             console.log(filename+' read '+ chunk.length + 'bytes');
        });
 
        part.on('end',function(){
              console.log(filename+' Part read complete');
              writeStream.end();
        });
+			 */
   });
+
 
   // all uploads are completed
   form.on('close',function(){
-       res.status(200).send('Upload complete');
+       //res.send(resultJson);
   });
 
   // track progress
-  form.on('progress',function(byteRead,byteExpected){
-       console.log(' Reading total  '+byteRead+'/'+byteExpected);
+  form.on('progress',function(byteRead, byteExpected){
+       console.log(' Reading total  '+ byteRead + '/' + byteExpected);
   });
 
   form.parse(req);
-
-
-  //res.send("OK");
 
 });
 
