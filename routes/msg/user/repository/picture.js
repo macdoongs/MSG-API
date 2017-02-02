@@ -8,10 +8,6 @@ var fs = require('fs');
 
 var util = require('util');
 
-var AWS = require('aws-sdk');
-AWS.config.loadFromPath('./config/s3_config.json');
-var s3Bucket = new AWS.S3( { params: {Bucket: 'korchid'} } );
-
 var repository_model = require('../../../../models/msg/repository.model');
 
 var db = require('../../../../models/msg/db_action');
@@ -46,7 +42,7 @@ router.get(['/:loginToken'], function(req, res, next){
     if(error){
       res.send(resultDownload);
     }else{
-			res.writeHead(200, {'Content-Type': 'image/png'});
+			res.writeHead(200, {'Content-Type': 'image/png; charset=binary'});
     	res.end(resultDownload); // Send the file data to the browser
     }
   });

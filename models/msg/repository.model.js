@@ -50,44 +50,44 @@ exports.uploadProfile = function(req, res, loginToken, callback){
 			params.Body = part;
 			params.ContentLength = part.byteCount;
 
-			 s3Bucket.putObject(params, function(err, data){
-					 if (err) {
-						 resultObject.upload = false;
-						 resultObject.key = null;
-						 resultObject.body = null;
+		  s3Bucket.putObject(params, function(err, data){
+				 if (err) {
+					 resultObject.upload = false;
+					 resultObject.key = null;
+					 resultObject.body = null;
 
-						 console.log('Error uploading data: ', data);
-					 } else {
-						 resultObject.upload = true;
-						 resultObject.key = params.Key;
-						 resultObject.body = params.Body;
-
-
-
-						 console.log('succesfully uploaded the image!');
-					 }
+					 console.log('Error uploading data: ', data);
+				 } else {
+					 resultObject.upload = true;
+					 resultObject.key = params.Key;
+					 resultObject.body = params.Body;
 
 
-					 	var resultJson = JSON.stringify(resultObject);
 
-						callback(null, resultJson);
-			 });
+					 console.log('succesfully uploaded the image!');
+				 }
+
+
+				 	var resultJson = JSON.stringify(resultObject);
+
+					callback(null, resultJson);
+		 });
 
 /*
-       console.log("Write Streaming file :"+filename);
-       var writeStream = fs.createWriteStream('uploads/'+filename);
-       writeStream.filename = filename;
-       part.pipe(writeStream);
+     console.log("Write Streaming file :"+filename);
+     var writeStream = fs.createWriteStream('uploads/'+filename);
+     writeStream.filename = filename;
+     part.pipe(writeStream);
 
-       part.on('data',function(chunk){
-             console.log(filename+' read '+ chunk.length + 'bytes');
-       });
+     part.on('data',function(chunk){
+           console.log(filename+' read '+ chunk.length + 'bytes');
+     });
 
-       part.on('end',function(){
-             console.log(filename+' Part read complete');
-             writeStream.end();
-       });
-			 */
+     part.on('end',function(){
+           console.log(filename+' Part read complete');
+           writeStream.end();
+     });
+		 */
   });
 
 
