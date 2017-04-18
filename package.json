@@ -27,6 +27,7 @@
     "express-session": "^1.14.1",
     "fcm-push": "^1.1.2",
     "file-stream-rotator": "0.0.7",
+    "jsonwebtoken": "^7.3.0",
     "moment": "^2.17.1",
     "morgan": "~1.7.0",
     "mqtt": "^1.12.0",
